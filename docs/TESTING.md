@@ -1,6 +1,7 @@
 # Pierwszy test ręczny — wykonuje właściciel tabletu
 
-Nie uruchomiono żadnego pliku EFI, również w QEMU. Nie zmieniaj BootOrder,
+Agent nie uruchamiał żadnego pliku EFI, również w QEMU. Użytkownik przesłał
+zdjęcia sukcesu M1/M2; zapis wyników: MANUAL-TEST-2026-10-07.md. Nie zmieniaj BootOrder,
 SPI ani partycji eMMC. Użyj istniejącej opcji jednorazowego Boot From File
 lub istniejącego IA32 EFI Shell. Potrzebny jest firmware dopuszczający
 niesygnowany testowy EFI; ten projekt nie zapewnia obejścia Secure Boot.

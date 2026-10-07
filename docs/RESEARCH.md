@@ -64,7 +64,8 @@ Analizowane konkretne wejścia:
 [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html),
 Vol.3A, rozdziały IA-32e paging i Mode Switching (9.8.5) są podstawą
 sekwencji PG=0, PAE, CR3/PML4, LME, PG i far jump do CS.L=1/CS.D=0.
-Zgodność sekwencji została sprawdzona źródłowo; brak uruchomienia CPU testu.
+Zgodność sekwencji sprawdzono źródłowo podczas przygotowania. Późniejsze
+zdjęcie użytkownika potwierdza wykonanie M2: MANUAL-TEST-2026-10-07.md.
 
 DUET nie jest obecnym pakietem w pobranym drzewie. Historyczny DUET
 był drogą bootowania UEFI na Legacy BIOS; stock IA32 UEFI już wykonał

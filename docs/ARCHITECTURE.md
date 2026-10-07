@@ -51,7 +51,7 @@ nieudanych próbach zatrzymuje BSP. Po udanym EBS nie ma wywołań EFI.
    retf do flat code32, płaskie DS/ES/SS/FS/GS.
 3. Przygotowanie fault-only IDT32 i IDT64 (wektory 0–31).
 4. CR0.PG=0; CR4.PAE=1; CR3=PML4; EFER.LME=1 przez MSR 0xC0000080;
-   CR0.PG|PE=1. Wymagany zapis MSR istnieje tylko w niewykonanym teście.
+   CR0.PG|PE=1. Wymagany zapis MSR jest częścią testu M2 wykonanego przez użytkownika.
 5. Far jump do selector 0x18, GDT code64 L=1, D=0. Explicit `mov ebp,ebp`
    zeruje górną połowę RBP przed adresowaniem w 64 bitach. Załadowanie IDT64.
 6. Nowy RSP poniżej 4 GiB, alignment 16 i 32 B shadow space. CALL do entry

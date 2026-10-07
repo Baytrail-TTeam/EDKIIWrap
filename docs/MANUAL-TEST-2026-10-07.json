@@ -1,0 +1,61 @@
+{
+  "evidence_received_date": "2026-10-07",
+  "operator": "user",
+  "evidence_type": "photographs",
+  "photos": [
+    {
+      "path": "/Users/kacper/Downloads/IMG_0424.HEIC",
+      "sha256": "b117a02b683ac2eb3d247af0e4741c415f5a9dc34912562f3130d9fb681d705e",
+      "stage": "M1"
+    },
+    {
+      "path": "/Users/kacper/Downloads/IMG_0425.HEIC",
+      "sha256": "b6c46716fa8f3d55d426a349ebdf7a52ae84cd3f3bd1d2989ca29c38dbf4cc60",
+      "stage": "M2"
+    }
+  ],
+  "booted_binary_sha256_verified": false,
+  "device_identity": "not established by photographs; values consistent with historical S165 capture",
+  "m1": {
+    "visible_result": "M1 COLLECT OK",
+    "cpuid": "0x30678",
+    "framebuffer": "0x80000000",
+    "width": 1366,
+    "height": 768,
+    "pixels_per_scan_line": 1376,
+    "pixel_format": 1,
+    "acpi2_rsdp": "0x7ccf6014",
+    "acpi1_rsdp": "0x0",
+    "acpi_table_count": 28,
+    "smbios2": "0x7bd22000",
+    "smbios3": "0x0",
+    "memory_map_bytes_displayed": 2064,
+    "handoff": "0x7b8eb000",
+    "table_presence_flags": 3,
+    "return_after_30_seconds_observed": false
+  },
+  "m2": {
+    "visible_result": "STAGE 2 X64 OK",
+    "memory_map_bytes_displayed_before_final_capture": 2016,
+    "handoff": "0x7b8eb000",
+    "inference": "Current source emits this pattern only from its X64 payload after successful ExitBootServices and transition.",
+    "halt_duration_observed": false,
+    "final_memory_map_not_visible": true
+  },
+  "verified_scope": [
+    "IA32 collector reached success message",
+    "X64 payload reached framebuffer success pattern",
+    "Inherited framebuffer usable for the shown pattern after handoff"
+  ],
+  "not_verified": [
+    "Exact booted binary hash",
+    "Independent CPU register dump",
+    "Full EDK2 DXE",
+    "X64 GOP protocol",
+    "USB or eMMC drivers",
+    "BOOTX64.EFI loading",
+    "Windows boot",
+    "AP/DMA/SMM stability",
+    "Cold/warm boot repeatability"
+  ]
+}

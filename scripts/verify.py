@@ -28,6 +28,6 @@ for symbol in report.split('  Symbol {')[1:]:
 lines.append('payload.elf: ELF64 x86-64, entry=0, no relocations or named undefined symbols')
 assert len((root/'build/transition.bin').read_bytes())<4096
 lines.append('transition.bin: fits one page; NASM listing records mixed 32/64-bit code')
-lines.append('STATIC CHECKS ONLY: no EFI artifact has been executed; M1/M2 runtime unverified.')
+lines.append('STATIC CHECKS ONLY: this script does not execute EFI or verify runtime; see STATUS.md for manual results.')
 (root/'build/verification.txt').write_text('\n'.join(lines)+'\n')
 print('\n'.join(lines))

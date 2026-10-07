@@ -21,7 +21,10 @@ Odtworzenie: `./build.sh`; raporty szczegółowe w ignored `build/`.
 Sprawdzenie powtarzalności: zachować SHA256SUMS, uruchomić build ponownie,
 porównać oba pliki SHA256SUMS bajt po bajcie.
 
-**Brak wykonania EFI, QEMU, testu tabletu i Windows.** Nie jest to dowód
-poprawności transition, dostępności framebufferu po EBS, bezpieczeństwa
-DMA/AP/SMM ani działania sterowników. Te wyniki pozostają do ręcznego
-potwierdzenia zgodnie z TESTING.md. M3 nie został rozpoczęty.
+**Ręczny test użytkownika: M1 i M2 potwierdzone zdjęciami przesłanymi
+2026-10-07.** Szczegóły i transkrypcja: MANUAL-TEST-2026-10-07.md.
+Kompilacja pozostaje kontrolą statyczną; dowodem wykonania jest osobno
+zdjęcie `STAGE 2 X64 OK`. Nie zmierzono CR0/CR4/EFER niezależnym debuggerem
+ani hashy faktycznie uruchomionych plików. Brak testu QEMU, pełnego EDK2
+czy Windows; stabilność DMA/AP/SMM pozostaje niezweryfikowana.
+Agent nie uruchamiał żadnego EFI. M3 nie został rozpoczęty.

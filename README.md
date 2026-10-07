@@ -10,8 +10,10 @@ Przygotowano dwa ręczne testy:
 - `build/BAYTRAIL-M2-IA32.EFI`: ten sam collector, ExitBootServices, własne tablice stron,
   long mode, osadzony kod X64 rysujący `STAGE 2 X64 OK` i zatrzymujący procesor.
 
-**Oba pliki mają wyłącznie weryfikację statyczną. M1 i M2 nie są potwierdzone runtime.**
-Pierwszy test to M1. M2 dopiero po potwierdzeniu M1. Żadnego EFI nie uruchomiono.
+**Użytkownik potwierdził M1 i M2 zdjęciami przesłanymi 2026-10-07.**
+M1 pokazuje `M1 COLLECT OK`, M2 pokazuje `STAGE 2 X64 OK` po transition.
+Opis i granice potwierdzenia: `docs/MANUAL-TEST-2026-10-07.md`.
+Agent nie uruchamiał EFI ani nie wykonywał testu fizycznego.
 Nie budowano pełnego EDK2 DXE ani nie próbowano Windows.
 
 ```sh

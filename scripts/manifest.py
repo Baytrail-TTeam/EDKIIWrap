@@ -7,4 +7,4 @@ checks={f:hashlib.sha256((root/'build'/f).read_bytes()).hexdigest() for f in fil
 tools={}
 for label,exe in [('clang',os.environ.get('CC',os.environ.get('LLVM_BIN','/opt/homebrew/opt/llvm/bin')+'/clang')),('lld',os.environ.get('LLD_BIN','/opt/homebrew/opt/lld/bin')+'/ld.lld'),('nasm','nasm')]:
  tools[label]=subprocess.check_output([exe,'--version'],text=True).splitlines()[0]
-(root/'build/manifest.json').write_text(json.dumps({'tools':tools,'sources':json.loads((root/'third_party/sources.lock.json').read_text()),'sha256':checks,'hardware_tested':False},indent=2)+'\n')
+(root/'build/manifest.json').write_text(json.dumps({'tools':tools,'sources':json.loads((root/'third_party/sources.lock.json').read_text()),'sha256':checks,'efi_executed_by_build_script':False,'manual_test_results':'docs/MANUAL-TEST-2026-10-07.md'},indent=2)+'\n')
