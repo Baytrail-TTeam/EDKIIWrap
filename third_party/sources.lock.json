@@ -1,0 +1,42 @@
+{
+  "sources": [
+    {
+      "path": "third_party/edk2",
+      "url": "https://github.com/tianocore/edk2.git",
+      "commit": "2970e5699ba6267f3384ffab20f96647578aebc8"
+    },
+    {
+      "path": "third_party/coreboot",
+      "url": "https://github.com/coreboot/coreboot.git",
+      "commit": "608fac61470b2b05e4ed11808e97efd636697c3d"
+    },
+    {
+      "path": "third_party/mrchromebox-edk2",
+      "url": "https://github.com/MrChromebox/edk2.git",
+      "commit": "1f9ab463057c53883245d0ce5dfe07201efb1efe"
+    },
+    {
+      "path": "third_party/mrchromebox-blobs",
+      "url": "https://github.com/MrChromebox/blobs.git",
+      "commit": "a8c9e312c44e108f3c6cfd51953439d353a7a461"
+    }
+  ],
+  "initialized_edk2_submodules": [
+    {
+      "path": "BaseTools/Source/C/BrotliCompress/brotli",
+      "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+    },
+    {
+      "path": "MdeModulePkg/Library/BrotliCustomDecompressLib/brotli",
+      "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+    },
+    {
+      "path": "MdePkg/Library/BaseFdtLib/libfdt",
+      "commit": "cfff805481bdea27f900c32698171286542b8d3c"
+    },
+    {
+      "path": "MdePkg/Library/MipiSysTLib/mipisyst",
+      "commit": "370b5944c046bab043dd8b133727b2135af7747a"
+    }
+  ]
+}

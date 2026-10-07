@@ -1,0 +1,32 @@
+{
+  "source": "https://github.com/MrChromebox/blobs/blob/a8c9e312c44e108f3c6cfd51953439d353a7a461/soc/intel/byt/IntelGopDriver.efi",
+  "sha256": "0a9c10dcecf861b9c0df2b15f5d08c0426aef5d1e988a1b220f4650e600d33fd",
+  "size": 75168,
+  "pe_machine": "0x8664",
+  "subsystem": 11,
+  "identity_string": "Intel(R) Valley View Graphics Controller",
+  "gop_version": "7.2.1013",
+  "version_evidence": "soc/intel/byt/versions.txt (repository metadata)",
+  "supported_pci_ids": [
+    "8086:0f30",
+    "8086:0f31",
+    "8086:0f32",
+    "8086:0f33"
+  ],
+  "pci_evidence": "Supported() disassembly RVAs 0x3864, 0x3885-0x389b; table RVA 0x33c0",
+  "companion_vbt": {
+    "path": "soc/intel/byt/vbt.bin",
+    "sha256": "58b7924eadc2388756ebe8680f1601afa81ac3c03f2f1e4b122d2c5e53e229c4",
+    "version": 100,
+    "declared_size": 3892,
+    "bdb_version": 191,
+    "bdb_size": 3844,
+    "checksum": 0
+  },
+  "limits": [
+    "VBT is a separate donor artifact, not an embedded GOP VBT.",
+    "Matching PCI ID and BDB version do not verify panel, PMIC or tablet compatibility.",
+    "Distribution rights not established; blob stays in ignored third_party.",
+    "Not executed or included in M1/M2."
+  ]
+}

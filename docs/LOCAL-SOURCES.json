@@ -1,0 +1,57 @@
+[
+  {
+    "path": "../baytrail-device-development/README.md",
+    "sha256": "5fc51f2285291cc8782dc33497fd923f4f7eb8e8895ab48933f6873daa67e2df",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/AGENTS.md",
+    "sha256": "88730942da1fe9210b7438b3050b1ffe6cd3379919f33ad87c273859c6610107",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/legacy/reports/STATUS.md",
+    "sha256": "eff204a66f75ac5234270df6c2c757452be668684e041990019763f02aa7cafe",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/legacy/reports/REPORT.md",
+    "sha256": "a99f5302a135fe371694174f99774298851be5d199e9ca1b8427bd6eadc7cb91",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/docs/ACPI-A5-0x11-ANALYSIS.md",
+    "sha256": "6e6922de244e48df8674c627019edce9f1285ec651404fb28bc7bf59ba0186c5",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/docs/USB-XSTATE-RESULT.md",
+    "sha256": "2a0dbc6c2d20a8950d59693f7449b723ea596f1c1268d3f0d30971483a785229",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/docs/COREBOOT-ROADMAP.md",
+    "sha256": "279d5c3370d8d92aa51ed35c2d626e9c17fd11c2365672ae9fa71707476dea83",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-device-development/boards/chuwi/vi10/device.json",
+    "sha256": "5c9028bae17f77601a27305a5f934874e58d16d22bbfbca7af18f86a661d965e",
+    "repository_head": "b78d5b101d4b8138ed85e126a47bc94765c3c71d"
+  },
+  {
+    "path": "../baytrail-firmware/AGENTS.md",
+    "sha256": "f531b728fa3dae55ac1fde3f74649c925e8837628141224f7e70e8f5ade78e3d",
+    "repository_head": "68ff88fadb52b9afd59ffa390b9b6de5a206303c"
+  },
+  {
+    "path": "../baytrail-firmware/README.md",
+    "sha256": "6be127c8e255d35c5012e959f6804109c70d4f957bd5cffe1eaa9759b9eea130",
+    "repository_head": "68ff88fadb52b9afd59ffa390b9b6de5a206303c"
+  },
+  {
+    "path": "../baytrail-firmware/CATALOG.md",
+    "sha256": "458b70856d3f7641cdfe0f5ac9abdcb10f1c3486234e6395a8b9fd982b4c64e9",
+    "repository_head": "68ff88fadb52b9afd59ffa390b9b6de5a206303c"
+  }
+]
