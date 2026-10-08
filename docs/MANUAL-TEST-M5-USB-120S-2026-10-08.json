@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-08",
+  "photo": {
+    "name": "IMG_0438.HEIC",
+    "sha256": "56758e3d113d740a88b2979503d643b4c54a1c3d14208c935656dacb1e2361a3"
+  },
+  "visible": {
+    "command_number": 3111,
+    "opcode": "28",
+    "current_tag": "C27",
+    "last_csw_tag": "C27",
+    "last_csw_status": 0,
+    "last_bulk_result": 0,
+    "last_usb_result": 0,
+    "last_bulk_length": 13,
+    "endpoint": "82",
+    "lba": 2048,
+    "last_block": 31457279,
+    "read_state": "PENDING",
+    "watchdog": "USB DISK READ TIMEOUT"
+  },
+  "physical_storage_app_success": false,
+  "reference_loader_sha256": "d8aa36a4251d7a48b01f92a453c1bc8086226a624a18aef13ecacfef3833980a",
+  "loader_hash_visible": false,
+  "interpretation": [
+    "Last READ10 received successful CSW with matching tag",
+    "Outer read remains pending; timeout alone does not mean current bulk transfer is blocked",
+    "False ReadOnly media-change loop identified in platform guard and upstream removable-media refresh; awaiting regression reproduction and physical fix test"
+  ]
+}

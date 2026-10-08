@@ -82,7 +82,7 @@ pozostają wyłączone. **Jest to timer kooperacyjny do tego PoC, nie pełny
 sprzętowy timer PI:** zdarzenia nie postępują podczas długiego kodu, który
 nie wykonuje Stall, CheckEvent ani idle. APIC/PIC i pozostałe AP nie są inicjalizowane.
 
-Notify na BlockIo ustawia ReadOnly i zastępuje WriteBlocks odmową
+Notify na BlockIo zachowuje flagi nośnika ze sterownika i zastępuje WriteBlocks odmową
 EFI_WRITE_PROTECTED przed połączeniem FAT. Obejmuje dyski USB, partycje
 i RAM FAT. Nie ma sterownika eMMC ani zapisów do NVRAM/SPI/BootOrder.
 Zmienne emulowane NV nadal istnieją tylko w RAM. RAM FAT zawiera oficjalną
@@ -248,3 +248,31 @@ zatrzymuje CPU i pokazuje również LastBlock. Limit nadal może uciąć kilka
 kolejnych pełnych cykli retry/reset; nie jest dowodem uszkodzenia pendrive'a
 ani naprawą xHCI/GPT. Dysk nie jest modyfikowany. Nowy raport QEMU:
 M5-USB-LONG-READ-2026-10-08.json.
+
+## Poprawka sztucznej zmiany nośnika — IMG_0438
+
+IMG_0438 pokazuje aktywny odczyt LBA 2048 i timeout 120 s, ale ostatni
+READ(10) ma CSW status 0 z tym samym tagiem C27. Licznik CBW wynosi 3111.
+To nie dowodzi blokady ostatniego transferu USB: odczyt zewnętrzny może
+obejmować powroty i rekurencyjne powiadomienia. Obserwacje i hash zdjęcia:
+MANUAL-TEST-M5-USB-120S-2026-10-08.json.
+
+Błąd naszej warstwy: GuardBlocks wymuszał Media.ReadOnly=TRUE w strukturze
+należącej do UsbMassStorageDxe. Dla RemovableMedia każdy odczyt wykonuje
+UsbBootDetectMedia, a UsbScsiModeSense odświeża ReadOnly na podstawie MODE
+SENSE urządzenia. Na zapisywalnym pendrive zmienia TRUE na FALSE.
+UsbBootDetectMedia interpretuje różnicę jako zmianę nośnika, reinstaluje
+BlockIo i zwraca EFI_MEDIA_CHANGED. Nasz notify ponownie ustawia TRUE,
+co powoduje kolejną sztuczną zmianę przy następnym odczycie.
+
+Usunięto zmianę Media.ReadOnly. WriteBlocks nadal wskazuje DenyWrite,
+które zwraca EFI_WRITE_PROTECTED, więc dane nie są zapisywane. Oznaczenie
+ReadOnly fizycznego nośnika pochodzi teraz z jego sterownika i nie musi
+być TRUE; polityka blokowania zapisów jest odrębna. RAM FAT zachowuje swoją
+własną flagę TRUE. Nie zmieniono upstream EDK2.
+
+Dodano przypadek QEMU removable z usb-storage,removable=on. Poprzednie
+przypadki używały domyślnego removable=off i pomijały tę ścieżkę odświeżania
+MODE SENSE, więc nie sprawdzały błędnego wymuszania flagi. Raport regresji
+przed/po: M5-USB-MEDIA-FIX-2026-10-08.json. Fizyczny sukces nowego wariantu
+nadal wymaga próby użytkownika; limit 120 s pozostaje diagnostyką awarii.

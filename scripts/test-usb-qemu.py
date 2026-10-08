@@ -5,7 +5,7 @@ import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
 root=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
-parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard'],default='direct')
+parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable'],default='direct')
 case=parser.parse_args().case
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
 out.mkdir(parents=True,exist_ok=True)
@@ -36,7 +36,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  '-drive',f'format=raw,file=fat:rw:{out/"esp"}',
  '-device','qemu-xhci,id=xhci',
  '-drive',f'if=none,id=usbtest,format=raw,file={out/"usb-disk.img"}',
- '-device','usb-storage,bus=xhci.0,drive=usbtest'+(',port=1.1' if case=='hub-mbr' else ''),
+ '-device','usb-storage,bus=xhci.0,drive=usbtest'+(',port=1.1' if case=='hub-mbr' else ',removable=on' if case=='removable' else ''),
  '-display','none','-serial',f'file:{out/"serial.log"}','-monitor','none',
  '-qmp',f'unix:{sock},server=on,wait=off','-net','none','-no-reboot','-no-shutdown']
  if case=='hub-mbr':command[command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1:command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1]=['-device','usb-hub,id=hub,bus=xhci.0,port=1']

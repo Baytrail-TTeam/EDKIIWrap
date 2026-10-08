@@ -104,7 +104,9 @@ STATIC EFI_STATUS EFIAPI WaitForTick(EFI_METRONOME_ARCH_PROTOCOL *This,UINT32 Ti
 }
 STATIC EFI_METRONOME_ARCH_PROTOCOL Metronome={WaitForTick,100};
 STATIC VOID EFIAPI Idle(EFI_EVENT Event,VOID *Context) {(VOID)Event;(VOID)Context;Stall(1000);}
-/* Block all writes as soon as a BlockIo is published, before FAT binds. */
+/* Deny writes without changing driver-owned media state. Removable USB
+ * devices refresh ReadOnly from MODE SENSE; forcing it here causes a
+ * false media change and repeated protocol reinstall on every read. */
 STATIC EFI_STATUS EFIAPI DenyWrite(EFI_BLOCK_IO_PROTOCOL *This,UINT32 Id,EFI_LBA Lba,UINTN Size,VOID *Buffer) {
  (VOID)This;(VOID)Id;(VOID)Lba;(VOID)Size;(VOID)Buffer;return EFI_WRITE_PROTECTED;
 }
@@ -127,7 +129,7 @@ STATIC VOID EFIAPI GuardBlocks(EFI_EVENT Event,VOID *Context) {
   Size=sizeof(Handle);
   if(EFI_ERROR(gBS->LocateHandle(ByRegisterNotify,NULL,BlockRegistration,&Size,&Handle))) break;
   if(!EFI_ERROR(gBS->HandleProtocol(Handle,&gEfiBlockIoProtocolGuid,(VOID **)&Io))) {
-   Io->Media->ReadOnly=TRUE;Io->WriteBlocks=DenyWrite;
+   Io->WriteBlocks=DenyWrite;
    for(I=0;I<ReadCount && Reads[I].Io!=Io;I++) {}
    if(I==ReadCount && ReadCount<ARRAY_SIZE(Reads)) {
     Reads[I].Io=Io;Reads[I].Read=Io->ReadBlocks;Reads[I].Index=I;ReadCount++;
