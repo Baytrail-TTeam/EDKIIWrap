@@ -19,7 +19,8 @@ if case!='direct':
   mbr[446:462]=bytes([0,0xfe,0xff,0xff,6,0xfe,0xff,0xff])+struct.pack('<II',2048,len(data)//512)
   mbr[510:512]=b'\x55\xaa';data=mbr+data
  (out/'usb-disk.img').write_bytes(data)
-negative=case in ['wrong-app','no-keyboard']
+negative=case=='no-keyboard'
+manual_app=case not in ['wrong-app','no-keyboard']
 firmware=Path(os.environ.get('QEMU_FIRMWARE','/opt/homebrew/share/qemu'))
 code=firmware/'edk2-i386-code.fd';vars_template=firmware/'edk2-i386-vars.fd'
 assert code.exists() and vars_template.exists(), 'Set QEMU_FIRMWARE to directory containing IA32 OVMF code and vars.'
@@ -44,7 +45,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  with (out/'qemu.log').open('wb') as log:
   proc=subprocess.Popen(command,stdout=log,stderr=log)
   try:
-   deadline=time.monotonic()+90
+   boot_started=time.monotonic();deadline=boot_started+90
    while not sock.exists():
     if proc.poll() is not None:raise RuntimeError('QEMU exited; see qemu.log')
     if time.monotonic()>deadline:raise TimeoutError('QMP socket timeout')
@@ -56,7 +57,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
      reply=json.loads(f.readline())
      if 'error' in reply:raise RuntimeError(reply)
      if 'return' in reply:return reply['return']
-   qmp('qmp_capabilities');counts=[];typed=False
+   qmp('qmp_capabilities');counts=[];typed=False;shell_ready_seconds=None;manual_pixels=0
    while time.monotonic()<deadline:
     qmp('screendump',{'filename':str(out/'screen.ppm')})
     with (out/'screen.ppm').open('rb') as p:
@@ -68,23 +69,28 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
     counts=[sum(pixels[i:i+3]==b'\x40\xff\x40' for i in range((8+row*32)*w*3,min(h,36+row*32)*w*3,3)) for row in (21,22,23,)]
     red=sum(pixels[i:i+3]==b'\xff\x40\x40' for i in range((8+7*32)*w*3,min(h,36+7*32)*w*3,3))
     if negative and red>100:break
+    manual_pixels=sum(pixels[i:i+3]==b'\x40\xff\x40' for i in range((8+20*32)*w*3,min(h,36+20*32)*w*3,3))
     if counts[2]>100 and not typed:
-     for char in 'echo usb_key_ok\n':
-      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else char
+     shell_ready_seconds=round(time.monotonic()-boot_started,3)
+     assert manual_pixels==0,'USB app ran before a manual Shell command'
+     command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+'echo usb_key_ok\n'
+     for char in command_text:
+      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
      typed=True
-    if min(counts)>100:break
+    if min(counts)>100 and (manual_pixels>100 or not manual_app):break
     time.sleep(1)
    registers=qmp('human-monitor-command',{'command-line':'info registers'})
    (out/'registers.txt').write_text(registers)
-   messages={str(row):marker(pixels,w,row,b'\xff\x40\x40' if row==7 else b'\x40\xff\x40') for row in [7,21,22,23]}
-   expected={'wrong-app':'USB TEST BOOTX64 NOT FOUND','no-keyboard':'USB KEYBOARD MISSING'}
-   exact=messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB STORAGE X64 APP OK'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
+   messages={str(row):marker(pixels,w,row,b'\xff\x40\x40' if row==7 else b'\x40\xff\x40') for row in [7,20,21,22,23]}
+   expected={'no-keyboard':'USB KEYBOARD MISSING'}
+   exact=messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB FILESYSTEM READY'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
+   exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and 'HLT=1' in registers if negative else min(counts)>100) and 'CS64' in registers
    result={'success':success,'visible_markers':messages,'case':case,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
-   'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
+   'seconds_to_shell_ready':shell_ready_seconds,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
-   'command':command,'date':'2026-10-08','scope':('Expected rejection of '+case if negative else 'Native X64 xHCI USB storage application + keyboard command')+'; cooperative PM timer; QEMU only; tablet not tested'}
+   'command':command,'date':'2026-10-08','scope':('Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
    (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
    qmp('quit');proc.wait(timeout=5)
    def chunk(kind,data):

@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-08",
+  "photo": {
+    "name": "codex-clipboard-abc5ab19-d76d-4352-914f-86099540d873.jpg",
+    "sha256": "c6401513f22f17a5d65f4079fbd56a289e55cd0e0014dad55b9ececc56e14842"
+  },
+  "visible": [
+    "USB: BOOTX64.EFI differs from the supplied test application; skipped.",
+    "USB TEST BOOTX64 NOT FOUND",
+    "BULK RETURN 0 USB 0 LEN 13",
+    "CSW STATUS 0 TAG 1FC"
+  ],
+  "conclusions": [
+    "USB filesystem opened and BOOTX64 file read for test comparison",
+    "Old bootstrap intentionally refused a file differing from embedded test reference",
+    "Photo does not prove execution of the user BOOTX64 file"
+  ],
+  "reference_loader_sha256": "b79893bf3806d8b5f9d3d9ef95065e385efa65f6198a5a1f0f6ebc0b10e3f72e",
+  "loader_hash_visible": false
+}

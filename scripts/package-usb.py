@@ -4,29 +4,34 @@ import hashlib,json,zipfile
 root=Path(__file__).resolve().parent.parent
 out=root/'build/usb'
 paths={'EFI/TOOLS/BAYTRAIL-USB-IA32.EFI':root/'build/BAYTRAIL-USB-IA32.EFI',
-       'EFI/BOOT/BOOTX64.EFI':out/'BOOTX64.EFI'}
-readme='''Test EDK2 X64 USB — 2026-10-08
+       'EFI/SAMPLES/USBTEST.EFI':out/'BOOTX64.EFI'}
+readme=r'''EDK2 X64 Shell z natywnym USB — 2026-10-08
 
-Wypakuj katalog EFI na testowy pendrive FAT32. Zachowaj wcześniej istniejący
-BOOTX64.EFI poza ścieżką testu. Nie zastępuj BOOTIA32.EFI ani plików systemu.
-Podłącz pendrive i klawiaturę USB przed uruchomieniem.
-Uruchom ręcznie EFI/TOOLS/BAYTRAIL-USB-IA32.EFI przez Boot From File
-lub dotychczasową powłokę IA32. Poczekaj na zakończenie enumeracji (15 s).
+Uruchom EFI/TOOLS/BAYTRAIL-USB-IA32.EFI przez Boot From File lub powłokę IA32.
+Podłącz pendrive FAT i klawiaturę USB przed startem.
+Loader przechodzi do Shell po wykryciu woluminu USB i klawiatury.
+Nie uruchamia automatycznie BOOTX64.EFI i nie wymaga dołączonego testowego pliku.
 
-Oczekiwane: USB STORAGE X64 APP OK, konsola Shell>,
-USB SHELL KEYBOARD READY. Wpisz w powłoce:
-  echo usb_key_ok
-Po Enter oczekuj USB KEYBOARD COMMAND OK. Zrób zdjęcie całego ekranu.
-FS0/FS1 mogą mieć różne numery; pendrive poznasz po /USB(...) w mapowaniu.
+W Shell wpisz:
+  map -r
+Znajdź FS z USB(...) w ścieżce. FS0 zwykle jest powłoką z RAM;
+numery pozostałych FS zależą od urządzeń. Dla wybranego FS, przykładowo FS1:
+  fs1:
+  ls
+  cd EFI\BOOT
+  BOOTX64.EFI
+Możesz też wpisać pełną ścieżkę, np. fs1:\EFI\BOOT\BOOTX64.EFI.
 
-BOOTX64.EFI jest dołączoną małą aplikacją testową X64, nie powłoką ani
-instalatorem Windows. Loader uruchamia z USB tylko dokładnie ten plik.
-Powłoka Shell jest osadzona w RAM. USB BlockIo.WriteBlocks jest blokowane.
-To PoC z pollingiem i IRQ wyłączonymi; wynik QEMU nie potwierdza jeszcze
-fizycznego kontrolera Intel. Dokumentacja: docs/M5-USB.md w repo projektu.
+Oczekiwane markery: USB FILESYSTEM READY, USB SHELL KEYBOARD READY.
+Polecenie echo usb_key_ok daje USB KEYBOARD COMMAND OK.
+Dołączony EFI/SAMPLES/USBTEST.EFI to opcjonalna mała aplikacja testowa X64.
+Jej ręczne uruchomienie daje USB MANUAL X64 APP OK; możesz zachować swój plik.
+Nie nadpisuj istniejącego BOOTX64 ani BOOTIA32 podczas kopiowania loadera.
 
-W razie czerwonego komunikatu/zatrzymania zrób zdjęcie ekranu.
-Nie wykonuj dalszych etapów Windows w tym teście.
+USB WriteBlocks pozostaje blokowane. To środowisko PoC z pollingiem i IRQ
+wyłączonymi, bez pełnego przejęcia platformy i pełnych runtime services.
+Uruchomienie dowolnego EFI nie jest gwarancją obsługi systemu operacyjnego.
+W razie zatrzymania zrób zdjęcie całego ekranu.
 '''
 (out/'TEST-USB.txt').write_text(readme)
 archive=out/'BAYTRAIL-USB-TEST.zip'

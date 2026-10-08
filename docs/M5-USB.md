@@ -1,5 +1,9 @@
 # M5 — natywne USB X64, pakiet testowy 2026-10-08
 
+**Bieżący loader przechodzi bezpośrednio do Shell; plik EFI wybierasz ręcznie.**
+Instrukcja: sekcja „Bieżący tryb: szybki start do Shell, ręczny wybór EFI”
+na końcu dokumentu. Starsze procedury poniżej opisują historię testów.
+
 Zbudowany `BAYTRAIL-USB-IA32.EFI` zachowuje sprawdzony collector, transition,
 SEC/DXE i GOP. Nowy wariant przejmuje wyłącznie xHCI, podłącza oficjalne
 XhciDxe, UsbBusDxe, UsbKbDxe, UsbMassStorageDxe, DiskIoDxe, PartitionDxe
@@ -276,3 +280,45 @@ przypadki używały domyślnego removable=off i pomijały tę ścieżkę odświe
 MODE SENSE, więc nie sprawdzały błędnego wymuszania flagi. Raport regresji
 przed/po: M5-USB-MEDIA-FIX-2026-10-08.json. Fizyczny sukces nowego wariantu
 nadal wymaga próby użytkownika; limit 120 s pozostaje diagnostyką awarii.
+
+## Bieżący tryb: szybki start do Shell, ręczny wybór EFI
+
+Na prośbę użytkownika usunięto automatyczne otwarcie, porównanie i uruchamianie
+USB BOOTX64.EFI. Zdjęcie kolejnej próby pokazało, że plik został odczytany,
+ale wcześniejszy tryb testowy go pominął, bo różnił się od testowego wzorca.
+Obserwacja: MANUAL-TEST-M5-USB-FILE-2026-10-08.json.
+
+Bootstrap łączy każdy nowy uchwyt UsbIo/BlockIo najwyżej raz (do 128 każdego),
+a następnie kończy oczekiwanie natychmiast, gdy istnieją USB SimpleFileSystem
+i USB SimpleTextIn. 15 s jest jedynie limitem wykrywania, a nie stałym
+opóźnieniem. Polling 20 ms, sprawdzanie nowych uchwytów co 100 ms.
+Zniknęły powtarzane logi block handle/connect returned i markery każdego
+bindingu/transferu. Read watchdog nadal działa, ale normalny trace jest
+wyłączony. Synchroniczne ConnectController i retry sterowników mogą nadal
+wydłużyć start, więc nie obiecujemy czasu na fizycznym sprzęcie. Bootstrap
+nie obsługuje ponownego użycia uchwytów podczas hotplug. Po 15 s bez FAT,
+przy dostępnej klawiaturze, również przechodzi do Shell z informacją o braku
+woluminu. Brak klawiatury kończy się dotychczasowym komunikatem błędu.
+
+Shell jest ładowany z RAM. Wpisz map -r, znajdź FS z USB(...) i wybierz plik:
+
+```
+fs1:
+ls
+cd EFI\BOOT
+BOOTX64.EFI
+```
+
+FS1 jest przykładem, numer sprawdź w mapowaniu. Działa też pełna ścieżka
+fs1:\EFI\BOOT\BOOTX64.EFI. Dowolna lokalizacja/nazwa na woluminie FAT jest
+wybierana przez użytkownika; bootstrap nie narzuca hash ani nazwy pliku.
+USB WriteBlocks pozostaje blokowane. Pakiet nie zastępuje istniejącego
+EFI/BOOT/BOOTX64.EFI: opcjonalny test trafia do EFI/SAMPLES/USBTEST.EFI.
+
+Markery bieżącego trybu: USB FILESYSTEM READY i USB SHELL KEYBOARD READY.
+Po echo usb_key_ok pojawia się USB KEYBOARD COMMAND OK. Ręczne wykonanie
+naszej aplikacji testowej daje USB MANUAL X64 APP OK. Nie jest wymagane do
+wejścia do Shell. QEMU sprawdza brak automatycznego uruchomienia, ręczny wybór
+pliku i powrót do działającej powłoki; także obcy testowy plik nie blokuje Shell.
+Raport bieżącej wersji: M5-USB-MANUAL-SHELL-2026-10-08.json. Wcześniejsze
+sekcje i raporty opisują kolejne historyczne warianty diagnostyczne.

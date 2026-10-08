@@ -14,7 +14,7 @@
 #include "M3Handoff.h"
 #include "Marker.h"
 #include "UsbTrace.h"
-STATIC BAYTRAIL_USB_TRACE_CONTROL TraceControl={1,TRUE};
+STATIC BAYTRAIL_USB_TRACE_CONTROL TraceControl={1,FALSE};
 extern EFI_GUID gBaytrailHandoffGuid;
 EFI_STATUS PublishXhci(M3Handoff *M);
 EFI_STATUS TraceUsbTransport(CONST Handoff *H,BAYTRAIL_USB_TRACE_CONTROL *State);
