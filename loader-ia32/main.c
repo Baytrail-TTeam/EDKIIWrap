@@ -166,7 +166,9 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
 #endif
  say(L"Baytrail X64 PoC / " );
 #if RUN_TRANSITION == 2
-#ifdef MILESTONE_4
+#if defined(MILESTONE_SHELL)
+ say(L"EDK2 X64 SHELL RAM\r\n");
+#elif defined(MILESTONE_4)
  say(L"M4 EDK2 GOP\r\n");
 #else
  say(L"M3 EDK2 DXE\r\n");

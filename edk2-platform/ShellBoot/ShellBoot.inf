@@ -1,0 +1,41 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailShellBoot
+ FILE_GUID = 2a311c03-7d27-40a8-a741-720c28b7db35
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = ShellBootEntry
+[Sources]
+ ShellBoot.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ DxeServicesLib
+ MemoryAllocationLib
+ BaseMemoryLib
+ HobLib
+ DevicePathLib
+ BaytrailMarkerLib
+[Guids]
+ gEfiAcpiTableGuid
+ gEfiAcpi10TableGuid
+ gEfiSmbiosTableGuid
+ gEfiSmbios3TableGuid
+ gBaytrailHandoffGuid
+ gIdleLoopEventGuid
+[Protocols]
+ gEfiGraphicsOutputProtocolGuid
+ gEfiSimpleTextOutProtocolGuid
+ gEfiSimpleTextInProtocolGuid
+ gEfiBlockIoProtocolGuid
+ gEfiDevicePathProtocolGuid
+ gEfiSimpleFileSystemProtocolGuid
+ gEfiLoadedImageProtocolGuid
+ gEfiVariableArchProtocolGuid
+ gEfiHiiDatabaseProtocolGuid
+[Depex]
+ gEfiGraphicsOutputProtocolGuid AND gEfiVariableArchProtocolGuid AND gEfiHiiDatabaseProtocolGuid

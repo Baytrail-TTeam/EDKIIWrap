@@ -1,0 +1,15 @@
+[Defines]
+ PLATFORM_NAME = BaytrailShellLoader
+ PLATFORM_GUID = c0d687f2-a45c-46a4-876d-e3281575d981
+ PLATFORM_VERSION = 0.1
+ DSC_SPECIFICATION = 0x00010005
+ OUTPUT_DIRECTORY = Build/BaytrailShellLoader
+ SUPPORTED_ARCHITECTURES = IA32
+ BUILD_TARGETS = DEBUG|RELEASE
+ SKUID_IDENTIFIER = DEFAULT
+!include edk2-platform/M3Libraries.dsc.inc
+[Components.IA32]
+ edk2-platform/Loader/ShellLoader.inf
+
+[BuildOptions]
+ GCC:*_CLANGPDB_IA32_CC_FLAGS = -I$(PROJECT_ROOT)/build/m5 -DMILESTONE_SHELL=1

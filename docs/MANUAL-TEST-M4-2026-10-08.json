@@ -1,0 +1,40 @@
+{
+  "evidence_received_date": "2026-10-08",
+  "operator": "user",
+  "evidence_type": "photograph",
+  "stage": "M4",
+  "photo": {
+    "path": "/Users/kacper/Downloads/IMG_0429.HEIC",
+    "sha256": "bd687f90975d339cdac58e6219ac2b81ea8b6b761378cdb17ea90b6b9cc58802"
+  },
+  "visible_messages": [
+    "M4 EDK2 GOP X64 OK",
+    "QUERY SET MODE OK",
+    "ALL FOUR BLT OPS OK",
+    "PIXEL READBACK OK",
+    "OVERLAP BOUNDS TEST OK",
+    "M3 BOOT SERVICES OK"
+  ],
+  "success_messages_color": "green",
+  "visible_chart": [
+    "red",
+    "green",
+    "blue"
+  ],
+  "booted_binary_sha256_verified": false,
+  "current_local_artifact_sha256": "e2aa3746579b3dca85c760cd4311202da3dd39321172bc7605e7c19ba85b2d6f",
+  "verified_scope": [
+    "X64 GOP probe reached success on the tablet",
+    "QueryMode/SetMode and four Blt operations reported success",
+    "Pixel readback and overlap/bounds tests reported success",
+    "RGB chart visibly has the expected channel order"
+  ],
+  "not_verified": [
+    "Exact hash of binary booted on tablet",
+    "USB/storage or BOOTX64.EFI",
+    "Windows",
+    "AP/DMA/SMM stability",
+    "Cold/warm boot repeatability"
+  ],
+  "milestone_gate": "M4 satisfied; M5 may begin"
+}

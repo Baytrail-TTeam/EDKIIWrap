@@ -90,7 +90,7 @@ M4: zaimplementowany adapter GOP nad odziedziczonym graphics HOB,
 bez wiązania PCI/zmiany BAR. Oficjalna FrameBufferBltLib obsługuje
 konwersje pikseli; kopiowanie video jest overlap-safe. Jeden tryb,
 QueryMode, SetMode i cztery Blt. [Implementacja i testy](M4.md).
-QEMU: sukces; test na tablecie oczekuje.
+QEMU i tablet: sukces (IMG_0429).
 
 M5: użyć PciHostBridge/PciBus, XhciDxe, UsbBusDxe, UsbMassStorageDxe,
 DiskIo/Partition/FAT i BDS z EDK2. Najpierw USB; kontrolery eMMC w ACPI mode
@@ -103,3 +103,10 @@ bez jakiegokolwiek patchowania w bieżącym PoC.
 Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
 Opis implementacji, zakres testów i instrukcja testu tabletu:
 [M3.md](M3.md).
+
+## Powłoka X64 — etap dodatkowy
+
+Oficjalny ShellPkg jest uruchamiany przez EDK2 LoadImage/StartImage
+z read-only RAM FAT. Konsola korzysta z GraphicsConsole/HII nad GOP M4.
+Zmienne są emulowane w RAM. To nie potwierdza natywnego USB ani M5.
+[Opis i test](SHELL.md).

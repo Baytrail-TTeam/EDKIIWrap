@@ -43,4 +43,10 @@ Bramka do M4 jest spełniona.
 
 GOP X64 zbudowano i sprawdzono w QEMU IA32 OVMF.
 Build, testy, dokładny plik EFI i procedura testu tabletu: [M4.md](M4.md).
-M5 oczekuje na potwierdzenie M4 przez użytkownika.
+M4 potwierdzono IMG_0429; [wynik](MANUAL-TEST-M4-2026-10-08.md).
+
+## Powłoka X64 — 2026-10-08
+
+Oficjalny ShellPkg X64 startuje przez EDK2 z RAM FAT i wykonuje
+diagnostykę w QEMU. [Build, zakres i test tabletu](SHELL.md).
+Natywne USB/klawiatura pozostają do przygotowania w M5.

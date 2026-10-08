@@ -4,7 +4,7 @@ Niezależne repozytorium w `/Users/kacper/code/BaytrailProject/baytrail-x64-uefi
 Dwa sąsiednie repozytoria były użyte wyłącznie jako źródła wiedzy.
 CSMWrap/SeaBIOS nie są częścią tego projektu.
 
-Przygotowano cztery ręczne testy:
+Przygotowano pięć ręcznych testów:
 
 - `build/BAYTRAIL-M1-IA32.EFI`: zbiera dane, pokazuje `M1 COLLECT OK`, wraca po 30 sekundach.
 - `build/BAYTRAIL-M2-IA32.EFI`: ten sam collector, ExitBootServices, własne tablice stron,
@@ -13,6 +13,8 @@ Przygotowano cztery ręczne testy:
   i publikacja ACPI/SMBIOS; szczegóły w [docs/M3.md](docs/M3.md).
 - `build/BAYTRAIL-M4-IA32.EFI`: GOP X64, testy QueryMode/SetMode/Blt,
   odczyt pikseli i paski RGB; szczegóły w [docs/M4.md](docs/M4.md).
+- `build/BAYTRAIL-SHELL-IA32.EFI`: rzeczywista powłoka EDK2 X64 z konsolą
+  i read-only FAT w RAM; bez fizycznego USB/klawiatury. [docs/SHELL.md](docs/SHELL.md).
 
 **Użytkownik potwierdził M1 i M2 zdjęciami przesłanymi 2026-10-07.**
 M1 pokazuje `M1 COLLECT OK`, M2 pokazuje `STAGE 2 X64 OK` po transition.
@@ -20,13 +22,15 @@ Opis i granice potwierdzenia: `docs/MANUAL-TEST-2026-10-07.md`.
 M3 uruchomiono poprawnie w QEMU z IA32 OVMF (2026-10-08).
 M3 potwierdzono również zdjęciem użytkownika IMG_0428 (2026-10-08):
 [wynik testu](docs/MANUAL-TEST-M3-2026-10-08.md). Bramka do M4 spełniona.
-M4 zbudowano i sprawdzono w QEMU; test na tablecie pozostaje do wykonania.
-Agent nie wykonywał testów fizycznych. M5 i próby Windows są wstrzymane.
+M4 potwierdzono również na tablecie zdjęciem IMG_0429 (2026-10-08):
+[wynik testu](docs/MANUAL-TEST-M4-2026-10-08.md). M5 jest w przygotowaniu.
+Agent nie wykonywał testów fizycznych. Próby Windows są wstrzymane.
 
 ```sh
 ./build.sh      # M1/M2
 ./build-m3.sh   # M3
 ./build-m4.sh   # M4
+./build-shell.sh # Shell X64 z RAM; dodatkowy etap przed natywnym USB M5
 ```
 
 Toolchain: LLVM/LLD 23.1.2, NASM 3.02, Python 3. Źródła EDK2 `edk2-stable202608`
