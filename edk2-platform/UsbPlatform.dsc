@@ -52,3 +52,6 @@
  MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
  edk2-platform/UsbBoot/UsbBoot.inf
  edk2-platform/UsbTest/UsbTest.inf
+
+[BuildOptions]
+ GCC:*_CLANGPDB_X64_CC_FLAGS = -DM3_ARENA_SIZE=268435456u

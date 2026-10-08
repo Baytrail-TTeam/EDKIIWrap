@@ -1,8 +1,13 @@
 """Deterministic FAT16 superfloppy; retain a sparse prefix for read-only RAM IO."""
 from pathlib import Path
-import struct,hashlib,json
+import struct,hashlib,json,argparse
 root=Path(__file__).resolve().parent.parent
-shell=(root/'build/usb/BOOTX64.EFI').read_bytes()
+parser=argparse.ArgumentParser()
+parser.add_argument('--app',type=Path,default=root/'build/usb/BOOTX64.EFI')
+parser.add_argument('--output',type=Path,default=root/'build/usb/qemu-usb')
+args=parser.parse_args()
+shell=args.app.read_bytes()
+assert len(shell)<(8192-76)*512,'Application does not fit the test FAT image'
 sector=512;total=8192;spf=32;root_entries=128;data_sector=1+2*spf+8
 image=bytearray(total*sector)
 image[:3]=b'\xeb\x3c\x90';image[3:11]=b'BTX64   '
@@ -35,7 +40,7 @@ r=(1+2*spf)*512
 image[r:r+96]=entry('BTUSBTEST  ',8,0)+entry('EFI        ',16,efi)+entry('STARTUP NSH',32,startup,len(script))
 image[512:512+len(fat)]=fat;image[(1+spf)*512:(1+2*spf)*512]=fat
 prefix=(data_sector+next_cluster-2)*512
-out=root/'build/usb/qemu-usb';out.mkdir(parents=True,exist_ok=True)
+out=args.output;out.mkdir(parents=True,exist_ok=True)
 (out/'usb-disk.raw').write_bytes(image[:prefix])
 (out/'usb-disk.img').write_bytes(image)
 (out/'usb-disk.json').write_text(json.dumps({'virtual_size':len(image),'prefix_size':prefix,'shell_sha256':hashlib.sha256(shell).hexdigest(),'fat16_image_sha256':hashlib.sha256(image).hexdigest()},indent=2)+'\n')

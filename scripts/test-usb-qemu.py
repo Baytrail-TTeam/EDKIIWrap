@@ -5,11 +5,15 @@ import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
 root=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
-parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable'],default='direct')
-case=parser.parse_args().case
+parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy'],default='direct')
+parser.add_argument('--ventoy-app',type=Path,help='Explore this user EFI in an isolated FAT image; no automatic success verdict')
+args=parser.parse_args();case=args.case
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
 out.mkdir(parents=True,exist_ok=True)
-if case!='direct':
+if case=='ventoy':
+ assert args.ventoy_app and args.ventoy_app.is_file(),'--ventoy-app is required'
+ subprocess.check_call(['python3',str(root/'scripts/make-usb-test-disk.py'),'--app',str(args.ventoy_app),'--output',str(out)])
+if case not in ['direct','ventoy']:
  data=bytearray((root/'build/usb/qemu-usb/usb-disk.img').read_bytes())
  if case=='wrong-app':
   off=data.find((root/'build/usb/BOOTX64.EFI').read_bytes());assert off>0;data[off]^=1
@@ -31,7 +35,7 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 usb_before=sha(out/'usb-disk.img')
 with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  sock=Path(tmp)/'qmp.sock'
- command=['qemu-system-x86_64','-machine','q35,accel=tcg','-cpu','max','-m','256','-smp','1',
+ command=['qemu-system-x86_64','-machine','q35,accel=tcg','-cpu','max','-m','512','-smp','1',
  '-drive',f'if=pflash,format=raw,unit=0,readonly=on,file={code}',
  '-drive',f'if=pflash,format=raw,unit=1,file={out/"vars.fd"}',
  '-drive',f'format=raw,file=fat:rw:{out/"esp"}',
@@ -57,7 +61,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
      reply=json.loads(f.readline())
      if 'error' in reply:raise RuntimeError(reply)
      if 'return' in reply:return reply['return']
-   qmp('qmp_capabilities');counts=[];typed=False;shell_ready_seconds=None;manual_pixels=0
+   qmp('qmp_capabilities');counts=[];typed=False;shell_ready_seconds=None;manual_pixels=0;app_started=None
    while time.monotonic()<deadline:
     qmp('screendump',{'filename':str(out/'screen.ppm')})
     with (out/'screen.ppm').open('rb') as p:
@@ -77,8 +81,9 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
      for char in command_text:
       key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
-     typed=True
-    if min(counts)>100 and (manual_pixels>100 or not manual_app):break
+     typed=True;app_started=time.monotonic()
+    if case=='ventoy' and app_started and time.monotonic()-app_started>8:break
+    if case!='ventoy' and min(counts)>100 and (manual_pixels>100 or not manual_app):break
     time.sleep(1)
    registers=qmp('human-monitor-command',{'command-line':'info registers'})
    (out/'registers.txt').write_text(registers)
@@ -87,10 +92,10 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    exact=messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB FILESYSTEM READY'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
    exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and 'HLT=1' in registers if negative else min(counts)>100) and 'CS64' in registers
-   result={'success':success,'visible_markers':messages,'case':case,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
-   'seconds_to_shell_ready':shell_ready_seconds,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
+   result={'success':None if case=='ventoy' else success,'observation_requires_review':case=='ventoy','visible_markers':messages,'case':case,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
+   'seconds_to_shell_ready':shell_ready_seconds,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
-   'command':command,'date':'2026-10-08','scope':('Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
+   'command':command,'date':'2026-10-08','scope':('Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
    (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
    qmp('quit');proc.wait(timeout=5)
    def chunk(kind,data):
@@ -100,7 +105,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    (out/'screen.png').write_bytes(png)
    print(json.dumps(result,indent=2))
    assert result['usb_disk_unchanged'],'USB disk was modified'
-   assert success,'USB storage/keyboard/Shell markers or X64 state missing; inspect screen.ppm and registers.txt'
+   if case!='ventoy':assert success,'USB storage/keyboard/Shell markers or X64 state missing; inspect screen.ppm and registers.txt'
   finally:
    if proc.poll() is None:
     proc.terminate()

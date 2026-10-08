@@ -328,3 +328,40 @@ sekcje i raporty opisują kolejne historyczne warianty diagnostyczne.
 IMG_0441–0445 potwierdzają interaktywny Shell i przeglądanie FAT pendrive
 w dwóch uruchomieniach. Ręcznie wybrany Ventoy BOOTX64.EFI kończy OOM;
 nie jest to sukces bootu Ventoy/OS. Szczegóły: MANUAL-TEST-M5-USB-SHELL-2026-10-08.md.
+
+## Wariant USB z pulą 256 MiB — plik Ventoy użytkownika
+
+Przeanalizowano /Users/kacper/Downloads/BOOTX64.EFI: PE32+ X64,
+1927600 B, image size 1925120 B, SHA256
+907c99a8370e953eb4ec34df2c314cf979356bfca97733ccb1139ee3f5e98cce.
+Sam plik na izolowanym FAT w QEMU z poprzednią pulą 64 MiB dochodzi do
+GNU GRUB 2.04 i grub>. OOM ze zdjęć nie został odtworzony. Obraz testowy
+nie ma pełnej partycji/config/theme Ventoy, więc nie jest równoważny
+fizycznej próbie użytkownika. To ogranicza diagnozę, nie potwierdza naprawy.
+
+Bieżący USB loader i USB DXE kompilują M3_ARENA_SIZE=268435456u.
+Stock IA32 AllocatePages rezerwuje tę pulę poniżej 4 GiB, a SEC nadal
+publikuje jako system memory wyłącznie własną pulę. Pozostała stock mapa
+pozostaje reserved. Nie odzyskujemy pamięci firmware ani nie publikujemy
+jej jako wolnej. Zmiana dotyczy tylko USB DSC; bazowe M3/M4/Shell zachowują
+wartość domyślną 64 MiB. Przy braku ciągłych 256 MiB rezerwacja loadera
+zakończy się błędem; nie ma automatycznego fallbacku do 64 MiB.
+
+USBTEST.EFI sprawdza teraz przydzielenie 160 MiB, zapis/odczyt na początku
+i końcu własnego bufora oraz jego zwolnienie przed powrotem. Sukces daje
+USB_MEMORY_160M_OK, dopiero potem dotychczasowy token app. QEMU ma 512 MiB
+RAM, aby stock OVMF mógł zarezerwować 256 MiB. Mierzone czasy QEMU nie są
+pomiarami fizycznego tabletu ani gwarancją bootu Ventoy/OS.
+
+Exploratory run można powtórzyć:
+
+```
+python3 scripts/test-usb-qemu.py --case ventoy --ventoy-app /Users/kacper/Downloads/BOOTX64.EFI
+```
+
+Tworzy wyłącznie własny FAT w build/usb/qemu-ventoy, uruchamia plik ręcznie
+w Shell i zachowuje screenshot. Pole success=null wymaga oceny obrazu;
+standardowe markery naszej aplikacji nie są warunkiem sukcesu programu
+Ventoy. Uruchomienie GRUB prompt nie oznacza działania pełnego Ventoy.
+Raport wariantu: M5-USB-MEMORY-2026-10-08.json. Fizyczna próba 256 MiB
+pozostaje do wykonania przez użytkownika.

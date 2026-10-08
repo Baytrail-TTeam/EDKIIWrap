@@ -35,5 +35,6 @@ pozostałych kontrolerów DMA, pełnych runtime services i SMM platformy;
 te tematy pozostają do rozwiązania przed bootem OS.
 
 Ręczny tryb USB Shell na tablecie: docs/MANUAL-TEST-M5-USB-SHELL-2026-10-08.md.
-Uruchomienie Ventoy pozostaje nieukończone; arena EDK2 ma 64 MiB,
-przyczyna błędu konkretnego EFI wymaga analizy pliku użytkownika.
+Uruchomienie Ventoy pozostaje nieukończone; USB arena EDK2 ma teraz 256 MiB,
+plik użytkownika uruchamia bare GRUB w QEMU również przy 64 MiB;
+OOM pełnego Ventoy na tablecie nie odtworzono. Próba 256 MiB oczekuje użytkownika.

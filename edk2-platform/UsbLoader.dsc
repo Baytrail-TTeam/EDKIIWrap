@@ -12,4 +12,4 @@
  edk2-platform/Loader/UsbLoader.inf
 
 [BuildOptions]
- GCC:*_CLANGPDB_IA32_CC_FLAGS = -I$(PROJECT_ROOT)/build/usb -DMILESTONE_USB=1
+ GCC:*_CLANGPDB_IA32_CC_FLAGS = -I$(PROJECT_ROOT)/build/usb -DMILESTONE_USB=1 -DM3_ARENA_SIZE=268435456u
