@@ -4,7 +4,9 @@
 QEMU z IA32 OVMF uruchamia oficjalny ShellPkg X64 przez nowe Boot Services
 EDK2: LoadImage/StartImage. Widać banner `UEFI Interactive Shell v2.2`,
 wynik `ver`, mapowanie `FS0:` i prompt `Shell>`.
-Test na tablecie pozostaje do wykonania przez użytkownika.
+Test na tablecie potwierdzony zdjęciem użytkownika IMG_0430: widoczne są
+`SHELL_X64_RAM_OK`, prompt i zielony `SHELL X64 SCRIPT OK`.
+Dowód: [MANUAL-TEST-SHELL-2026-10-08.md](MANUAL-TEST-SHELL-2026-10-08.md).
 
 To dodatkowy etap uruchomienia aplikacji/konsoli po potwierdzonym M4.
 **Nie oznacza ukończenia M5: fizyczne USB, klawiatura i BOOTX64.EFI z

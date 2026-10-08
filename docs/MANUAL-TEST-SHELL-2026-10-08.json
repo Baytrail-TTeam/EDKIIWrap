@@ -1,0 +1,37 @@
+{
+  "evidence_received_date": "2026-10-08",
+  "operator": "user",
+  "evidence_type": "photograph",
+  "stage": "Shell X64 RAM",
+  "photo": {
+    "path": "/Users/kacper/Downloads/IMG_0430.HEIC",
+    "sha256": "59a18ede36a71912bb4d10d0be8738b7129433e53fb4d6739b6f4f9222c0e0c1"
+  },
+  "visible_messages": [
+    "UEFI Interactive Shell v2.2",
+    "EDK II",
+    "UEFI v2.70 (Baytrail EDK2 X64, 0x00010000)",
+    "FS0: Alias(s):F0:;BLK0:",
+    "No SimpleTextInputEx was found. CTRL-based features are not usable.",
+    "Shell> echo -off",
+    "SHELL_X64_RAM_OK",
+    "Shell>",
+    "SHELL X64 SCRIPT OK"
+  ],
+  "booted_binary_sha256_verified": false,
+  "current_local_artifact_sha256": "2d518db791a7be5c0162e7a825b60e315fe8c4041d98061d60f4a248f8c0e89a",
+  "verified_scope": [
+    "Shell console and FS0 RAM FAT visible on tablet",
+    "startup.nsh output visible",
+    "Final success marker and Shell prompt visible"
+  ],
+  "not_verified": [
+    "Exact hash of booted binary",
+    "Physical keyboard input",
+    "Native USB storage",
+    "BOOTX64.EFI from physical USB",
+    "Windows",
+    "Cold/warm boot repeatability"
+  ],
+  "milestone_gate": "Shell RAM bootstrap confirmed; full M5 remains incomplete"
+}

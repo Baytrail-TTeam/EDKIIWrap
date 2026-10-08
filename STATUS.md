@@ -6,7 +6,7 @@
 | M2 — long mode / wzór X64 | zbudowany, ELF64 i surowy payload osadzony w EFI IA32 | potwierdzony zdjęciem użytkownika IMG_0425 |
 | M3 — EDK2 X64 payload | zbudowany: SEC adapter + oficjalny DXE Core/RuntimeDxe + probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0428 |
 | M4 — GOP w EDK2 | zbudowany fixed-mode GOP X64, FrameBufferBltLib i probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0429 |
-| Shell X64 — etap dodatkowy | oficjalny ShellPkg, konsola, read-only RAM FAT, LoadImage/StartImage | QEMU IA32 OVMF: sukces; test tabletu oczekuje |
+| Shell X64 — etap dodatkowy | oficjalny ShellPkg, konsola, read-only RAM FAT, LoadImage/StartImage | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0430 |
 | M5 — USB BOOTX64.EFI | natywne PCI/USB/klawiatura jeszcze niezaimplementowane | bramka M4 spełniona |
 | M6 — bootmgfw.efi X64 | bez prób | wstrzymany |
 
@@ -19,7 +19,8 @@ na tablecie. M2, M3, M4 i Shell X64 sprawdzono również w QEMU; brak prób Wind
 M3: docs/M3.md, docs/M3-QEMU-2026-10-08.json oraz
 docs/MANUAL-TEST-M3-2026-10-08.md (ręczny test użytkownika).
 M4: docs/M4.md; M4 potwierdzono zdjęciem IMG_0429: docs/MANUAL-TEST-M4-2026-10-08.md.
-Shell: docs/SHELL.md; RAM FAT nie potwierdza natywnego USB M5.
+Shell: docs/SHELL.md; test tabletu: docs/MANUAL-TEST-SHELL-2026-10-08.md.
+RAM FAT nie potwierdza natywnego USB M5.
 
 Źródła urządzenia: legacy S165/BYT-PF02/Z3736F; etykieta folderu Chuwi Vi10
 nie potwierdza modelu capture. Aktywne wyjście w raporcie S165 to eDP; MIPI
