@@ -16,8 +16,10 @@ Przygotowano trzy ręczne testy:
 M1 pokazuje `M1 COLLECT OK`, M2 pokazuje `STAGE 2 X64 OK` po transition.
 Opis i granice potwierdzenia: `docs/MANUAL-TEST-2026-10-07.md`.
 M3 uruchomiono poprawnie w QEMU z IA32 OVMF (2026-10-08).
-Test M3 na tablecie pozostaje do wykonania przez użytkownika.
-Agent nie wykonywał testów fizycznych. M4 i próby Windows są wstrzymane.
+M3 potwierdzono również zdjęciem użytkownika IMG_0428 (2026-10-08):
+[wynik testu](docs/MANUAL-TEST-M3-2026-10-08.md). Bramka do M4 spełniona.
+Agent nie wykonywał testów fizycznych. M4 pozostaje do implementacji;
+próby Windows są wstrzymane.
 
 ```sh
 ./build.sh      # M1/M2

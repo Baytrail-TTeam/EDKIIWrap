@@ -1,0 +1,51 @@
+{
+  "evidence_received_date": "2026-10-08",
+  "operator": "user",
+  "evidence_type": "photograph",
+  "stage": "M3",
+  "photo": {
+    "path": "/Users/kacper/Downloads/IMG_0428.HEIC",
+    "sha256": "529aa2a654b5c9d1da910a20a8740d8ddb0b986243709989f5696373adc8fcdb"
+  },
+  "visible_messages": [
+    "M3 X64 ENTRY",
+    "M3 HOBS READY",
+    "M3 LOADING DXE CORE",
+    "M3 ENTERING DXE CORE",
+    "M3 EDK2 DXE OK",
+    "BOOT SERVICES TEST OK",
+    "ACPI SMBIOS TABLES OK"
+  ],
+  "success_messages_color": "green",
+  "visible_values": {
+    "memory_map_bytes_displayed_before_final_capture": 2016,
+    "handoff": "0x7b8eb000",
+    "table_presence_flags": 3,
+    "arena_base": "0x72000000",
+    "fv_base": "0x77972000",
+    "entry_point": "0x7b9de32c"
+  },
+  "booted_binary_sha256_verified": false,
+  "current_local_artifact": {
+    "path": "/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/BAYTRAIL-M3-IA32.EFI",
+    "sha256": "0f6fc584e3efe2579c1a84e6f925a50627483b78135aa7a084ec246623603042"
+  },
+  "inference": "The current M3 source draws the three green messages only after EDK2 X64 DXE probe completes its Boot Services, memory confinement and configuration table checks.",
+  "verified_scope": [
+    "EDK2 X64 DXE probe reached success on user-operated tablet",
+    "Boot Services diagnostic suite reported success",
+    "Available ACPI/SMBIOS pointers republished and checked in X64 Configuration Tables",
+    "Inherited framebuffer usable after EBS and DXE entry"
+  ],
+  "not_verified": [
+    "Exact hash of binary booted on tablet",
+    "Independent CPU register dump",
+    "X64 GOP protocol",
+    "USB/storage drivers and BOOTX64.EFI loading",
+    "Windows boot",
+    "AP/DMA/SMM stability",
+    "Cold/warm boot repeatability",
+    "Duration of halted state"
+  ],
+  "milestone_gate": "M3 satisfied; M4 may begin"
+}

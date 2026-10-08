@@ -34,3 +34,7 @@ z IA32 OVMF; szczegóły poniżej. Nie wykonano prób Windows.
 Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
 Opis implementacji, zakres testów i instrukcja testu tabletu:
 [M3.md](M3.md).
+
+Użytkownik potwierdził M3 na tablecie zdjęciem IMG_0428.
+[Zapis testu i jego ograniczenia](MANUAL-TEST-M3-2026-10-08.md).
+Bramka do M4 jest spełniona.
