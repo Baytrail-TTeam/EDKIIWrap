@@ -64,3 +64,9 @@ Testy fizyczne wykonuje użytkownik.
 Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
 Opis implementacji, zakres testów i instrukcja testu tabletu:
 [M3.md](M3.md).
+
+## M4 — 2026-10-08
+
+GOP X64 zbudowano i sprawdzono w QEMU IA32 OVMF.
+Build, testy, dokładny plik EFI i procedura testu tabletu: [M4.md](M4.md).
+M5 oczekuje na potwierdzenie M4 przez użytkownika.

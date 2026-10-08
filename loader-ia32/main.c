@@ -9,7 +9,7 @@
 #include <Library/PeCoffLib.h>
 #include <IndustryStandard/PeImage.h>
 #endif
-#if RUN_TRANSITION
+#if RUN_TRANSITION && !defined(BAYTRAIL_BLOBS_PREINCLUDED)
 #include "blobs.h"
 #endif
 static EFI_SYSTEM_TABLE *st;
@@ -166,7 +166,11 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
 #endif
  say(L"Baytrail X64 PoC / " );
 #if RUN_TRANSITION == 2
+#ifdef MILESTONE_4
+ say(L"M4 EDK2 GOP\r\n");
+#else
  say(L"M3 EDK2 DXE\r\n");
+#endif
 #elif RUN_TRANSITION
  say(L"M2 TRANSITION\r\n");
 #else

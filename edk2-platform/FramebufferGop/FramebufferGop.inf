@@ -1,0 +1,29 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailFramebufferGop
+ FILE_GUID = 482d8863-48f7-4764-b1a0-9522bf0e57f3
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = GopEntry
+[Sources]
+ Gop.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ HobLib
+ BaseMemoryLib
+ MemoryAllocationLib
+ FrameBufferBltLib
+ BaytrailMarkerLib
+[Guids]
+ gEfiGraphicsInfoHobGuid
+ gBaytrailHandoffGuid
+[Protocols]
+ gEfiGraphicsOutputProtocolGuid
+ gEfiDevicePathProtocolGuid
+[Depex]
+ TRUE

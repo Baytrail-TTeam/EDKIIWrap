@@ -38,3 +38,9 @@ Opis implementacji, zakres testów i instrukcja testu tabletu:
 Użytkownik potwierdził M3 na tablecie zdjęciem IMG_0428.
 [Zapis testu i jego ograniczenia](MANUAL-TEST-M3-2026-10-08.md).
 Bramka do M4 jest spełniona.
+
+## M4 — 2026-10-08
+
+GOP X64 zbudowano i sprawdzono w QEMU IA32 OVMF.
+Build, testy, dokładny plik EFI i procedura testu tabletu: [M4.md](M4.md).
+M5 oczekuje na potwierdzenie M4 przez użytkownika.

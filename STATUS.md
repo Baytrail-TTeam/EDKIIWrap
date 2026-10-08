@@ -5,7 +5,7 @@
 | M1 — collector IA32 | zbudowany, PE32 IA32, ABI EDK2 | potwierdzony zdjęciem użytkownika IMG_0424 |
 | M2 — long mode / wzór X64 | zbudowany, ELF64 i surowy payload osadzony w EFI IA32 | potwierdzony zdjęciem użytkownika IMG_0425 |
 | M3 — EDK2 X64 payload | zbudowany: SEC adapter + oficjalny DXE Core/RuntimeDxe + probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0428 |
-| M4 — GOP w EDK2 | znaleziony gotowy GraphicsOutputDxe do adaptacji; implementacja nierozpoczęta | bramka M3 spełniona |
+| M4 — GOP w EDK2 | zbudowany fixed-mode GOP X64, FrameBufferBltLib i probe | QEMU IA32 OVMF: sukces; test tabletu oczekuje |
 | M5 — USB BOOTX64.EFI | plan sterowników | wstrzymany |
 | M6 — bootmgfw.efi X64 | bez prób | wstrzymany |
 
@@ -14,9 +14,10 @@ zdjęcia sukcesu M1 i M2. Napis X64 potwierdza wykonanie minimalnego payloadu
 i zachowanie framebufferu po EBS. Dokładne hashe uruchomionych plików nie są
 widoczne na zdjęciach. Szczegóły: docs/MANUAL-TEST-2026-10-07.md.
 Agent nie wykonywał fizycznych testów, rebootów, flashowania ani zapisów
-na tablecie. M2 i M3 sprawdzono również w QEMU; brak prób Windows.
+na tablecie. M2, M3 i M4 sprawdzono również w QEMU; brak prób Windows.
 M3: docs/M3.md, docs/M3-QEMU-2026-10-08.json oraz
 docs/MANUAL-TEST-M3-2026-10-08.md (ręczny test użytkownika).
+M4: docs/M4.md; M5 oczekuje na potwierdzenie M4 na tablecie.
 
 Źródła urządzenia: legacy S165/BYT-PF02/Z3736F; etykieta folderu Chuwi Vi10
 nie potwierdza modelu capture. Aktywne wyjście w raporcie S165 to eDP; MIPI

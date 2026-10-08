@@ -1,0 +1,15 @@
+[Defines]
+ PLATFORM_NAME = BaytrailM4Loader
+ PLATFORM_GUID = ab5b5d47-e65e-42c2-b7cb-efbb74538b0c
+ PLATFORM_VERSION = 0.1
+ DSC_SPECIFICATION = 0x00010005
+ OUTPUT_DIRECTORY = Build/BaytrailM4Loader
+ SUPPORTED_ARCHITECTURES = IA32
+ BUILD_TARGETS = DEBUG|RELEASE
+ SKUID_IDENTIFIER = DEFAULT
+!include edk2-platform/M3Libraries.dsc.inc
+[Components.IA32]
+ edk2-platform/Loader/M4Loader.inf
+
+[BuildOptions]
+ GCC:*_CLANGPDB_IA32_CC_FLAGS = -I$(PROJECT_ROOT)/build/m4 -DMILESTONE_4=1

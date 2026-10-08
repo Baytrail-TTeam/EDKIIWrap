@@ -1,0 +1,175 @@
+{
+  "success": true,
+  "loader_sha256": "e2aa3746579b3dca85c760cd4311202da3dd39321172bc7605e7c19ba85b2d6f",
+  "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+  "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+  "rgb_chart_pixels": [
+    "ff0000",
+    "00ff00",
+    "0000ff"
+  ],
+  "green_pixels_rows_0_to_5": [
+    860,
+    884,
+    884,
+    932,
+    1172,
+    984
+  ],
+  "qemu_version": "QEMU emulator version 11.1.1",
+  "command": [
+    "qemu-system-x86_64",
+    "-machine",
+    "q35,accel=tcg",
+    "-cpu",
+    "max",
+    "-m",
+    "256",
+    "-smp",
+    "1",
+    "-drive",
+    "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+    "-drive",
+    "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m4/qemu-m4/vars.fd",
+    "-drive",
+    "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m4/qemu-m4/esp",
+    "-display",
+    "none",
+    "-serial",
+    "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m4/qemu-m4/serial.log",
+    "-monitor",
+    "none",
+    "-qmp",
+    "unix:<temporary qmp socket>,server=on,wait=off",
+    "-net",
+    "none",
+    "-no-reboot",
+    "-no-shutdown"
+  ],
+  "date": "2026-10-08",
+  "scope": "QEMU TCG IA32 OVMF only; tablet not tested",
+  "artifacts": {
+    "BAYTRAIL-M4-IA32.EFI": {
+      "machine": "0x14c",
+      "subsystem": 10,
+      "entry_rva": "0x2dc",
+      "bytes": 1079744,
+      "sha256": "e2aa3746579b3dca85c760cd4311202da3dd39321172bc7605e7c19ba85b2d6f"
+    },
+    "M3Entry.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x32c",
+      "bytes": 16864,
+      "sha256": "e5c0ba6d8bd756dbb4be30efb944ec1cca8ea4aeeaf352ca7a695d9438b431a5"
+    },
+    "DxeCore.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x27e0",
+      "bytes": 111712,
+      "sha256": "057625d04a0190d4e88521ffe7693fa0abb1d61c2c7b3719e3e835d9f9ab9bae"
+    },
+    "RuntimeDxe.efi": {
+      "machine": "0x8664",
+      "subsystem": 12,
+      "entry_rva": "0x10a8",
+      "bytes": 11008,
+      "sha256": "20c8c6294dc58727ab1a526520aa2cf3aff7b65bdb2822411106bf636a5147dd"
+    },
+    "BaytrailFramebufferGop.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x10d4",
+      "bytes": 13248,
+      "sha256": "8e6bd21f32928e381224c21209c4bd2d2d8e4da757d28ab19dde9b223346bcdc"
+    },
+    "BaytrailM4Probe.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x1094",
+      "bytes": 16320,
+      "sha256": "7b130f3a5546bf7a9fc49c6c98fffd476e9eaf5434d744f752a04bcf5b742725"
+    },
+    "M4DXE.Fv": {
+      "bytes": 1048576,
+      "sha256": "6e65e5c18c6fd578d7623d774e86f529bb26aafaef4f0736fa2075ba4da42f15",
+      "ffs_types": [
+        2,
+        5,
+        7,
+        7,
+        7
+      ],
+      "pe32_sections": 4
+    }
+  },
+  "toolchain": {
+    "clang": "Homebrew clang version 23.1.2",
+    "lld": "Homebrew LLD 23.1.2",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "python": "Python 3.14.5"
+  },
+  "source_lock": {
+    "sources": [
+      {
+        "path": "third_party/edk2",
+        "url": "https://github.com/tianocore/edk2.git",
+        "commit": "2970e5699ba6267f3384ffab20f96647578aebc8"
+      },
+      {
+        "path": "third_party/coreboot",
+        "url": "https://github.com/coreboot/coreboot.git",
+        "commit": "608fac61470b2b05e4ed11808e97efd636697c3d"
+      },
+      {
+        "path": "third_party/mrchromebox-edk2",
+        "url": "https://github.com/MrChromebox/edk2.git",
+        "commit": "1f9ab463057c53883245d0ce5dfe07201efb1efe"
+      },
+      {
+        "path": "third_party/mrchromebox-blobs",
+        "url": "https://github.com/MrChromebox/blobs.git",
+        "commit": "a8c9e312c44e108f3c6cfd51953439d353a7a461"
+      }
+    ],
+    "initialized_edk2_submodules": [
+      {
+        "path": "BaseTools/Source/C/BrotliCompress/brotli",
+        "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+      },
+      {
+        "path": "MdeModulePkg/Library/BrotliCustomDecompressLib/brotli",
+        "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+      },
+      {
+        "path": "MdePkg/Library/BaseFdtLib/libfdt",
+        "commit": "cfff805481bdea27f900c32698171286542b8d3c"
+      },
+      {
+        "path": "MdePkg/Library/MipiSysTLib/mipisyst",
+        "commit": "370b5944c046bab043dd8b133727b2135af7747a"
+      }
+    ]
+  },
+  "clean_rebuild": {
+    "clean_rebuild_identical": true,
+    "sha256": {
+      "build/BAYTRAIL-M4-IA32.EFI": "e2aa3746579b3dca85c760cd4311202da3dd39321172bc7605e7c19ba85b2d6f",
+      "build/m4/RuntimeDxe.efi": "20c8c6294dc58727ab1a526520aa2cf3aff7b65bdb2822411106bf636a5147dd",
+      "build/m4/M3Entry.efi": "e5c0ba6d8bd756dbb4be30efb944ec1cca8ea4aeeaf352ca7a695d9438b431a5",
+      "build/m4/BaytrailFramebufferGop.efi": "8e6bd21f32928e381224c21209c4bd2d2d8e4da757d28ab19dde9b223346bcdc",
+      "build/m4/DxeCore.efi": "057625d04a0190d4e88521ffe7693fa0abb1d61c2c7b3719e3e835d9f9ab9bae",
+      "build/m4/BaytrailM4Probe.efi": "7b130f3a5546bf7a9fc49c6c98fffd476e9eaf5434d744f752a04bcf5b742725",
+      "build/m4/M4DXE.Fv": "6e65e5c18c6fd578d7623d774e86f529bb26aafaef4f0736fa2075ba4da42f15"
+    }
+  },
+  "registers": "\nCPU#0\nRAX=0000000000000000 RBX=0000000000000060 RCX=00000000ffffffff RDX=000000000000000a\nRSI=000000000e224a50 RDI=0000000000000030 RBP=000000000e224680 RSP=000000000e224680\nR8 =0000000000000001 R9 =0000000000000010 R10=ffffffffffffff00 R11=000000000bf6b830\nR12=0000000000000000 R13=ffffffffffffffd4 R14=0000000000000104 R15=0000000000000008\nRIP=000000000bf19d61 RFL=00000006 [-----P-] CPL=0 II=0 A20=1 SMM=0 HLT=1\nES =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nCS =0018 0000000000000000 ffffffff 00af9a00 DPL=0 CS64 [-R-]\nSS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nDS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nFS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nGS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nLDT=0000 0000000000000000 0000ffff 00008200 DPL=0 LDT\nTR =0020 000000000bf74e80 00000067 00008900 DPL=0 TSS64-avl\nGDT=     000000000bf74e50 0000002f\nIDT=     000000000e8d1290 000001ff\nCR0=80010033 CR2=0000000000000000 CR3=000000000e1ff000 CR4=00000660\nDR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000 \nDR6=00000000ffff0ff0 DR7=0000000000000400\nEFER=0000000000000d00\nFCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80\nFPR0=0000000000000000 0000 FPR1=0000000000000000 0000\nFPR2=0000000000000000 0000 FPR3=0000000000000000 0000\nFPR4=0000000000000000 0000 FPR5=0000000000000000 0000\nFPR6=0000000000000000 0000 FPR7=8000000000000000 4006\nXMM00=0000000000000000 0000000000000000 XMM01=0000000000000000 0000000000000000\nXMM02=0000000000000000 0000000000000000 XMM03=0000000000000000 0000000000000000\nXMM04=0000000000000000 0000000000000000 XMM05=0000000000000000 0000000000000000\nXMM06=0000000000000000 0000000000000000 XMM07=0000000000000000 0000000000000000\nXMM08=0000000000000000 0000000000000000 XMM09=0000000000000000 0000000000000000\nXMM10=0000000000000000 0000000000000000 XMM11=0000000000000000 0000000000000000\nXMM12=0000000000000000 0000000000000000 XMM13=0000000000000000 0000000000000000\nXMM14=0000000000000000 0000000000000000 XMM15=0000000000000000 0000000000000000\n",
+  "screenshot_sha256": "01a3ab4ebcaef033e7e3c31aaf1c3a7f5c8abb5d5928ff5f715337452a6acbe5",
+  "limitations": [
+    "QEMU BGR pixel format only",
+    "QEMU stride equals width; padding checked only when present",
+    "Tablet M4 not yet tested",
+    "No GPU reinitialization, X64 text console, USB/storage, BOOTX64.EFI or Windows"
+  ]
+}

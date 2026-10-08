@@ -86,10 +86,11 @@ Nie dodano zapisów SPI ani trwałych variables.
 
 ## Dalsze etapy — projekt
 
-M4: adaptować EDK2 `UefiPayloadPkg/GraphicsOutputDxe/GraphicsOutput.c`
-i FrameBufferBltLib. Ten kod już obsługuje framebuffer z graphics HOB,
-lecz wiąże się z PCI controllerem i zasobami BAR; należy zachować BAR,
-OpRegion, stolen memory i skorelowany GPU device info HOB.
+M4: zaimplementowany adapter GOP nad odziedziczonym graphics HOB,
+bez wiązania PCI/zmiany BAR. Oficjalna FrameBufferBltLib obsługuje
+konwersje pikseli; kopiowanie video jest overlap-safe. Jeden tryb,
+QueryMode, SetMode i cztery Blt. [Implementacja i testy](M4.md).
+QEMU: sukces; test na tablecie oczekuje.
 
 M5: użyć PciHostBridge/PciBus, XhciDxe, UsbBusDxe, UsbMassStorageDxe,
 DiskIo/Partition/FAT i BDS z EDK2. Najpierw USB; kontrolery eMMC w ACPI mode

@@ -1,0 +1,31 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailM4Probe
+ FILE_GUID = 174105bc-0e88-4869-a6b4-a83c404e747d
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = M4ProbeEntry
+[Sources]
+ M4Probe.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ HobLib
+ BaseMemoryLib
+ MemoryAllocationLib
+ BaytrailMarkerLib
+[Guids]
+ gBaytrailHandoffGuid
+ gEfiAcpiTableGuid
+ gEfiAcpi10TableGuid
+ gEfiSmbiosTableGuid
+ gEfiSmbios3TableGuid
+[Protocols]
+ gEfiGraphicsOutputProtocolGuid
+ gEfiDevicePathProtocolGuid
+ gEfiRuntimeArchProtocolGuid
+[Depex]
+ gEfiRuntimeArchProtocolGuid AND gEfiGraphicsOutputProtocolGuid

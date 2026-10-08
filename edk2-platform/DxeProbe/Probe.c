@@ -58,5 +58,8 @@ EFI_STATUS EFIAPI ProbeEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  BaytrailMarker(H,4,"M3 EDK2 DXE OK",0x40ff40);
  BaytrailMarker(H,5,"BOOT SERVICES TEST OK",0x40ff40);
  BaytrailMarker(H,6,"ACPI SMBIOS TABLES OK",0x40ff40);
- BaytrailHalt();return EFI_SUCCESS;
+#ifndef BAYTRAIL_PROBE_CONTINUE
+ BaytrailHalt();
+#endif
+ return EFI_SUCCESS;
 }
