@@ -26,15 +26,20 @@ STATIC CONST Handoff *DiagnosticH;
 typedef struct {EFI_BLOCK_IO_PROTOCOL *Io;EFI_BLOCK_READ Read;UINTN Index;} READ_RECORD;
 STATIC READ_RECORD Reads[64];STATIC UINTN ReadCount,ReadDepth,CurrentDisk;
 STATIC EFI_LBA CurrentLba;
-STATIC UINT64 ReadTicks,ReadElapsed;
+STATIC UINT64 ReadTicks,ReadElapsed,ReadReportAt;
 STATIC VOID ReadWatchdog(VOID) {
  UINT64 Now;CHAR8 Text[96];
  if(!ReadDepth) return;
  Now=GetPerformanceCounter();ReadElapsed+=(Now-ReadTicks)&Mask;ReadTicks=Now;
- if(ReadElapsed>=3579545ULL*30) {
+ if(ReadElapsed>=ReadReportAt && ReadElapsed<3579545ULL*120) {
+  RefreshUsbTransportTrace();
+  AsciiSPrint(Text,sizeof(Text),"USB DISK READ WAIT %u S",(UINT32)(ReadElapsed/3579545));
+  BaytrailMarker(DiagnosticH,17,Text,0xffa040);ReadReportAt+=3579545ULL*30;
+ }
+ if(ReadElapsed>=3579545ULL*120) {
   RefreshUsbTransportTrace();
   BaytrailMarker(DiagnosticH,17,"USB DISK READ TIMEOUT",0xff4040);
-  AsciiSPrint(Text,sizeof(Text),"DISK %u LBA %Lu",(UINT32)CurrentDisk,CurrentLba);
+  AsciiSPrint(Text,sizeof(Text),"DISK %u LBA %Lu LAST %Lu",(UINT32)CurrentDisk,CurrentLba,Reads[CurrentDisk].Io->Media->LastBlock);
   BaytrailMarker(DiagnosticH,18,Text,0xff4040);BaytrailHalt();
  }
 }
@@ -107,7 +112,7 @@ STATIC EFI_STATUS EFIAPI TraceRead(EFI_BLOCK_IO_PROTOCOL *Io,UINT32 Id,EFI_LBA L
  UINTN I,SavedDisk=CurrentDisk;EFI_LBA SavedLba=CurrentLba;EFI_STATUS S;CHAR8 Text[96];
  for(I=0;I<ReadCount && Reads[I].Io!=Io;I++) {}
  if(I==ReadCount) return EFI_DEVICE_ERROR;
- if(!ReadDepth) {ReadElapsed=0;ReadTicks=GetPerformanceCounter();}
+ if(!ReadDepth) {ReadElapsed=0;ReadReportAt=3579545ULL*30;ReadTicks=GetPerformanceCounter();}
  ReadDepth++;CurrentDisk=Reads[I].Index;CurrentLba=Lba;
  AsciiSPrint(Text,sizeof(Text),"DISK %u READ LBA %Lu BYTES %Lu",(UINT32)CurrentDisk,Lba,(UINT64)Size);
  if(TraceControl.Enabled) {BaytrailMarker(DiagnosticH,19,Text,0xffffff);BaytrailMarker(DiagnosticH,20,"DISK READ PENDING",0xffffff);}

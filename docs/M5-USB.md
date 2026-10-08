@@ -224,3 +224,27 @@ Watchdog ponownie rysuje ostatnie markery transportu przed zatrzymaniem,
 ponieważ przewijanie konsoli GOP może naruszać wcześniejsze overlaye.
 CSW i sense oznaczają ostatnią odebraną odpowiedź; BULK PENDING oznacza
 aktualnie niewrócony transfer.
+
+## Próba transportu — kolejne zdjęcie z 2026-10-08
+
+Widać READ(10), opcode 28, tag 30D, endpoint IN 82, oczekiwane 512 B,
+timeout pojedynczego bulk 5000 ms i BULK PENDING. Odczyt BlockIo dotyczy
+LBA 31457279. Ostatni CSW ma status 0 i tag 30C, zatem nie odpowiada
+bieżącemu tagowi 30D. Sense key 6 / ASC 28 / ASCQ 00 jest ostatnią zachowaną
+odpowiedzią, nie dowodem błędu bieżącego polecenia. W źródle UsbMassBoot
+oznacza unit attention / media change. Licznik 781 jest sumą CBW od
+publikacji UsbIo, nie liczbą ponowień tego sektora.
+
+PartitionDxe/Gpt.c sprawdza backup przy LastBlock, jeśli nagłówek primary
+nie przechodzi walidacji. Adres 31457279 jest zgodny z końcem urządzenia
+15 GiB, ale zdjęcie nie pokazuje LastBlock; pochodzenie odczytu pozostaje
+hipotezą do sprawdzenia. Bezpośrednio potwierdzono tylko aktywny READ(10)
+i brak jego zakończenia przed naszym limitem 30 s.
+
+Nowa próba wydłuża zewnętrzny watchdog do 120 s, aby nie przerywać od razu
+60-sekundowej ścieżki retry EDK2. Po 30/60/90 s pokazuje pomarańczowy READ WAIT
+i odświeża trace, nadal pozwalając oryginalnemu odczytowi działać. Po 120 s
+zatrzymuje CPU i pokazuje również LastBlock. Limit nadal może uciąć kilka
+kolejnych pełnych cykli retry/reset; nie jest dowodem uszkodzenia pendrive'a
+ani naprawą xHCI/GPT. Dysk nie jest modyfikowany. Nowy raport QEMU:
+M5-USB-LONG-READ-2026-10-08.json.

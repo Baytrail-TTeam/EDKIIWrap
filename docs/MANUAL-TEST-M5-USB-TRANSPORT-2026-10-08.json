@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-08",
+  "photo": {
+    "name": "codex-clipboard-4f47fba0-b2f9-4337-8af7-971099a0d060.jpg",
+    "sha256": "40b872e8dc1e065ea8f19e00d4f62102b4e89fab001d6e66eae3a5256ecf3d5c"
+  },
+  "visible": {
+    "command_number": 781,
+    "opcode": "28",
+    "current_tag": "30D",
+    "endpoint": "82",
+    "bulk_bytes": 512,
+    "bulk_timeout_ms": 5000,
+    "bulk_state": "PENDING",
+    "last_csw_status": 0,
+    "last_csw_tag": "30C",
+    "last_sense_key": 6,
+    "last_sense_asc": "28",
+    "last_sense_ascq": "00",
+    "disk_index": 0,
+    "lba": 31457279,
+    "read_bytes": 512,
+    "watchdog": "USB DISK READ TIMEOUT"
+  },
+  "physical_storage_app_success": false,
+  "reference_loader_sha256": "f996b8a622ce94747e92a4c77fe8fd3370036d0d0bef17a0d4a955850469aa98",
+  "loader_hash_visible": false,
+  "interpretation_limits": [
+    "Command number is cumulative, not per-read retry count",
+    "CSW tag 30C does not complete current command 30D",
+    "Last sense response can be from earlier command",
+    "LastBlock not visible; backup GPT probe is a source-based hypothesis"
+  ]
+}
