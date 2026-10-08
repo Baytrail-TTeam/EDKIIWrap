@@ -1,0 +1,20 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailUsbLoader
+ FILE_GUID = 61c79627-c77e-47ab-b046-29cb55786961
+ MODULE_TYPE = UEFI_APPLICATION
+ VERSION_STRING = 0.1
+ ENTRY_POINT = efi_main
+[Sources]
+ Loader.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ UefiPayloadPkg/UefiPayloadPkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiApplicationEntryPoint
+ PeCoffLib
+ BaseMemoryLib
+[BuildOptions]
+ GCC:*_CLANGPDB_IA32_CC_FLAGS = -DRUN_TRANSITION=2 -mno-sse -mno-mmx

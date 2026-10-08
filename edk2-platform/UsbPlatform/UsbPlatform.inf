@@ -1,0 +1,35 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailUsbPlatform
+ FILE_GUID = 9fe49a01-1671-48d1-b5a1-3926c5acee02
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = UsbPlatformEntry
+[Sources]
+ Platform.c
+ Pci.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ MemoryAllocationLib
+ BaseMemoryLib
+ BaseLib
+ IoLib
+ HobLib
+ TimerLib
+ BaytrailMarkerLib
+[Guids]
+ gBaytrailHandoffGuid
+ gIdleLoopEventGuid
+[Protocols]
+ gEfiTimerArchProtocolGuid
+ gEfiMetronomeArchProtocolGuid
+ gEfiPciIoProtocolGuid
+ gEfiDevicePathProtocolGuid
+ gEfiBlockIoProtocolGuid
+[Depex]
+ TRUE

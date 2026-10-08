@@ -64,3 +64,9 @@ M4 potwierdzono IMG_0429; [wynik](MANUAL-TEST-M4-2026-10-08.md).
 Oficjalny ShellPkg X64 startuje przez EDK2 z RAM FAT i wykonuje
 diagnostykę w QEMU. [Build, zakres i test tabletu](SHELL.md).
 Natywne USB/klawiatura pozostają do przygotowania w M5.
+
+## Kandydat M5 USB — 2026-10-08
+
+Natywne xHCI/storage/klawiatura X64: [M5-USB.md](M5-USB.md).
+Osobny build-usb.sh i pakiet testowy zawierający dwa pliki EFI; pozytywne testy QEMU
+nie potwierdzają jeszcze fizycznego kontrolera tabletu.

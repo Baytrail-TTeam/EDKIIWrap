@@ -1,0 +1,20 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailPmTimerLib
+ FILE_GUID = 18007217-736b-41ea-a0fa-a8238de484bc
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ LIBRARY_CLASS = TimerLib|DXE_DRIVER UEFI_DRIVER UEFI_APPLICATION
+ CONSTRUCTOR = PmTimerConstructor
+[Sources]
+ Timer.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ HobLib
+ IoLib
+ BaseLib
+ BaseMemoryLib
+[Guids]
+ gBaytrailHandoffGuid

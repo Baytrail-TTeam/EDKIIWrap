@@ -110,3 +110,9 @@ Oficjalny ShellPkg jest uruchamiany przez EDK2 LoadImage/StartImage
 z read-only RAM FAT. Konsola korzysta z GraphicsConsole/HII nad GOP M4.
 Zmienne są emulowane w RAM. To nie potwierdza natywnego USB ani M5.
 [Opis i test](SHELL.md).
+
+## Kandydat M5 USB — 2026-10-08
+
+Natywne xHCI/storage/klawiatura X64: [M5-USB.md](M5-USB.md).
+Osobny build-usb.sh i pakiet testowy zawierający dwa pliki EFI; pozytywne testy QEMU
+nie potwierdzają jeszcze fizycznego kontrolera tabletu.

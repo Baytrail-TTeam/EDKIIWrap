@@ -1,5 +1,8 @@
 /* Build the same collector through EDK2 for M3, with official PeCoffLib. */
-#if defined(MILESTONE_SHELL)
+#if defined(MILESTONE_USB)
+#include "../../build/usb/blobs.h"
+#define BAYTRAIL_BLOBS_PREINCLUDED
+#elif defined(MILESTONE_SHELL)
 #include "../../build/m5/blobs.h"
 #define BAYTRAIL_BLOBS_PREINCLUDED
 #elif defined(MILESTONE_4)

@@ -7,7 +7,7 @@
 | M3 — EDK2 X64 payload | zbudowany: SEC adapter + oficjalny DXE Core/RuntimeDxe + probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0428 |
 | M4 — GOP w EDK2 | zbudowany fixed-mode GOP X64, FrameBufferBltLib i probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0429 |
 | Shell X64 — etap dodatkowy | oficjalny ShellPkg, konsola, read-only RAM FAT, LoadImage/StartImage | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0430 |
-| M5 — USB BOOTX64.EFI | natywne PCI/USB/klawiatura jeszcze niezaimplementowane | bramka M4 spełniona |
+| M5 — USB BOOTX64.EFI | kandydat: ograniczony PCI/DMA, timer kooperacyjny, oficjalny stos xHCI/USB/FAT/klawiatury, testowa app X64 | QEMU: storage + polecenie klawiatury; tablet: oczekuje testu |
 | M6 — bootmgfw.efi X64 | bez prób | wstrzymany |
 
 Pakiet przygotowano i sprawdzono statycznie; następnie użytkownik przesłał
@@ -20,7 +20,7 @@ M3: docs/M3.md, docs/M3-QEMU-2026-10-08.json oraz
 docs/MANUAL-TEST-M3-2026-10-08.md (ręczny test użytkownika).
 M4: docs/M4.md; M4 potwierdzono zdjęciem IMG_0429: docs/MANUAL-TEST-M4-2026-10-08.md.
 Shell: docs/SHELL.md; test tabletu: docs/MANUAL-TEST-SHELL-2026-10-08.md.
-RAM FAT nie potwierdza natywnego USB M5.
+RAM FAT nie potwierdza natywnego USB M5. Nowy kandydat: docs/M5-USB.md.
 
 Źródła urządzenia: legacy S165/BYT-PF02/Z3736F; etykieta folderu Chuwi Vi10
 nie potwierdza modelu capture. Aktywne wyjście w raporcie S165 to eDP; MIPI
@@ -30,5 +30,6 @@ adresów ACPI, framebufferu ani parametrów panelu z tych raportów.
 Pozostałe ograniczenia PoC: mapowanie tylko 0–4 GiB, fixed mode framebuffer
 32 bpp, maksymalnie 128 ACPI SDT/FACS i bufor mapy 64 KiB. Brak trwałego logu
 na pendrive; należy fotografować ekran. Mapę i HANDOFF zachowuje się w RAM.
-Brak przejęcia AP, kontrolerów DMA, runtime services, SMM ani reinitializacji
-urządzeń; te tematy pozostają do rozwiązania przed bootem OS.
+M5 inicjalizuje wyłącznie xHCI i DMA jego własnych buforów. Brak przejęcia AP,
+pozostałych kontrolerów DMA, pełnych runtime services i SMM platformy;
+te tematy pozostają do rozwiązania przed bootem OS.

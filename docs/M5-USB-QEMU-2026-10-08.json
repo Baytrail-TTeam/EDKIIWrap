@@ -1,0 +1,536 @@
+{
+  "date": "2026-10-08",
+  "tablet_tested": false,
+  "milestone": "M5 USB candidate; physical gate awaits user test",
+  "static_manifest": {
+    "static_checks_passed": true,
+    "source_date_epoch": 1791331200,
+    "source_lock": {
+      "sources": [
+        {
+          "path": "third_party/edk2",
+          "url": "https://github.com/tianocore/edk2.git",
+          "commit": "2970e5699ba6267f3384ffab20f96647578aebc8"
+        },
+        {
+          "path": "third_party/coreboot",
+          "url": "https://github.com/coreboot/coreboot.git",
+          "commit": "608fac61470b2b05e4ed11808e97efd636697c3d"
+        },
+        {
+          "path": "third_party/mrchromebox-edk2",
+          "url": "https://github.com/MrChromebox/edk2.git",
+          "commit": "1f9ab463057c53883245d0ce5dfe07201efb1efe"
+        },
+        {
+          "path": "third_party/mrchromebox-blobs",
+          "url": "https://github.com/MrChromebox/blobs.git",
+          "commit": "a8c9e312c44e108f3c6cfd51953439d353a7a461"
+        }
+      ],
+      "initialized_edk2_submodules": [
+        {
+          "path": "BaseTools/Source/C/BrotliCompress/brotli",
+          "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+        },
+        {
+          "path": "MdeModulePkg/Library/BrotliCustomDecompressLib/brotli",
+          "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+        },
+        {
+          "path": "MdePkg/Library/BaseFdtLib/libfdt",
+          "commit": "cfff805481bdea27f900c32698171286542b8d3c"
+        },
+        {
+          "path": "MdePkg/Library/MipiSysTLib/mipisyst",
+          "commit": "370b5944c046bab043dd8b133727b2135af7747a"
+        }
+      ]
+    },
+    "artifacts": {
+      "BAYTRAIL-USB-IA32.EFI": {
+        "machine": "0x14c",
+        "subsystem": 10,
+        "entry_rva": "0x2dc",
+        "bytes": 3176928,
+        "sha256": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378"
+      },
+      "UsbMassStorageDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1094",
+        "bytes": 11616,
+        "sha256": "3f31e60266c3890c8f3b4daffd188c000f443d580821e9239da8c5a22cedf936"
+      },
+      "BaytrailUsbBoot.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 20992,
+        "sha256": "bc0aaa8d85f75daf1e3d1af2f0b567026e1a1325027a9730b0562800abd214f0"
+      },
+      "UsbKbDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 13856,
+        "sha256": "8a5cc83a306377ce72646aca165076e5e6492acd686c73624ef9595db1a0d5df"
+      },
+      "RuntimeDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 12,
+        "entry_rva": "0x10a8",
+        "bytes": 11008,
+        "sha256": "ee7348666e49f445d3bc40a9fd0c17a72bfd83b713f321874006b1b5102754bb"
+      },
+      "BaytrailUsbPlatform.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 15680,
+        "sha256": "7dfeae4749934b56b93a30025247576f56436b183b9c65e99b7fe6b07404cd04"
+      },
+      "BaytrailUsbTest.efi": {
+        "machine": "0x8664",
+        "subsystem": 10,
+        "entry_rva": "0x1080",
+        "bytes": 6944,
+        "sha256": "fadfd53c7833db612c2f70ca6cafafd31456f6e546e86ad50b8205b2ce2cb1d5"
+      },
+      "UsbBusDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 18624,
+        "sha256": "7305f6b9ed86bf2b65bdafe11dfe979ce4cff73092ba8f2dbe4bd776ca1ddcec"
+      },
+      "DiskIoDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 7552,
+        "sha256": "d260e49169813c7974967e543c908beda7588fd54e74d94224786a9cf9247354"
+      },
+      "EnglishDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1000",
+        "bytes": 2176,
+        "sha256": "62cabf28d0f4ed4f98f8b58f50d0346e1ebdcf1c9d9a2466f3445510ca74db21"
+      },
+      "M3Entry.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x32c",
+        "bytes": 16864,
+        "sha256": "e5026908a800380ff2c4da70d6d7251c520419e993c00216d5390540043ea47e"
+      },
+      "Fat.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1231",
+        "bytes": 25664,
+        "sha256": "c5cff1ee18d92b961811e84ae3c89010eeedf8f292bc58c3023754ffc92e4f46"
+      },
+      "HiiDatabase.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1094",
+        "bytes": 104064,
+        "sha256": "30e647f44bcb155b8cbe69c781f737ceeef7a926f3c947e8d9a57fede64090c4"
+      },
+      "BaytrailFramebufferGop.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x10d4",
+        "bytes": 13280,
+        "sha256": "626d37a431e71b65e3a00a859f4fa07559d9ec3d9b0478b0ddcfd79c82b5da2e"
+      },
+      "DxeCore.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x27e0",
+        "bytes": 111712,
+        "sha256": "41785808383345d9e728302462c57204e9c07bc7e1c7d181855b7656fb2a4022"
+      },
+      "VariableRuntimeDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 12,
+        "entry_rva": "0x10c8",
+        "bytes": 42624,
+        "sha256": "02033a0f9529185dceabb86db44343cbcc1d5a7f8c69da03a94054a0cd7c3acb"
+      },
+      "PartitionDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 13664,
+        "sha256": "6aa7fe5f579d585184b3032655cb26073f734019fa0d67c6bc66fff00dc8d317"
+      },
+      "XhciDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 28512,
+        "sha256": "dca933b87f59a0ca82e46687bab15e763c7eac0fc981d176adb5284d0ba33119"
+      },
+      "GraphicsConsoleDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 14144,
+        "sha256": "d4ed9b62460c65e4d8a97e261314208dea581417368b88bbfc1a21643bf8e1c8"
+      },
+      "BOOTX64.EFI": {
+        "machine": "0x8664",
+        "subsystem": 10,
+        "entry_rva": "0x1080",
+        "bytes": 6944,
+        "sha256": "cb6c0fb1f54aebcceb08699fbf805d81217dbe52762e766f5264145ec68b465e"
+      },
+      "USBDXE.Fv": {
+        "bytes": 3145728,
+        "sha256": "5b6a0306ed675a1fb17c60a43ad63d04f181aef4621365294855982f0e41ba09",
+        "ffs_types": [
+          2,
+          5,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          2,
+          2
+        ],
+        "pe32_sections": 16
+      }
+    }
+  },
+  "qemu_cases": {
+    "direct": {
+      "success": true,
+      "visible_markers": {
+        "7": "",
+        "21": "USB STORAGE X64 APP OK",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "direct",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "6db028716cc458a8a9010d92b9580f9d171357b10ca0675811e0dbdfb131054c",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1136,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "256",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-device",
+        "usb-kbd,bus=xhci.0",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-z9n816qm/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Native X64 xHCI USB storage application + keyboard command; cooperative PM timer; QEMU only; tablet not tested",
+      "screenshot_sha256": "559718c4fc4afbff870fd66774b03a2e42b50ef9c7f5b59ca6faa886132b07dd",
+      "registers_sha256": "f407bf9c408cd65808d32659cd77a3ee817bde946e2da169490ed9c0c604560c"
+    },
+    "hub-mbr": {
+      "success": true,
+      "visible_markers": {
+        "7": "",
+        "21": "USB STORAGE X64 APP OK",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "hub-mbr",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "148dff2cd2f93cc976e71420bc72825eb12b60724e7d4e4a1f40e621ee45da1a",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1136,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "256",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/usb-disk.img",
+        "-device",
+        "usb-hub,id=hub,bus=xhci.0,port=1",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest,port=1.1",
+        "-device",
+        "usb-kbd,bus=xhci.0,port=1.2",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-3647_eyl/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Native X64 xHCI USB storage application + keyboard command; cooperative PM timer; QEMU only; tablet not tested",
+      "screenshot_sha256": "44486f7ecd5d4d4c62cb10586523190c0549c056c453a3d80bbb9787cb9767b4",
+      "registers_sha256": "c225001eb8ac61f827bb61e1729b310e5a263378e40e7a7a0ed8f1ef0b54c291"
+    },
+    "wrong-app": {
+      "success": true,
+      "visible_markers": {
+        "7": "USB TEST BOOTX64 NOT FOUND",
+        "21": "",
+        "22": "",
+        "23": ""
+      },
+      "case": "wrong-app",
+      "expected_rejection": true,
+      "red_pixels_row_7": 1328,
+      "loader_sha256": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "5d57e2b339818fa6f34159edf5288b27f7beea8b6251516a2cc802601639e62a",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        0,
+        0,
+        0
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "256",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-device",
+        "usb-kbd,bus=xhci.0",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-fhax9i03/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Expected rejection of wrong-app; cooperative PM timer; QEMU only; tablet not tested",
+      "screenshot_sha256": "c4b2abdb6f432fda117b54413f7cf184d789e6e9345e0f312ef7873245f4f7fd",
+      "registers_sha256": "a00ff36860aae68b94ddf068642ae70a818307213dc1cca223d16fcc4a3648ae"
+    },
+    "no-keyboard": {
+      "success": true,
+      "visible_markers": {
+        "7": "USB KEYBOARD MISSING",
+        "21": "USB STORAGE X64 APP OK",
+        "22": "",
+        "23": ""
+      },
+      "case": "no-keyboard",
+      "expected_rejection": true,
+      "red_pixels_row_7": 1144,
+      "loader_sha256": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "6db028716cc458a8a9010d92b9580f9d171357b10ca0675811e0dbdfb131054c",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1136,
+        0,
+        0
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "256",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-rbxlwm5y/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Expected rejection of no-keyboard; cooperative PM timer; QEMU only; tablet not tested",
+      "screenshot_sha256": "080f2cdea132133deb1db66168debc233360c14b4c5de664d3b827857e562462",
+      "registers_sha256": "c012662c337c72307350d8aa17660e8e353cc6ee5641cf654593f60a933aa3fe"
+    }
+  },
+  "reproducibility": {
+    "clean_rebuild_identical": true,
+    "artifact_count": 22,
+    "before": {
+      "build/usb/UsbMassStorageDxe.efi": "3f31e60266c3890c8f3b4daffd188c000f443d580821e9239da8c5a22cedf936",
+      "build/usb/BaytrailUsbBoot.efi": "bc0aaa8d85f75daf1e3d1af2f0b567026e1a1325027a9730b0562800abd214f0",
+      "build/usb/UsbKbDxe.efi": "8a5cc83a306377ce72646aca165076e5e6492acd686c73624ef9595db1a0d5df",
+      "build/usb/RuntimeDxe.efi": "ee7348666e49f445d3bc40a9fd0c17a72bfd83b713f321874006b1b5102754bb",
+      "build/usb/BaytrailUsbPlatform.efi": "7dfeae4749934b56b93a30025247576f56436b183b9c65e99b7fe6b07404cd04",
+      "build/usb/BaytrailUsbTest.efi": "fadfd53c7833db612c2f70ca6cafafd31456f6e546e86ad50b8205b2ce2cb1d5",
+      "build/usb/UsbBusDxe.efi": "7305f6b9ed86bf2b65bdafe11dfe979ce4cff73092ba8f2dbe4bd776ca1ddcec",
+      "build/usb/DiskIoDxe.efi": "d260e49169813c7974967e543c908beda7588fd54e74d94224786a9cf9247354",
+      "build/usb/EnglishDxe.efi": "62cabf28d0f4ed4f98f8b58f50d0346e1ebdcf1c9d9a2466f3445510ca74db21",
+      "build/usb/M3Entry.efi": "e5026908a800380ff2c4da70d6d7251c520419e993c00216d5390540043ea47e",
+      "build/usb/Fat.efi": "c5cff1ee18d92b961811e84ae3c89010eeedf8f292bc58c3023754ffc92e4f46",
+      "build/usb/HiiDatabase.efi": "30e647f44bcb155b8cbe69c781f737ceeef7a926f3c947e8d9a57fede64090c4",
+      "build/usb/BaytrailFramebufferGop.efi": "626d37a431e71b65e3a00a859f4fa07559d9ec3d9b0478b0ddcfd79c82b5da2e",
+      "build/usb/DxeCore.efi": "41785808383345d9e728302462c57204e9c07bc7e1c7d181855b7656fb2a4022",
+      "build/usb/VariableRuntimeDxe.efi": "02033a0f9529185dceabb86db44343cbcc1d5a7f8c69da03a94054a0cd7c3acb",
+      "build/usb/PartitionDxe.efi": "6aa7fe5f579d585184b3032655cb26073f734019fa0d67c6bc66fff00dc8d317",
+      "build/usb/XhciDxe.efi": "dca933b87f59a0ca82e46687bab15e763c7eac0fc981d176adb5284d0ba33119",
+      "build/usb/GraphicsConsoleDxe.efi": "d4ed9b62460c65e4d8a97e261314208dea581417368b88bbfc1a21643bf8e1c8",
+      "build/usb/BOOTX64.EFI": "cb6c0fb1f54aebcceb08699fbf805d81217dbe52762e766f5264145ec68b465e",
+      "build/usb/USBDXE.Fv": "5b6a0306ed675a1fb17c60a43ad63d04f181aef4621365294855982f0e41ba09",
+      "build/usb/BAYTRAIL-USB-TEST.zip": "aac636237b025c2744a56d8e36befddc10214ccfe93d113ca1d4b6863acbaa8f",
+      "build/BAYTRAIL-USB-IA32.EFI": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378"
+    },
+    "after": {
+      "build/usb/UsbMassStorageDxe.efi": "3f31e60266c3890c8f3b4daffd188c000f443d580821e9239da8c5a22cedf936",
+      "build/usb/BaytrailUsbBoot.efi": "bc0aaa8d85f75daf1e3d1af2f0b567026e1a1325027a9730b0562800abd214f0",
+      "build/usb/UsbKbDxe.efi": "8a5cc83a306377ce72646aca165076e5e6492acd686c73624ef9595db1a0d5df",
+      "build/usb/RuntimeDxe.efi": "ee7348666e49f445d3bc40a9fd0c17a72bfd83b713f321874006b1b5102754bb",
+      "build/usb/BaytrailUsbPlatform.efi": "7dfeae4749934b56b93a30025247576f56436b183b9c65e99b7fe6b07404cd04",
+      "build/usb/BaytrailUsbTest.efi": "fadfd53c7833db612c2f70ca6cafafd31456f6e546e86ad50b8205b2ce2cb1d5",
+      "build/usb/UsbBusDxe.efi": "7305f6b9ed86bf2b65bdafe11dfe979ce4cff73092ba8f2dbe4bd776ca1ddcec",
+      "build/usb/DiskIoDxe.efi": "d260e49169813c7974967e543c908beda7588fd54e74d94224786a9cf9247354",
+      "build/usb/EnglishDxe.efi": "62cabf28d0f4ed4f98f8b58f50d0346e1ebdcf1c9d9a2466f3445510ca74db21",
+      "build/usb/M3Entry.efi": "e5026908a800380ff2c4da70d6d7251c520419e993c00216d5390540043ea47e",
+      "build/usb/Fat.efi": "c5cff1ee18d92b961811e84ae3c89010eeedf8f292bc58c3023754ffc92e4f46",
+      "build/usb/HiiDatabase.efi": "30e647f44bcb155b8cbe69c781f737ceeef7a926f3c947e8d9a57fede64090c4",
+      "build/usb/BaytrailFramebufferGop.efi": "626d37a431e71b65e3a00a859f4fa07559d9ec3d9b0478b0ddcfd79c82b5da2e",
+      "build/usb/DxeCore.efi": "41785808383345d9e728302462c57204e9c07bc7e1c7d181855b7656fb2a4022",
+      "build/usb/VariableRuntimeDxe.efi": "02033a0f9529185dceabb86db44343cbcc1d5a7f8c69da03a94054a0cd7c3acb",
+      "build/usb/PartitionDxe.efi": "6aa7fe5f579d585184b3032655cb26073f734019fa0d67c6bc66fff00dc8d317",
+      "build/usb/XhciDxe.efi": "dca933b87f59a0ca82e46687bab15e763c7eac0fc981d176adb5284d0ba33119",
+      "build/usb/GraphicsConsoleDxe.efi": "d4ed9b62460c65e4d8a97e261314208dea581417368b88bbfc1a21643bf8e1c8",
+      "build/usb/BOOTX64.EFI": "cb6c0fb1f54aebcceb08699fbf805d81217dbe52762e766f5264145ec68b465e",
+      "build/usb/USBDXE.Fv": "5b6a0306ed675a1fb17c60a43ad63d04f181aef4621365294855982f0e41ba09",
+      "build/usb/BAYTRAIL-USB-TEST.zip": "aac636237b025c2744a56d8e36befddc10214ccfe93d113ca1d4b6863acbaa8f",
+      "build/BAYTRAIL-USB-IA32.EFI": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378"
+    }
+  },
+  "package": {
+    "files": {
+      "EFI/TOOLS/BAYTRAIL-USB-IA32.EFI": "395c7b660f768cc78327d37ee0a677b791441e3d5ee7de9c8c96b32ae3f08378",
+      "EFI/BOOT/BOOTX64.EFI": "cb6c0fb1f54aebcceb08699fbf805d81217dbe52762e766f5264145ec68b465e"
+    },
+    "archive_sha256": "aac636237b025c2744a56d8e36befddc10214ccfe93d113ca1d4b6863acbaa8f"
+  }
+}

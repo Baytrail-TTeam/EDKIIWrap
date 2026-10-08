@@ -99,3 +99,9 @@ oczekiwany. Czerwony `SHELL ... FAILED`, `SHELL IDLE BEFORE SCRIPT`, ASSERT,
 czarny ekran bez banneru lub brak końcowego markera wymagają zdjęcia.
 Nie przystępujemy jeszcze do Windows. Następna praca M5 to natywne
 PCI/USB/klawiatura i odczyt BOOTX64.EFI z fizycznego pendrive'a.
+
+## Kolejny wariant: USB
+
+Osobny kandydat M5 umożliwia natywny odczyt aplikacji z USB i wejście
+klawiatury: [M5-USB.md](M5-USB.md). Wariant Shell RAM opisany powyżej
+pozostaje bez obsługi fizycznego USB.

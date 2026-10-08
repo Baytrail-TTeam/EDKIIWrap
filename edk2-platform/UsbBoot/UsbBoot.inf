@@ -1,0 +1,49 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailUsbBoot
+ FILE_GUID = ae32c902-f7d7-430f-8bb5-1d0b3837e40b
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = UsbBootEntry
+[Sources]
+ UsbBoot.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ DxeServicesLib
+ MemoryAllocationLib
+ BaseMemoryLib
+ HobLib
+ DevicePathLib
+ BaytrailMarkerLib
+ UefiLib
+ BaseLib
+ TimerLib
+[Guids]
+ gEfiAcpiTableGuid
+ gEfiAcpi10TableGuid
+ gEfiSmbiosTableGuid
+ gEfiSmbios3TableGuid
+ gBaytrailHandoffGuid
+ gIdleLoopEventGuid
+[Protocols]
+ gEfiGraphicsOutputProtocolGuid
+ gEfiSimpleTextOutProtocolGuid
+ gEfiSimpleTextInProtocolGuid
+ gEfiBlockIoProtocolGuid
+ gEfiDevicePathProtocolGuid
+ gEfiSimpleFileSystemProtocolGuid
+ gEfiLoadedImageProtocolGuid
+ gEfiVariableArchProtocolGuid
+ gEfiHiiDatabaseProtocolGuid
+ gEfiPciIoProtocolGuid
+ gEfiUsb2HcProtocolGuid
+ gEfiUsbIoProtocolGuid
+ gEfiSimpleTextInputExProtocolGuid
+ gEfiTimerArchProtocolGuid
+[Depex]
+ gEfiGraphicsOutputProtocolGuid AND gEfiVariableArchProtocolGuid AND gEfiHiiDatabaseProtocolGuid

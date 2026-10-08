@@ -16,6 +16,10 @@ Przygotowano pięć ręcznych testów:
 - `build/BAYTRAIL-SHELL-IA32.EFI`: rzeczywista powłoka EDK2 X64 z konsolą
   i read-only FAT w RAM; bez fizycznego USB/klawiatury. [docs/SHELL.md](docs/SHELL.md).
 
+- `build/BAYTRAIL-USB-IA32.EFI` i `build/usb/BOOTX64.EFI`: kandydat M5
+  z natywnym USB/storage/klawiaturą X64. [docs/M5-USB.md](docs/M5-USB.md).
+  Pakiet testowy: `build/usb/BAYTRAIL-USB-TEST.zip`.
+
 **Użytkownik potwierdził M1 i M2 zdjęciami przesłanymi 2026-10-07.**
 M1 pokazuje `M1 COLLECT OK`, M2 pokazuje `STAGE 2 X64 OK` po transition.
 Opis i granice potwierdzenia: `docs/MANUAL-TEST-2026-10-07.md`.
@@ -31,6 +35,7 @@ Agent nie wykonywał testów fizycznych. Próby Windows są wstrzymane.
 ./build-m3.sh   # M3
 ./build-m4.sh   # M4
 ./build-shell.sh # Shell X64 z RAM; dodatkowy etap przed natywnym USB M5
+./build-usb.sh  # kandydat M5, native USB X64 i testowy BOOTX64.EFI
 ```
 
 Toolchain: LLVM/LLD 23.1.2, NASM 3.02, Python 3. Źródła EDK2 `edk2-stable202608`
