@@ -4,6 +4,11 @@
 #include <Guid/Acpi.h>
 #include <Guid/SmBios.h>
 #include "Handoff.h"
+#if RUN_TRANSITION == 2
+#include "M3Handoff.h"
+#include <Library/PeCoffLib.h>
+#include <IndustryStandard/PeImage.h>
+#endif
 #if RUN_TRANSITION
 #include "blobs.h"
 #endif
@@ -31,6 +36,33 @@ static EFI_STATUS pages(UINTN n, EFI_MEMORY_TYPE type, uint64_t *out) {
  if(!EFI_ERROR(status)) {zero((void*)(UINTN)p,n*4096);*out=p;}
  return status;
 }
+
+#if RUN_TRANSITION == 2
+typedef struct { const unsigned char *bytes; UINTN length; } PeSource;
+static RETURN_STATUS EFIAPI pe_read(void *handle,UINTN offset,UINTN *size,void *buffer) {
+ PeSource *source=handle;
+ if(offset>source->length || *size>source->length-offset) return RETURN_LOAD_ERROR;
+ copy(buffer,source->bytes+offset,*size);return RETURN_SUCCESS;
+}
+static EFI_STATUS load_m3_entry(uint64_t *base,UINTN *count,uint64_t *entry) {
+ PE_COFF_LOADER_IMAGE_CONTEXT context;PeSource source={payload_blob,sizeof(payload_blob)};
+ zero(&context,sizeof(context));context.Handle=&source;context.ImageRead=pe_read;
+ EFI_STATUS status=PeCoffLoaderGetImageInfo(&context);
+ if(EFI_ERROR(status)) return status;
+ if(context.Machine!=IMAGE_FILE_MACHINE_X64 || context.RelocationsStripped ||
+    !context.ImageSize || context.ImageSize>16*1024*1024 ||
+    !context.SectionAlignment || context.SectionAlignment>4096 ||
+    (context.SectionAlignment&(context.SectionAlignment-1))) return EFI_UNSUPPORTED;
+ *count=(UINTN)((context.ImageSize+4095)>>12);
+ status=pages(*count,EfiLoaderCode,base);if(EFI_ERROR(status)) return status;
+ context.ImageAddress=*base;
+ status=PeCoffLoaderLoadImage(&context);if(EFI_ERROR(status)) return status;
+ status=PeCoffLoaderRelocateImage(&context);if(EFI_ERROR(status)) return status;
+ if(context.EntryPoint<*base || context.EntryPoint-*base>=context.ImageSize) return EFI_LOAD_ERROR;
+ *entry=context.EntryPoint;return EFI_SUCCESS;
+}
+#endif
+
 static uint32_t u32(const void*p) {uint32_t x;copy(&x,p,4);return x;}
 static uint64_t u64(const void*p) {uint64_t x;copy(&x,p,8);return x;}
 static int checksum(const void*p,unsigned n) {
@@ -129,8 +161,13 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  EFI_STATUS status;uint64_t hp=0,mp=0;Handoff*h;
  uint64_t tr=0,pl=0,stack=0,pt=0;
  UINTN capacity=65536,key=0,ds=0,sz;UINT32 dv=0;
+#if RUN_TRANSITION == 2
+ M3Handoff *m3=NULL;uint64_t arena=0,fv=0,pl_entry=0;UINTN pl_pages=0;
+#endif
  say(L"Baytrail X64 PoC / " );
-#if RUN_TRANSITION
+#if RUN_TRANSITION == 2
+ say(L"M3 EDK2 DXE\r\n");
+#elif RUN_TRANSITION
  say(L"M2 TRANSITION\r\n");
 #else
  say(L"M1 COLLECT ONLY\r\n");
@@ -138,6 +175,10 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  status=bs->SetWatchdogTimer(0,0,0,NULL);if(EFI_ERROR(status)) return status;
  if(EFI_ERROR(status=pages(1,EfiLoaderData,&hp))) return status;
  h=(void*)(UINTN)hp;h->magic=HANDOFF_MAGIC;h->version=1;h->size=sizeof(*h);
+#if RUN_TRANSITION == 2
+ m3=(void*)(UINTN)hp;m3->m3_magic=M3_MAGIC;m3->m3_version=1;m3->m3_size=sizeof(*m3);
+ m3->firmware_system_table=(UINTN)system;
+#endif
  if(!cpu(h)) {say(L"Unsupported CPU/mode/PAT (requires PAT entry 3 = UC).\r\n");status=EFI_UNSUPPORTED;goto cleanup;}
  if(EFI_ERROR(status=pages(16,EfiLoaderData,&mp))) goto cleanup;
  h->memory_map=mp;
@@ -173,14 +214,33 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  }
 #if RUN_TRANSITION
  if(EFI_ERROR(status=pages((sizeof(transition_blob)+4095)/4096,EfiLoaderCode,&tr))) goto cleanup;
+ #if RUN_TRANSITION == 2
+ if((h->initial_pat&255)!=6 || h->framebuffer_size>0xffffffff || h->height<330) {status=EFI_UNSUPPORTED;goto cleanup;}
+ if(EFI_ERROR(status=load_m3_entry(&pl,&pl_pages,&pl_entry))) goto cleanup;
+ if(EFI_ERROR(status=pages(32,EfiLoaderData,&stack))) goto cleanup;
+ if(EFI_ERROR(status=pages(M3_ARENA_SIZE/4096,EfiLoaderData,&arena))) goto cleanup;
+ if(EFI_ERROR(status=pages((sizeof(fv_blob)+4095)/4096,EfiLoaderData,&fv))) goto cleanup;
+ copy((void*)(UINTN)fv,fv_blob,sizeof(fv_blob));
+ m3->arena_base=arena;m3->arena_size=M3_ARENA_SIZE;
+ m3->fv_base=fv;m3->fv_size=sizeof(fv_blob);
+ m3->entry_base=pl;m3->entry_size=pl_pages*4096;
+#else
  if(EFI_ERROR(status=pages((sizeof(payload_blob)+4095)/4096,EfiLoaderCode,&pl))) goto cleanup;
  if(EFI_ERROR(status=pages(16,EfiLoaderData,&stack))) goto cleanup;
+#endif
  if(EFI_ERROR(status=pages(6,EfiLoaderData,&pt))) goto cleanup;
  copy((void*)(UINTN)tr,transition_blob,sizeof(transition_blob));
+ #if RUN_TRANSITION != 2
  copy((void*)(UINTN)pl,payload_blob,sizeof(payload_blob));
+#endif
  h->transition_base=tr;h->transition_size=sizeof(transition_blob);
+#if RUN_TRANSITION == 2
+ h->payload_base=pl;h->payload_size=pl_pages*4096;
+ h->stack_base=stack;h->stack_size=128*1024;h->page_tables=pt;
+#else
  h->payload_base=pl;h->payload_size=sizeof(payload_blob);
  h->stack_base=stack;h->stack_size=65536;h->page_tables=pt;
+#endif
  uint64_t *pml4=(void*)(UINTN)pt,*pdpt=(void*)(UINTN)(pt+4096);
  pml4[0]=(pt+4096)|3;
  for(unsigned i=0;i<4;i++) {
@@ -209,7 +269,12 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  line(L"SMBIOS2: ",h->smbios2);line(L"SMBIOS3: ",h->smbios3);
  line(L"Memory map bytes: ",h->memory_map_size);line(L"Handoff: ",hp);line(L"Tables present flags (ACPI=1 SMBIOS=2): ",h->flags);
 #if RUN_TRANSITION
+#if RUN_TRANSITION == 2
+ line(L"M3 arena base: ",arena);line(L"M3 FV base: ",fv);line(L"M3 entry point: ",pl_entry);
+ say(L"M3: ExitBootServices then EDK2 X64 DXE.\r\n");
+#else
  say(L"M2: ExitBootServices then long mode. No EFI calls afterwards.\r\n");
+ #endif
  /* Last firmware console operation. A retry uses only GetMemoryMap/EBS. */
  for(unsigned retry=0;retry<3;retry++) {
   sz=capacity;status=bs->GetMemoryMap(&sz,(void*)(UINTN)mp,&key,&ds,&dv);
@@ -218,7 +283,11 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
   status=bs->ExitBootServices(image,key);
   if(!EFI_ERROR(status)) {
    typedef void (__attribute__((cdecl))*Enter)(uint32_t,uint32_t,uint32_t,uint32_t);
+   #if RUN_TRANSITION == 2
+   ((Enter)(UINTN)tr)((uint32_t)pt,(uint32_t)(stack+128*1024),(uint32_t)pl_entry,(uint32_t)hp);
+#else
    ((Enter)(UINTN)tr)((uint32_t)pt,(uint32_t)(stack+65536),(uint32_t)pl,(uint32_t)hp);
+#endif
    stop();
   }
   if(status!=EFI_INVALID_PARAMETER) stop();
@@ -232,8 +301,15 @@ cleanup:
  if(EFI_ERROR(status)) {line(L"PRE-EXIT ERROR: ",status);bs->Stall(10000000);}
 #if RUN_TRANSITION
  if(pt) bs->FreePages(pt,6);
+ #if RUN_TRANSITION == 2
+ if(fv) bs->FreePages(fv,(sizeof(fv_blob)+4095)/4096);
+ if(arena) bs->FreePages(arena,M3_ARENA_SIZE/4096);
+ if(stack) bs->FreePages(stack,32);
+ if(pl) bs->FreePages(pl,pl_pages);
+#else
  if(stack) bs->FreePages(stack,16);
  if(pl) bs->FreePages(pl,(sizeof(payload_blob)+4095)/4096);
+#endif
  if(tr) bs->FreePages(tr,(sizeof(transition_blob)+4095)/4096);
 #else
  (void)tr;(void)pl;(void)stack;(void)pt;

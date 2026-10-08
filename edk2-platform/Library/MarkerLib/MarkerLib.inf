@@ -1,0 +1,13 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailMarkerLib
+ FILE_GUID = 2dacb8a1-5b3f-43f8-8a71-d5fe480ef42f
+ MODULE_TYPE = BASE
+ LIBRARY_CLASS = BaytrailMarkerLib
+[Sources]
+ Marker.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ BaseLib

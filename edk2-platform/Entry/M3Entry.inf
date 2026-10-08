@@ -1,0 +1,35 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = M3Entry
+ FILE_GUID = 706d07e2-77d8-42bd-9c6c-60c3fd8464ca
+ MODULE_TYPE = SEC
+ VERSION_STRING = 0.1
+[Sources]
+ Entry.c
+ LoadDxeCore.c
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+ UefiCpuPkg/UefiCpuPkg.dec
+ UefiPayloadPkg/UefiPayloadPkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ CpuLib
+ BaseLib
+ BaseMemoryLib
+ HobLib
+ MemoryAllocationLib
+ PayloadEntryHelperLib
+ PeCoffLib
+ DebugLib
+ PcdLib
+ BaytrailMarkerLib
+[Guids]
+ gEfiHobMemoryAllocModuleGuid
+ gEfiGraphicsInfoHobGuid
+ gBaytrailHandoffGuid
+ gUniversalPayloadAcpiTableGuid
+ gUniversalPayloadSmbiosTableGuid
+ gUniversalPayloadSmbios3TableGuid
+[Pcd]
+ gUefiPayloadPkgTokenSpaceGuid.PcdPayloadFdMemBase

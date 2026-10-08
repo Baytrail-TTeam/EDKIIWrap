@@ -1,0 +1,12 @@
+[Defines]
+ PLATFORM_NAME = BaytrailM3Loader
+ PLATFORM_GUID = c9f79d13-e25b-4ee6-b997-665b272a8722
+ PLATFORM_VERSION = 0.1
+ DSC_SPECIFICATION = 0x00010005
+ OUTPUT_DIRECTORY = Build/BaytrailM3Loader
+ SUPPORTED_ARCHITECTURES = IA32
+ BUILD_TARGETS = DEBUG|RELEASE
+ SKUID_IDENTIFIER = DEFAULT
+!include edk2-platform/M3Libraries.dsc.inc
+[Components.IA32]
+ edk2-platform/Loader/M3Loader.inf

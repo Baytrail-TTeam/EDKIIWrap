@@ -1,0 +1,28 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailDxeProbe
+ FILE_GUID = 0c1a3f26-c288-4ba1-a7fd-e3b0fcb66e17
+ MODULE_TYPE = DXE_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = ProbeEntry
+[Sources]
+ Probe.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ HobLib
+ BaseMemoryLib
+ BaytrailMarkerLib
+[Guids]
+ gBaytrailHandoffGuid
+ gEfiAcpiTableGuid
+ gEfiAcpi10TableGuid
+ gEfiSmbiosTableGuid
+ gEfiSmbios3TableGuid
+[Protocols]
+ gEfiRuntimeArchProtocolGuid
+[Depex]
+ gEfiRuntimeArchProtocolGuid

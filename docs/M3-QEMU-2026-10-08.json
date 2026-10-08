@@ -1,0 +1,152 @@
+{
+  "success": true,
+  "loader_sha256": "0f6fc584e3efe2579c1a84e6f925a50627483b78135aa7a084ec246623603042",
+  "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+  "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+  "green_pixels_rows_4_5_6": [
+    684,
+    1076,
+    1100
+  ],
+  "qemu_version": "QEMU emulator version 11.1.1",
+  "command": [
+    "qemu-system-x86_64",
+    "-machine",
+    "q35,accel=tcg",
+    "-cpu",
+    "max",
+    "-m",
+    "256",
+    "-smp",
+    "1",
+    "-drive",
+    "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+    "-drive",
+    "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m3/qemu-m3/vars.fd",
+    "-drive",
+    "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m3/qemu-m3/esp",
+    "-display",
+    "none",
+    "-serial",
+    "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/m3/qemu-m3/serial.log",
+    "-monitor",
+    "none",
+    "-qmp",
+    "unix:<temporary qmp socket>,server=on,wait=off",
+    "-net",
+    "none",
+    "-no-reboot",
+    "-no-shutdown"
+  ],
+  "date": "2026-10-08",
+  "scope": "QEMU TCG IA32 OVMF only; tablet not tested",
+  "artifacts": {
+    "BAYTRAIL-M3-IA32.EFI": {
+      "machine": "0x14c",
+      "subsystem": 10,
+      "entry_rva": "0x2dc",
+      "bytes": 1079744,
+      "sha256": "0f6fc584e3efe2579c1a84e6f925a50627483b78135aa7a084ec246623603042"
+    },
+    "M3Entry.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x32c",
+      "bytes": 16864,
+      "sha256": "0efe770aa1735089178afbf049497a2f5f0590d045627cb414b1d5731dbe3a40"
+    },
+    "DxeCore.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x27e0",
+      "bytes": 111712,
+      "sha256": "c88c80d851b9ee2fcb06855323741a1eb694ee775426012cf9de713d507c8b57"
+    },
+    "RuntimeDxe.efi": {
+      "machine": "0x8664",
+      "subsystem": 12,
+      "entry_rva": "0x10a8",
+      "bytes": 11008,
+      "sha256": "ad056f0e2b0ad858f764368b5ec6ef02805568e2de753333e01ee18ca3b6f1e3"
+    },
+    "BaytrailDxeProbe.efi": {
+      "machine": "0x8664",
+      "subsystem": 11,
+      "entry_rva": "0x1080",
+      "bytes": 10048,
+      "sha256": "3c72ada43f367a074d84a6029382b5a0646f87f6396d6c604cea2e57dbed77fe"
+    },
+    "M3DXE.Fv": {
+      "bytes": 1048576,
+      "sha256": "78e4f78f78848f76470f2084185512cf9f2d3fa00d1349936dabf5ccbdbc4ae0",
+      "ffs_types": [
+        2,
+        5,
+        7,
+        7
+      ],
+      "pe32_sections": 3
+    }
+  },
+  "toolchain": {
+    "clang": "Homebrew clang version 23.1.2",
+    "lld": "Homebrew LLD 23.1.2",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "python": "Python 3.14.5"
+  },
+  "source_lock": {
+    "sources": [
+      {
+        "path": "third_party/edk2",
+        "url": "https://github.com/tianocore/edk2.git",
+        "commit": "2970e5699ba6267f3384ffab20f96647578aebc8"
+      },
+      {
+        "path": "third_party/coreboot",
+        "url": "https://github.com/coreboot/coreboot.git",
+        "commit": "608fac61470b2b05e4ed11808e97efd636697c3d"
+      },
+      {
+        "path": "third_party/mrchromebox-edk2",
+        "url": "https://github.com/MrChromebox/edk2.git",
+        "commit": "1f9ab463057c53883245d0ce5dfe07201efb1efe"
+      },
+      {
+        "path": "third_party/mrchromebox-blobs",
+        "url": "https://github.com/MrChromebox/blobs.git",
+        "commit": "a8c9e312c44e108f3c6cfd51953439d353a7a461"
+      }
+    ],
+    "initialized_edk2_submodules": [
+      {
+        "path": "BaseTools/Source/C/BrotliCompress/brotli",
+        "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+      },
+      {
+        "path": "MdeModulePkg/Library/BrotliCustomDecompressLib/brotli",
+        "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+      },
+      {
+        "path": "MdePkg/Library/BaseFdtLib/libfdt",
+        "commit": "cfff805481bdea27f900c32698171286542b8d3c"
+      },
+      {
+        "path": "MdePkg/Library/MipiSysTLib/mipisyst",
+        "commit": "370b5944c046bab043dd8b133727b2135af7747a"
+      }
+    ]
+  },
+  "clean_rebuild": {
+    "clean_rebuild_identical": true,
+    "sha256": {
+      "build/BAYTRAIL-M3-IA32.EFI": "0f6fc584e3efe2579c1a84e6f925a50627483b78135aa7a084ec246623603042",
+      "build/m3/BaytrailDxeProbe.efi": "3c72ada43f367a074d84a6029382b5a0646f87f6396d6c604cea2e57dbed77fe",
+      "build/m3/RuntimeDxe.efi": "ad056f0e2b0ad858f764368b5ec6ef02805568e2de753333e01ee18ca3b6f1e3",
+      "build/m3/M3Entry.efi": "0efe770aa1735089178afbf049497a2f5f0590d045627cb414b1d5731dbe3a40",
+      "build/m3/DxeCore.efi": "c88c80d851b9ee2fcb06855323741a1eb694ee775426012cf9de713d507c8b57",
+      "build/m3/M3DXE.Fv": "78e4f78f78848f76470f2084185512cf9f2d3fa00d1349936dabf5ccbdbc4ae0"
+    }
+  },
+  "registers": "\nCPU#0\nRAX=0000000000000000 RBX=000000000e224a30 RCX=0000000000000015 RDX=0000000000112168\nRSI=000000000bf4b638 RDI=000000000bf4b620 RBP=000000000e2249e0 RSP=000000000e2249e0\nR8 =0000000000044700 R9 =000000000040ff40 R10=ffffffffffffff00 R11=000000000bf6b830\nR12=8000000000000002 R13=000000000bf6b4c0 R14=000000000e224a24 R15=000000000e224a18\nRIP=000000000bf29bde RFL=00000002 [-------] CPL=0 II=0 A20=1 SMM=0 HLT=1\nES =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nCS =0018 0000000000000000 ffffffff 00af9a00 DPL=0 CS64 [-R-]\nSS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nDS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nFS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nGS =0010 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]\nLDT=0000 0000000000000000 0000ffff 00008200 DPL=0 LDT\nTR =0020 000000000bf74e80 00000067 00008900 DPL=0 TSS64-avl\nGDT=     000000000bf74e50 0000002f\nIDT=     000000000e8d1290 000001ff\nCR0=80010033 CR2=0000000000000000 CR3=000000000e1ff000 CR4=00000660\nDR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000 \nDR6=00000000ffff0ff0 DR7=0000000000000400\nEFER=0000000000000d00\nFCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80\nFPR0=0000000000000000 0000 FPR1=0000000000000000 0000\nFPR2=0000000000000000 0000 FPR3=0000000000000000 0000\nFPR4=0000000000000000 0000 FPR5=0000000000000000 0000\nFPR6=0000000000000000 0000 FPR7=8000000000000000 4006\nXMM00=0000000000000000 0000000000000000 XMM01=0000000000000000 0000000000000000\nXMM02=0000000000000000 0000000000000000 XMM03=0000000000000000 0000000000000000\nXMM04=0000000000000000 0000000000000000 XMM05=0000000000000000 0000000000000000\nXMM06=0000000000000000 0000000000000000 XMM07=0000000000000000 0000000000000000\nXMM08=0000000000000000 0000000000000000 XMM09=0000000000000000 0000000000000000\nXMM10=0000000000000000 0000000000000000 XMM11=0000000000000000 0000000000000000\nXMM12=0000000000000000 0000000000000000 XMM13=0000000000000000 0000000000000000\nXMM14=0000000000000000 0000000000000000 XMM15=0000000000000000 0000000000000000\n",
+  "screenshot_sha256": "c036895fadcdc16efa0655a7246fc91606925fc55a8efd0e923eee1c16a9bc7b"
+}

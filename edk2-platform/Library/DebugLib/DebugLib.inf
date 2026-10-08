@@ -1,0 +1,16 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailFramebufferDebugLib
+ FILE_GUID = 2cd16708-43f6-401c-baf7-4ae9bdf6a0fa
+ MODULE_TYPE = BASE
+ LIBRARY_CLASS = DebugLib|SEC DXE_CORE DXE_DRIVER DXE_RUNTIME_DRIVER
+[Sources]
+ Debug.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ BaseLib
+ HobLib
+ PrintLib
+ BaytrailMarkerLib

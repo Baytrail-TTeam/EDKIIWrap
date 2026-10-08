@@ -16,9 +16,9 @@ Pierwsza komenda instaluje bieżące wersje: dla identycznych bajtów należy
 użyć wersji z `build/manifest.json`, nie dowolnych przyszłych wersji.
 Plik sources.lock przypina EDK2 i research trees do commitów oraz cztery
 zainicjalizowane submodules (Brotli dla BaseTools i decompressor, libfdt,
-MipiSysT). Pozostałe zależności pełnego firmware nie są wymagane przez M1/M2;
-zostaną wybrane z DSC podczas M3. Obecny build używa nagłówków EDK2 i nie
-kompiluje BaseTools ani pełnego payloadu UefiPayloadPkg.
+MipiSysT). Pozostałe zależności pełnego firmware nie są wymagane przez M1/M2.
+`build.sh` używa nagłówków EDK2; odrębny `build-m3.sh` kompiluje BaseTools
+i minimalną platformę DXE opisaną w M3.md.
 
 Dla innej instalacji ustaw LLVM_BIN/LLD_BIN, opcjonalnie CC/OBJCOPY:
 
@@ -46,3 +46,9 @@ zgodności firmware. Kompilacja na Linuksie nie była testowana.
 
 GOP donor jest analizowany osobno: `python3 scripts/analyze-gop.py`.
 Nie jest osadzany w testowym EFI. Duże dumpy są wyłącznie w starych repo.
+
+## Aktualizacja M3 — 2026-10-08
+
+Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
+Opis implementacji, zakres testów i instrukcja testu tabletu:
+[M3.md](M3.md).

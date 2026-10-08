@@ -1,0 +1,39 @@
+[FV.M3DXE]
+ FvNameGuid = 2ca2fa7d-dcba-4965-8514-3f2bad3a9993
+ BlockSize = 0x1000
+ NumBlocks = 0x100
+ ERASE_POLARITY = 1
+ MEMORY_MAPPED = TRUE
+ STICKY_WRITE = TRUE
+ LOCK_CAP = TRUE
+ LOCK_STATUS = TRUE
+ WRITE_DISABLED_CAP = TRUE
+ WRITE_ENABLED_CAP = TRUE
+ WRITE_STATUS = TRUE
+ READ_DISABLED_CAP = TRUE
+ READ_ENABLED_CAP = TRUE
+ READ_STATUS = TRUE
+ APRIORI DXE {
+  INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+  INF edk2-platform/DxeProbe/DxeProbe.inf
+ }
+ INF MdeModulePkg/Core/Dxe/DxeMain.inf
+ INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+ INF edk2-platform/DxeProbe/DxeProbe.inf
+[Rule.Common.DXE_CORE]
+ FILE DXE_CORE = $(NAMED_GUID) {
+  PE32 PE32 $(INF_OUTPUT)/$(MODULE_NAME).efi
+  UI STRING = "$(MODULE_NAME)"
+ }
+[Rule.Common.DXE_RUNTIME_DRIVER]
+ FILE DRIVER = $(NAMED_GUID) {
+  DXE_DEPEX DXE_DEPEX Optional $(INF_OUTPUT)/$(MODULE_NAME).depex
+  PE32 PE32 $(INF_OUTPUT)/$(MODULE_NAME).efi
+  UI STRING = "$(MODULE_NAME)"
+ }
+[Rule.Common.DXE_DRIVER]
+ FILE DRIVER = $(NAMED_GUID) {
+  DXE_DEPEX DXE_DEPEX Optional $(INF_OUTPUT)/$(MODULE_NAME).depex
+  PE32 PE32 $(INF_OUTPUT)/$(MODULE_NAME).efi
+  UI STRING = "$(MODULE_NAME)"
+ }

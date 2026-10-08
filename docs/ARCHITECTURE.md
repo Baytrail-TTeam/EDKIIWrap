@@ -42,7 +42,8 @@ DXE ani przestrzeni powyżej 4 GiB; pozostałe regiony używają PAT index 0.
 Ostatni komunikat jest drukowany przed ostatecznym GetMemoryMap i
 ExitBootServices. Po nieudanym EBS retry wykonuje wyłącznie GetMemoryMap/EBS;
 nie alokuje, nie drukuje i nie wraca do shell. Po maksymalnie trzech
-nieudanych próbach zatrzymuje BSP. Po udanym EBS nie ma wywołań EFI.
+nieudanych próbach zatrzymuje BSP. Po udanym EBS nie ma wywołań stockowego IA32 EFI.
+M3 wywołuje później własne Boot Services X64 EDK2.
 
 `transition/long-mode.asm`:
 
@@ -70,22 +71,20 @@ a SMI może nadal wystąpić. Nie dodano port writes do maskowania NMI ani PIC.
 Firmware może pozostawić DMA i procesory pomocnicze aktywne. Ograniczenia
 te nie pozwalają na traktowanie tego kodu jako gotowej platformy DXE.
 
-## M3 i dalsze etapy — projekt, bez implementacji
+## M3 — zaimplementowany minimalny payload
 
-Preferowana droga to EDK2 UniversalPayloadEntry oraz istniejący DXE,
-a nie własna implementacja UEFI. Adapter konwertuje HANDOFF na PHIT,
-resource descriptor HOB, allocation HOB, CPU HOB, stos/BSP HOB,
-graphics HOB i GUID HOB dla ACPI/SMBIOS/root bridge. Loader musi załadować
-ELF/FIT, sekcje firmware volume i przekazać extra-data HOB z adresami FV;
-nie wystarczy skoczyć do przypadkowego .fd lub BOOTX64.EFI.
+Oficjalny EDK2 DXE Core i RuntimeDxe są ładowane z niekompresowanego FV.
+Własny SEC adapter zamienia rozszerzony HANDOFF na HOB-y, używając
+oficjalnych bibliotek payload-entry oraz LoadDxeCore.c. PeCoffLib IA32
+ładuje wejście X64 przed EBS. Zachowujemy stos/CR3 transition; DXE
+alokuje wyłącznie we własnej arenie 64 MiB. Nowa ConfigurationTable X64
+publikuje zachowane wskaźniki ACPI/SMBIOS. Szczegóły: [M3.md](M3.md).
 
-Nie oddajemy allocatorowi obszarów używanych przez loader, stos, tablice stron,
-HANDOFF/mapę, payload/FV, runtime stockowego firmware ani ACPI/NVS/SMBIOS.
-Stockowe ACPI i SMBIOS mają zostać ponownie opublikowane przez X64
-Configuration Tables po ochronie całego grafu. SMM nadal należy do firmware.
-Stockowe IA32 RuntimeServices nie są runtime usługami X64: potrzebna będzie
-polityka własnych/emulowanych variables i jawne ograniczenie usług runtime.
-Na początku nie będzie zapisów SPI ani trwałych variables.
+Nie ma thunków do stockowego firmware, BDS ani pełnego zestawu usług
+runtime. SMM, AP i DMA pozostają zależne od stockowego firmware.
+Nie dodano zapisów SPI ani trwałych variables.
+
+## Dalsze etapy — projekt
 
 M4: adaptować EDK2 `UefiPayloadPkg/GraphicsOutputDxe/GraphicsOutput.c`
 i FrameBufferBltLib. Ten kod już obsługuje framebuffer z graphics HOB,
@@ -97,3 +96,9 @@ DiskIo/Partition/FAT i BDS z EDK2. Najpierw USB; kontrolery eMMC w ACPI mode
 wymagają dodatkowych danych platformowych. M6 i Windows dopiero po
 ręcznie potwierdzonym M5. ACPI overlays dla Win7 są przyszłym rozszerzeniem,
 bez jakiegokolwiek patchowania w bieżącym PoC.
+
+## Aktualizacja M3 — 2026-10-08
+
+Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
+Opis implementacji, zakres testów i instrukcja testu tabletu:
+[M3.md](M3.md).

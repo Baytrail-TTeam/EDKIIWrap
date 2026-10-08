@@ -1,7 +1,7 @@
 # Pierwszy test ręczny — wykonuje właściciel tabletu
 
-Agent nie uruchamiał żadnego pliku EFI, również w QEMU. Użytkownik przesłał
-zdjęcia sukcesu M1/M2; zapis wyników: MANUAL-TEST-2026-10-07.md. Nie zmieniaj BootOrder,
+Agent uruchomił M2/M3 w QEMU IA32 OVMF; nie wykonywał testów fizycznych.
+Użytkownik przesłał zdjęcia sukcesu M1/M2; zapis wyników: MANUAL-TEST-2026-10-07.md. Nie zmieniaj BootOrder,
 SPI ani partycji eMMC. Użyj istniejącej opcji jednorazowego Boot From File
 lub istniejącego IA32 EFI Shell. Potrzebny jest firmware dopuszczający
 niesygnowany testowy EFI; ten projekt nie zapewnia obejścia Secure Boot.
@@ -55,7 +55,12 @@ jedynie wykonanie M2: nie potwierdza działania EDK2/USB/Windows.
 | Kolory lub napis błędne | pitch/pixel masks/cache/display state; przekazać zdjęcie i wyniki M1 |
 | STAGE 2 X64 OK | M2 dotarło do kodu X64; zapisać nazwę i SHA256 pliku oraz zdjęcie |
 
-Przed M3 warto dodać instrumentację wyjątków oraz sprawdzić handoff w
-QEMU z prawdziwym IA32 OVMF. X64 OVMF nie sprawdza wejścia ze stock IA32;
-QEMU nie emuluje MIPI/eDP/PMIC tego tabletu. Nie przygotowano automatycznego
-uruchamiania EFI ani testów na fizycznym sprzęcie.
+M3 zawiera diagnostykę ASSERT i został sprawdzony w QEMU z IA32 OVMF. X64 OVMF nie sprawdza wejścia ze stock IA32;
+QEMU nie emuluje MIPI/eDP/PMIC tego tabletu. Automatyczny test QEMU jest dostępny w scripts/test-m3-qemu.py.
+Testy fizyczne wykonuje użytkownik.
+
+## Aktualizacja M3 — 2026-10-08
+
+Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
+Opis implementacji, zakres testów i instrukcja testu tabletu:
+[M3.md](M3.md).

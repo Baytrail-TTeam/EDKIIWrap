@@ -25,6 +25,12 @@ porównać oba pliki SHA256SUMS bajt po bajcie.
 2026-10-07.** Szczegóły i transkrypcja: MANUAL-TEST-2026-10-07.md.
 Kompilacja pozostaje kontrolą statyczną; dowodem wykonania jest osobno
 zdjęcie `STAGE 2 X64 OK`. Nie zmierzono CR0/CR4/EFER niezależnym debuggerem
-ani hashy faktycznie uruchomionych plików. Brak testu QEMU, pełnego EDK2
-czy Windows; stabilność DMA/AP/SMM pozostaje niezweryfikowana.
-Agent nie uruchamiał żadnego EFI. M3 nie został rozpoczęty.
+ani hashy faktycznie uruchomionych na tablecie plików. Stabilność DMA/AP/SMM
+pozostaje niezweryfikowana. 2026-10-08 agent uruchomił M2 i M3 w QEMU
+z IA32 OVMF; szczegóły poniżej. Nie wykonano prób Windows.
+
+## Aktualizacja M3 — 2026-10-08
+
+Minimalny EDK2 X64 jest zbudowany i sprawdzony w QEMU IA32 OVMF.
+Opis implementacji, zakres testów i instrukcja testu tabletu:
+[M3.md](M3.md).

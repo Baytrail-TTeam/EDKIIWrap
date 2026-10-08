@@ -1,0 +1,58 @@
+!include MdePkg/MdeLibs.dsc.inc
+[LibraryClasses]
+ BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
+ BaseMemoryLib|MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf
+ DebugLib|edk2-platform/Library/DebugLib/DebugLib.inf
+ PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
+ PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
+ TimerLib|MdePkg/Library/BaseTimerLibNullTemplate/BaseTimerLibNullTemplate.inf
+ IoLib|MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf
+ CacheMaintenanceLib|MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.inf
+ PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
+ PeCoffExtraActionLib|MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf
+ PeCoffGetEntryPointLib|MdePkg/Library/BasePeCoffGetEntryPointLib/BasePeCoffGetEntryPointLib.inf
+ UefiBootServicesTableLib|MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.inf
+ UefiRuntimeServicesTableLib|MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.inf
+ UefiLib|MdePkg/Library/UefiLib/UefiLib.inf
+ DxeServicesLib|MdePkg/Library/DxeServicesLib/DxeServicesLib.inf
+ DxeServicesTableLib|MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.inf
+ DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
+ UefiDriverEntryPoint|MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.inf
+ UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
+ DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
+ UefiDecompressLib|MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.inf
+ PerformanceLib|MdePkg/Library/BasePerformanceLibNull/BasePerformanceLibNull.inf
+ ReportStatusCodeLib|MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.inf
+ DebugAgentLib|MdeModulePkg/Library/DebugAgentLibNull/DebugAgentLibNull.inf
+ ImagePropertiesRecordLib|MdeModulePkg/Library/ImagePropertiesRecordLib/ImagePropertiesRecordLib.inf
+ SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
+ LocalApicLib|UefiCpuPkg/Library/BaseXApicX2ApicLib/BaseXApicX2ApicLib.inf
+ CcExitLib|UefiCpuPkg/Library/CcExitLibNull/CcExitLibNull.inf
+ HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
+ MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
+ BaytrailMarkerLib|edk2-platform/Library/MarkerLib/MarkerLib.inf
+[LibraryClasses.common.UEFI_APPLICATION]
+ DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+[LibraryClasses.common.SEC]
+ HobLib|UefiPayloadPkg/Library/PayloadEntryHobLib/HobLib.inf
+ PayloadEntryHelperLib|UefiPayloadPkg/Library/PayloadEntryHelperLib/PayloadEntryHelperLib.inf
+ MemoryAllocationLib|UefiPayloadPkg/Library/PayloadEntryMemoryAllocationLib/PayloadEntryMemoryAllocationLib.inf
+[LibraryClasses.common.DXE_CORE]
+ HobLib|MdePkg/Library/DxeCoreHobLib/DxeCoreHobLib.inf
+ MemoryAllocationLib|MdeModulePkg/Library/DxeCoreMemoryAllocationLib/DxeCoreMemoryAllocationLib.inf
+ ExtractGuidedSectionLib|MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.inf
+ CpuExceptionHandlerLib|UefiCpuPkg/Library/CpuExceptionHandlerLib/DxeCpuExceptionHandlerLib.inf
+[PcdsFixedAtBuild]
+ gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x21
+ gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0
+ gEfiMdeModulePkgTokenSpaceGuid.PcdDxeNxMemoryProtectionPolicy|0
+ gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask|0
+ gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPropertyMask|0
+ gEfiMdeModulePkgTokenSpaceGuid.PcdCpuStackGuard|FALSE
+ gEfiMdeModulePkgTokenSpaceGuid.PcdLoadModuleAtFixAddressEnable|0
+ gUefiPayloadPkgTokenSpaceGuid.PcdPayloadFdMemBase|0
+[BuildOptions]
+ GCC:*_CLANGPDB_*_DLINK_FLAGS = /timestamp:0
+ GCC:*_CLANGPDB_IA32_CC_FLAGS = -I$(PROJECT_ROOT)/build/m3
+[BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
+ GCC:*_CLANGPDB_*_DLINK_FLAGS = /ALIGN:4096

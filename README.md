@@ -4,20 +4,24 @@ Niezależne repozytorium w `/Users/kacper/code/BaytrailProject/baytrail-x64-uefi
 Dwa sąsiednie repozytoria były użyte wyłącznie jako źródła wiedzy.
 CSMWrap/SeaBIOS nie są częścią tego projektu.
 
-Przygotowano dwa ręczne testy:
+Przygotowano trzy ręczne testy:
 
 - `build/BAYTRAIL-M1-IA32.EFI`: zbiera dane, pokazuje `M1 COLLECT OK`, wraca po 30 sekundach.
 - `build/BAYTRAIL-M2-IA32.EFI`: ten sam collector, ExitBootServices, własne tablice stron,
   long mode, osadzony kod X64 rysujący `STAGE 2 X64 OK` i zatrzymujący procesor.
+- `build/BAYTRAIL-M3-IA32.EFI`: minimalny EDK2 X64 DXE, testy Boot Services
+  i publikacja ACPI/SMBIOS; szczegóły w [docs/M3.md](docs/M3.md).
 
 **Użytkownik potwierdził M1 i M2 zdjęciami przesłanymi 2026-10-07.**
 M1 pokazuje `M1 COLLECT OK`, M2 pokazuje `STAGE 2 X64 OK` po transition.
 Opis i granice potwierdzenia: `docs/MANUAL-TEST-2026-10-07.md`.
-Agent nie uruchamiał EFI ani nie wykonywał testu fizycznego.
-Nie budowano pełnego EDK2 DXE ani nie próbowano Windows.
+M3 uruchomiono poprawnie w QEMU z IA32 OVMF (2026-10-08).
+Test M3 na tablecie pozostaje do wykonania przez użytkownika.
+Agent nie wykonywał testów fizycznych. M4 i próby Windows są wstrzymane.
 
 ```sh
-./build.sh
+./build.sh      # M1/M2
+./build-m3.sh   # M3
 ```
 
 Toolchain: LLVM/LLD 23.1.2, NASM 3.02, Python 3. Źródła EDK2 `edk2-stable202608`

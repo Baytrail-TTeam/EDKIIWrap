@@ -1,0 +1,11 @@
+[Defines]
+ DEC_SPECIFICATION = 0x00010005
+ PACKAGE_NAME = BaytrailM3
+ PACKAGE_GUID = d87d1722-6e82-4a80-8698-7ac5bdc680a4
+ PACKAGE_VERSION = 0.1
+[Includes]
+ Include
+[LibraryClasses]
+ BaytrailMarkerLib|Include/Marker.h
+[Guids]
+ gBaytrailHandoffGuid = {0x64d1c6a3,0x58af,0x46f1,{0x8b,0x58,0xa4,0x50,0x75,0xa0,0x03,0x13}}
