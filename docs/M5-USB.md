@@ -196,3 +196,31 @@ np. PARTITION START, FAT SUPPORTED, DISK READ LBA i READ RETURN.
 Ta wersja jest diagnostyczna; nie deklarujemy naprawy fizycznej blokady.
 BOOTX64.EFI pozostaje bez zmian. Raport QEMU tej wersji:
 M5-USB-DISK-TRACE-2026-10-08.json.
+
+## Odczyt sektora 2048 — zdjęcia IMG_0432–0435
+
+Zdjęcia otrzymane 2026-10-08 potwierdzają wykonanie kooperacyjnego watchdogu
+na tablecie: USB DISK READ TIMEOUT, DISK 0 LBA 2048, odczyt 512 B.
+Wcześniej widoczny jest udany odczyt LBA 0. Pozostający READ RETURN 0
+pochodzi z poprzedniego wywołania, ponieważ wcześniejszy trace nie zerował
+wiersza powrotu przed rozpoczęciem kolejnego odczytu. Część wcześniejszych
+zdjęć uchwyciła markery w trakcie przerysowywania i nie pozwala na odczyt
+jednoznacznej pary Supported/Start–return. Hashe zdjęć i obserwacje:
+MANUAL-TEST-M5-USB-2026-10-08.json. Hash EFI nie jest widoczny na zdjęciach.
+
+Kolejna wersja pokazuje PENDING przed wywołaniem ReadBlocks i bindingu.
+Notify UsbIo opakowuje tylko Control/Bulk urządzeń klasy mass storage (08),
+bez zmian danych, parametrów i statusów oryginalnych wywołań. Wiersze 11–16
+pokazują control request/status, ostatni REQUEST SENSE, numer/opcode/tag CBW,
+endpoint/liczbę bajtów/timeout bulk, return USB i CSW status/tag.
+Tablica obejmuje do 64 UsbIo; brak gwarancji hotplug/reuse pointer jak przy
+BlockIo. Trace nie obejmuje wewnętrznych ringów xHCI. Diagnostyka wyłącza się
+przed Shell. Nadal obowiązuje limit 30 s dla całego zewnętrznego ReadBlocks;
+może on uciąć legalne retry media-not-ready, które EDK2 ogranicza do 60 s.
+Nie deklarujemy naprawy transportu. Potrzebne zdjęcie końcowe z wierszami 11–20.
+Raport QEMU: M5-USB-TRANSPORT-TRACE-2026-10-08.json.
+
+Watchdog ponownie rysuje ostatnie markery transportu przed zatrzymaniem,
+ponieważ przewijanie konsoli GOP może naruszać wcześniejsze overlaye.
+CSW i sense oznaczają ostatnią odebraną odpowiedź; BULK PENDING oznacza
+aktualnie niewrócony transfer.

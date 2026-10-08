@@ -111,6 +111,7 @@ STATIC EFI_STATUS DriverCall(BOOLEAN Start,EFI_DRIVER_BINDING_PROTOCOL *This,EFI
  if(!TraceBindings) return Start?DiskDrivers[I].Start(This,Handle,Remaining):DiskDrivers[I].Supported(This,Handle,Remaining);
  AsciiSPrint(Text,sizeof(Text),"%a %a HANDLE %LX",DiskDrivers[I].Name,Start?"START":"SUPPORTED",(UINT64)(UINTN)Handle);
  BaytrailMarker(ContextH,17,Text,0xffffff);
+ BaytrailMarker(ContextH,18,"DRIVER CALL PENDING",0xffffff);
  S=Start?DiskDrivers[I].Start(This,Handle,Remaining):DiskDrivers[I].Supported(This,Handle,Remaining);
  AsciiSPrint(Text,sizeof(Text),"%a %a RETURN %LX",DiskDrivers[I].Name,Start?"START":"SUPPORTED",(UINT64)S);
  BaytrailMarker(ContextH,18,Text,EFI_ERROR(S)?0xffa040:0x40ff40);return S;

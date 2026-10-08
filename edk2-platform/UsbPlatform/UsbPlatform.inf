@@ -8,6 +8,7 @@
 [Sources]
  Platform.c
  Pci.c
+ UsbTransport.c
 [Packages]
  MdePkg/MdePkg.dec
  MdeModulePkg/MdeModulePkg.dec
@@ -33,5 +34,6 @@
  gEfiPciIoProtocolGuid
  gEfiDevicePathProtocolGuid
  gEfiBlockIoProtocolGuid
+ gEfiUsbIoProtocolGuid
 [Depex]
  TRUE

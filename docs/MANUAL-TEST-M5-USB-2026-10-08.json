@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-08",
+  "photos": [
+    {
+      "name": "IMG_0432.HEIC",
+      "sha256": "7b7505fd1552ce5a75914c2155e30325e05f5a972f711e16cbe81dd6f6e9f618"
+    },
+    {
+      "name": "IMG_0433.HEIC",
+      "sha256": "3921e5d61b14de3d7be32ad2a3ef8374e6639708d1d9b7366753c72120e3806d"
+    },
+    {
+      "name": "IMG_0434.HEIC",
+      "sha256": "e29a3e6a145f844fa6e7938bb77cdeec6bdf7ced6fbd9bc8461dc074db2f6e3f"
+    },
+    {
+      "name": "IMG_0435.HEIC",
+      "sha256": "b9dc67b3b8a0204044e501cb390eb2b7301c95a1aebf355f4d4cf0f386d267c4"
+    }
+  ],
+  "observations": {
+    "IMG_0432.HEIC": "PARTITION phase and successful prior read; marker captured during redraw, text partly overlaps",
+    "IMG_0433.HEIC": "PARTITION SUPPORTED; prior return text partly overlaps; read LBA 0 visible",
+    "IMG_0434.HEIC": "Driver markers captured during redraw; DISK 0 READ LBA 0 BYTES 512, prior READ RETURN 0",
+    "IMG_0435.HEIC": "USB DISK READ TIMEOUT; DISK 0 LBA 2048; DISK 0 READ LBA 2048 BYTES 512; old READ RETURN 0 remains"
+  },
+  "conclusions": [
+    "Cooperative read watchdog executes on physical tablet",
+    "Read of LBA 2048 remained active at 30 second watchdog threshold",
+    "Successful previous read does not prove completion of timed-out request",
+    "Exact failing command/USB transport stage is not yet visible"
+  ],
+  "physical_storage_app_success": false,
+  "reference_loader_sha256": "ff084a2ef34b63a4fec25b36c3bd78a49731acdb52fc891d3f0bf4fd1a26a81e",
+  "loader_hash_visible_in_photos": false
+}

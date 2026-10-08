@@ -7,7 +7,7 @@
 | M3 — EDK2 X64 payload | zbudowany: SEC adapter + oficjalny DXE Core/RuntimeDxe + probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0428 |
 | M4 — GOP w EDK2 | zbudowany fixed-mode GOP X64, FrameBufferBltLib i probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0429 |
 | Shell X64 — etap dodatkowy | oficjalny ShellPkg, konsola, read-only RAM FAT, LoadImage/StartImage | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0430 |
-| M5 — USB BOOTX64.EFI | kandydat: ograniczony PCI/DMA, timer kooperacyjny, oficjalny stos xHCI/USB/FAT/klawiatury, testowa app X64 | QEMU: storage + polecenie klawiatury; tablet: zatrzymanie disks/FAT przy tick 0 po poprawce timera; wariant diagnostyczny oczekuje zdjęcia |
+| M5 — USB BOOTX64.EFI | kandydat: ograniczony PCI/DMA, timer kooperacyjny, oficjalny stos xHCI/USB/FAT/klawiatury, testowa app X64 | QEMU: storage + polecenie klawiatury; tablet: IMG_0432–0435: watchdog odczytu DISK 0, LBA 2048, 512 B; brak sukcesu app USB; dalsza diagnostyka transportu |
 | M6 — bootmgfw.efi X64 | bez prób | wstrzymany |
 
 Pakiet przygotowano i sprawdzono statycznie; następnie użytkownik przesłał

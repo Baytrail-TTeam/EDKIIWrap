@@ -17,6 +17,8 @@
 STATIC BAYTRAIL_USB_TRACE_CONTROL TraceControl={1,TRUE};
 extern EFI_GUID gBaytrailHandoffGuid;
 EFI_STATUS PublishXhci(M3Handoff *M);
+EFI_STATUS TraceUsbTransport(CONST Handoff *H,BAYTRAIL_USB_TRACE_CONTROL *State);
+VOID RefreshUsbTransportTrace(VOID);
 STATIC EFI_TIMER_NOTIFY Handler;
 STATIC UINT64 Period=10000,Last,Mask;
 STATIC BOOLEAN Busy;
@@ -30,6 +32,7 @@ STATIC VOID ReadWatchdog(VOID) {
  if(!ReadDepth) return;
  Now=GetPerformanceCounter();ReadElapsed+=(Now-ReadTicks)&Mask;ReadTicks=Now;
  if(ReadElapsed>=3579545ULL*30) {
+  RefreshUsbTransportTrace();
   BaytrailMarker(DiagnosticH,17,"USB DISK READ TIMEOUT",0xff4040);
   AsciiSPrint(Text,sizeof(Text),"DISK %u LBA %Lu",(UINT32)CurrentDisk,CurrentLba);
   BaytrailMarker(DiagnosticH,18,Text,0xff4040);BaytrailHalt();
@@ -107,7 +110,7 @@ STATIC EFI_STATUS EFIAPI TraceRead(EFI_BLOCK_IO_PROTOCOL *Io,UINT32 Id,EFI_LBA L
  if(!ReadDepth) {ReadElapsed=0;ReadTicks=GetPerformanceCounter();}
  ReadDepth++;CurrentDisk=Reads[I].Index;CurrentLba=Lba;
  AsciiSPrint(Text,sizeof(Text),"DISK %u READ LBA %Lu BYTES %Lu",(UINT32)CurrentDisk,Lba,(UINT64)Size);
- if(TraceControl.Enabled) BaytrailMarker(DiagnosticH,19,Text,0xffffff);
+ if(TraceControl.Enabled) {BaytrailMarker(DiagnosticH,19,Text,0xffffff);BaytrailMarker(DiagnosticH,20,"DISK READ PENDING",0xffffff);}
  S=Reads[I].Read(Io,Id,Lba,Size,Buffer);
  AsciiSPrint(Text,sizeof(Text),"DISK %u READ RETURN %LX",(UINT32)CurrentDisk,(UINT64)S);
  if(TraceControl.Enabled) BaytrailMarker(DiagnosticH,20,Text,EFI_ERROR(S)?0xffa040:0x40ff40);
@@ -150,6 +153,7 @@ EFI_STATUS EFIAPI UsbPlatformEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  if(EFI_ERROR(S)) return S;
  S=gBS->RegisterProtocolNotify(&gEfiBlockIoProtocolGuid,Event,&BlockRegistration);
  if(EFI_ERROR(S)) return S;
+ S=TraceUsbTransport(&M->common,&TraceControl);if(EFI_ERROR(S)) return S;
  S=PublishXhci(M);BaytrailMarker(&M->common,8,EFI_ERROR(S)?"USB PCI PUBLISH FAILED":"USB PCI AND PM TIMER READY",EFI_ERROR(S)?0xff4040:0x40ff40);
  return S;
 }
