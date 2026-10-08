@@ -160,3 +160,39 @@ Dokładny wynik nowego testu fizycznego nadal oczekuje na użytkownika.
 Nowy pakiet ma taki sam plik diagnostyczny BOOTX64.EFI, ale nowy loader IA32.
 Raport poprawki: M5-USB-TIMER-FIX-2026-10-08.json. Poprzedni raport i hashe
 pozostają dowodem wcześniejszej wersji, nie poprawionego loadera.
+
+## Diagnostyka blokady disks/FAT — 2026-10-08
+
+Użytkownik zgłosił zatrzymanie poprawionego wariantu na „connecting disks/FAT”
+przy enumerate tick 0/150. Nie ustalono jeszcze przyczyny: komunikat poprzedza
+rekurencyjne ConnectController na pierwszym zbiorze BlockIo.
+
+Nowy wariant zachowuje kolejność bindingu sterowników. Opakowuje Supported
+oraz Start tylko dla oficjalnych DiskIoDxe, PartitionDxe i FatDxe, rozpoznanych
+po GUID pliku FV w LoadedImage. Markery zawierają nazwę sterownika, fazę,
+handle i status powrotu. Konsola pokazuje parametry każdego BlockIo:
+media ID, wielkość sektora, ostatni LBA i oznaczenie partycji.
+
+Notify BlockIo zachowuje blokadę WriteBlocks i dodatkowo opakowuje ReadBlocks.
+Na ekranie widoczne są numer dysku, ostatni LBA, liczba bajtów i status powrotu.
+Hook wywołuje oryginalne ReadBlocks bez zmiany danych. Zagnieżdżone odczyty
+partycji i dysku fizycznego zachowują wspólny czas trwania odczytu zewnętrznego.
+Wariant ma tablicę dla 64 protokołów BlockIo; kolejne są chronione przed zapisem,
+ale nie otrzymują read trace. Nie gwarantuje obsługi hotplug/reuse handle.
+
+Podczas aktywnego ReadBlocks Pump sprawdza niezależne elapsed PM ticks.
+Po 30 s rysuje czerwony USB DISK READ TIMEOUT, numer dysku i LBA, następnie
+zatrzymuje CPU bez rebootu. Watchdog jest kooperacyjny: wymaga osiągania Pump
+przez Stall/CheckEvent/idle; nie przerwie ciasnej pętli bez tych wywołań.
+Nie wycofuje aktualnego transferu ani nie resetuje kontrolera. Dane i bufory
+pozostają zarezerwowane tak jak przy pozostałych zatrzymaniach PoC.
+
+Markery bindingu i odczytów są aktywne podczas uruchamiania USB. Po sukcesie
+testu dysku i wykryciu klawiatury znikają z dalszych wywołań, aby nie nadpisywać
+konsoli Shell. Watchdog odczytu pozostaje aktywny również w Shell.
+
+Potrzebne jest zdjęcie całego ekranu nowej próby, szczególnie wierszy 17–20:
+np. PARTITION START, FAT SUPPORTED, DISK READ LBA i READ RETURN.
+Ta wersja jest diagnostyczna; nie deklarujemy naprawy fizycznej blokady.
+BOOTX64.EFI pozostaje bez zmian. Raport QEMU tej wersji:
+M5-USB-DISK-TRACE-2026-10-08.json.

@@ -21,11 +21,13 @@
  IoLib
  HobLib
  TimerLib
+ PrintLib
  BaytrailMarkerLib
 [Guids]
  gBaytrailHandoffGuid
  gIdleLoopEventGuid
 [Protocols]
+ gBaytrailUsbTraceControlGuid
  gEfiTimerArchProtocolGuid
  gEfiMetronomeArchProtocolGuid
  gEfiPciIoProtocolGuid

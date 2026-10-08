@@ -8,19 +8,38 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/TimerLib.h>
 #include <Library/BaseLib.h>
+#include <Library/PrintLib.h>
 #include <Library/HobLib.h>
 #include <Guid/IdleLoopEvent.h>
 #include "M3Handoff.h"
 #include "Marker.h"
+#include "UsbTrace.h"
+STATIC BAYTRAIL_USB_TRACE_CONTROL TraceControl={1,TRUE};
 extern EFI_GUID gBaytrailHandoffGuid;
 EFI_STATUS PublishXhci(M3Handoff *M);
 STATIC EFI_TIMER_NOTIFY Handler;
 STATIC UINT64 Period=10000,Last,Mask;
 STATIC BOOLEAN Busy;
+STATIC CONST Handoff *DiagnosticH;
+typedef struct {EFI_BLOCK_IO_PROTOCOL *Io;EFI_BLOCK_READ Read;UINTN Index;} READ_RECORD;
+STATIC READ_RECORD Reads[64];STATIC UINTN ReadCount,ReadDepth,CurrentDisk;
+STATIC EFI_LBA CurrentLba;
+STATIC UINT64 ReadTicks,ReadElapsed;
+STATIC VOID ReadWatchdog(VOID) {
+ UINT64 Now;CHAR8 Text[96];
+ if(!ReadDepth) return;
+ Now=GetPerformanceCounter();ReadElapsed+=(Now-ReadTicks)&Mask;ReadTicks=Now;
+ if(ReadElapsed>=3579545ULL*30) {
+  BaytrailMarker(DiagnosticH,17,"USB DISK READ TIMEOUT",0xff4040);
+  AsciiSPrint(Text,sizeof(Text),"DISK %u LBA %Lu",(UINT32)CurrentDisk,CurrentLba);
+  BaytrailMarker(DiagnosticH,18,Text,0xff4040);BaytrailHalt();
+ }
+}
 STATIC VOID *BlockRegistration;
 STATIC EFI_TIMER_ARCH_PROTOCOL Timer;
 STATIC EFI_STATUS EFIAPI Pump(EFI_TIMER_ARCH_PROTOCOL *This) {
  UINT64 Now,Delta;EFI_TPL Old;(VOID)This;
+ ReadWatchdog();
  if(Busy || !Handler || !Period) return EFI_SUCCESS;
  Busy=TRUE;Now=GetPerformanceCounter();Delta=(Now-Last)&Mask;
  if(Delta*10000000ULL>=Period*3579545ULL) {
@@ -81,13 +100,31 @@ STATIC VOID EFIAPI Idle(EFI_EVENT Event,VOID *Context) {(VOID)Event;(VOID)Contex
 STATIC EFI_STATUS EFIAPI DenyWrite(EFI_BLOCK_IO_PROTOCOL *This,UINT32 Id,EFI_LBA Lba,UINTN Size,VOID *Buffer) {
  (VOID)This;(VOID)Id;(VOID)Lba;(VOID)Size;(VOID)Buffer;return EFI_WRITE_PROTECTED;
 }
+STATIC EFI_STATUS EFIAPI TraceRead(EFI_BLOCK_IO_PROTOCOL *Io,UINT32 Id,EFI_LBA Lba,UINTN Size,VOID *Buffer) {
+ UINTN I,SavedDisk=CurrentDisk;EFI_LBA SavedLba=CurrentLba;EFI_STATUS S;CHAR8 Text[96];
+ for(I=0;I<ReadCount && Reads[I].Io!=Io;I++) {}
+ if(I==ReadCount) return EFI_DEVICE_ERROR;
+ if(!ReadDepth) {ReadElapsed=0;ReadTicks=GetPerformanceCounter();}
+ ReadDepth++;CurrentDisk=Reads[I].Index;CurrentLba=Lba;
+ AsciiSPrint(Text,sizeof(Text),"DISK %u READ LBA %Lu BYTES %Lu",(UINT32)CurrentDisk,Lba,(UINT64)Size);
+ if(TraceControl.Enabled) BaytrailMarker(DiagnosticH,19,Text,0xffffff);
+ S=Reads[I].Read(Io,Id,Lba,Size,Buffer);
+ AsciiSPrint(Text,sizeof(Text),"DISK %u READ RETURN %LX",(UINT32)CurrentDisk,(UINT64)S);
+ if(TraceControl.Enabled) BaytrailMarker(DiagnosticH,20,Text,EFI_ERROR(S)?0xffa040:0x40ff40);
+ ReadDepth--;CurrentDisk=SavedDisk;CurrentLba=SavedLba;return S;
+}
 STATIC VOID EFIAPI GuardBlocks(EFI_EVENT Event,VOID *Context) {
- EFI_HANDLE Handle;UINTN Size;EFI_BLOCK_IO_PROTOCOL *Io;(VOID)Event;(VOID)Context;
+ EFI_HANDLE Handle;UINTN Size,I;EFI_BLOCK_IO_PROTOCOL *Io;(VOID)Event;(VOID)Context;
  for(;;) {
   Size=sizeof(Handle);
   if(EFI_ERROR(gBS->LocateHandle(ByRegisterNotify,NULL,BlockRegistration,&Size,&Handle))) break;
   if(!EFI_ERROR(gBS->HandleProtocol(Handle,&gEfiBlockIoProtocolGuid,(VOID **)&Io))) {
    Io->Media->ReadOnly=TRUE;Io->WriteBlocks=DenyWrite;
+   for(I=0;I<ReadCount && Reads[I].Io!=Io;I++) {}
+   if(I==ReadCount && ReadCount<ARRAY_SIZE(Reads)) {
+    Reads[I].Io=Io;Reads[I].Read=Io->ReadBlocks;Reads[I].Index=I;ReadCount++;
+    Io->ReadBlocks=TraceRead;
+   }
   }
  }
 }
@@ -95,12 +132,12 @@ EFI_STATUS EFIAPI UsbPlatformEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  VOID *Hob=GetFirstGuidHob(&gBaytrailHandoffGuid);M3Handoff *M;EFI_HANDLE Handle=NULL;
  EFI_EVENT Event;EFI_STATUS S;UINT32 Crc;(VOID)Image;(VOID)St;
  if(!Hob || GET_GUID_HOB_DATA_SIZE(Hob)!=sizeof(*M)) return EFI_NOT_FOUND;
- M=GET_GUID_HOB_DATA(Hob);
+ M=GET_GUID_HOB_DATA(Hob);DiagnosticH=&M->common;
  if(GetPerformanceCounterProperties(NULL,&Mask)!=3579545) {
   BaytrailMarker(&M->common,8,"USB PM TIMER UNAVAILABLE",0xff4040);return EFI_DEVICE_ERROR;
  }
  Timer.RegisterHandler=Register;Timer.SetTimerPeriod=SetPeriod;Timer.GetTimerPeriod=GetPeriod;Timer.GenerateSoftInterrupt=Pump;
- Last=GetPerformanceCounter();S=gBS->InstallMultipleProtocolInterfaces(&Handle,&gEfiTimerArchProtocolGuid,&Timer,&gEfiMetronomeArchProtocolGuid,&Metronome,NULL);
+ Last=GetPerformanceCounter();S=gBS->InstallMultipleProtocolInterfaces(&Handle,&gEfiTimerArchProtocolGuid,&Timer,&gEfiMetronomeArchProtocolGuid,&Metronome,&gBaytrailUsbTraceControlGuid,&TraceControl,NULL);
  if(EFI_ERROR(S)) return S;
  OriginalCheckEvent=gBS->CheckEvent;gBS->CheckEvent=CheckEvent;
  gBS->Hdr.CRC32=0;gBS->CalculateCrc32(gBS,gBS->Hdr.HeaderSize,&Crc);gBS->Hdr.CRC32=Crc;

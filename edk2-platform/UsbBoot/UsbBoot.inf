@@ -23,6 +23,7 @@
  UefiLib
  BaseLib
  TimerLib
+ PrintLib
 [Guids]
  gEfiAcpiTableGuid
  gEfiAcpi10TableGuid
@@ -31,6 +32,7 @@
  gBaytrailHandoffGuid
  gIdleLoopEventGuid
 [Protocols]
+ gBaytrailUsbTraceControlGuid
  gEfiGraphicsOutputProtocolGuid
  gEfiSimpleTextOutProtocolGuid
  gEfiSimpleTextInProtocolGuid
@@ -40,6 +42,7 @@
  gEfiLoadedImageProtocolGuid
  gEfiVariableArchProtocolGuid
  gEfiHiiDatabaseProtocolGuid
+ gEfiDriverBindingProtocolGuid
  gEfiPciIoProtocolGuid
  gEfiUsb2HcProtocolGuid
  gEfiUsbIoProtocolGuid

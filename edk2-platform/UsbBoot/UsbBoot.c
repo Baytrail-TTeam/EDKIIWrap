@@ -14,6 +14,9 @@
 #include <Library/DevicePathLib.h>
 #include <Guid/IdleLoopEvent.h>
 #include <Protocol/UsbIo.h>
+#include <Protocol/DriverBinding.h>
+#include <Library/PrintLib.h>
+#include "UsbTrace.h"
 #include <Protocol/Usb2HostController.h>
 #include <Protocol/PciIo.h>
 #include <Protocol/SimpleTextInEx.h>
@@ -91,10 +94,65 @@ STATIC BOOLEAN HasUsbPath(EFI_HANDLE Handle) {
  }
  return FALSE;
 }
+typedef struct {
+ EFI_GUID Guid;CONST CHAR8 *Name;EFI_DRIVER_BINDING_PROTOCOL *Binding;
+ EFI_DRIVER_BINDING_SUPPORTED Supported;EFI_DRIVER_BINDING_START Start;
+} DISK_DRIVER;
+STATIC BOOLEAN TraceBindings=TRUE;
+STATIC DISK_DRIVER DiskDrivers[]={
+ {{0x6b38f7b4,0xad98,0x40e9,{0x90,0x93,0xac,0xa2,0xb5,0xa2,0x53,0xc4}},"DISKIO",NULL,NULL,NULL},
+ {{0x1fa1f39e,0xfeff,0x4aae,{0xbd,0x7b,0x38,0xa0,0x70,0xa3,0xb6,0x09}},"PARTITION",NULL,NULL,NULL},
+ {{0x961578fe,0xb6b7,0x44c3,{0xaf,0x35,0x6b,0xc7,0x05,0xcd,0x2b,0x1f}},"FAT",NULL,NULL,NULL}
+};
+STATIC EFI_STATUS DriverCall(BOOLEAN Start,EFI_DRIVER_BINDING_PROTOCOL *This,EFI_HANDLE Handle,EFI_DEVICE_PATH_PROTOCOL *Remaining) {
+ UINTN I;EFI_STATUS S;CHAR8 Text[96];
+ for(I=0;I<ARRAY_SIZE(DiskDrivers) && DiskDrivers[I].Binding!=This;I++) {}
+ if(I==ARRAY_SIZE(DiskDrivers)) return EFI_INVALID_PARAMETER;
+ if(!TraceBindings) return Start?DiskDrivers[I].Start(This,Handle,Remaining):DiskDrivers[I].Supported(This,Handle,Remaining);
+ AsciiSPrint(Text,sizeof(Text),"%a %a HANDLE %LX",DiskDrivers[I].Name,Start?"START":"SUPPORTED",(UINT64)(UINTN)Handle);
+ BaytrailMarker(ContextH,17,Text,0xffffff);
+ S=Start?DiskDrivers[I].Start(This,Handle,Remaining):DiskDrivers[I].Supported(This,Handle,Remaining);
+ AsciiSPrint(Text,sizeof(Text),"%a %a RETURN %LX",DiskDrivers[I].Name,Start?"START":"SUPPORTED",(UINT64)S);
+ BaytrailMarker(ContextH,18,Text,EFI_ERROR(S)?0xffa040:0x40ff40);return S;
+}
+STATIC EFI_STATUS EFIAPI DriverSupported(EFI_DRIVER_BINDING_PROTOCOL *This,EFI_HANDLE Handle,EFI_DEVICE_PATH_PROTOCOL *Remaining) {return DriverCall(FALSE,This,Handle,Remaining);}
+STATIC EFI_STATUS EFIAPI DriverStart(EFI_DRIVER_BINDING_PROTOCOL *This,EFI_HANDLE Handle,EFI_DEVICE_PATH_PROTOCOL *Remaining) {return DriverCall(TRUE,This,Handle,Remaining);}
+STATIC VOID TraceDiskDrivers(VOID) {
+ EFI_HANDLE *Handles;UINTN Count,I,J;EFI_DRIVER_BINDING_PROTOCOL *Binding;EFI_LOADED_IMAGE_PROTOCOL *Image;EFI_DEVICE_PATH_PROTOCOL *Path;
+ if(EFI_ERROR(gBS->LocateHandleBuffer(ByProtocol,&gEfiDriverBindingProtocolGuid,NULL,&Count,&Handles))) return;
+ for(I=0;I<Count;I++) {
+  if(EFI_ERROR(gBS->HandleProtocol(Handles[I],&gEfiDriverBindingProtocolGuid,(VOID **)&Binding)) ||
+     EFI_ERROR(gBS->HandleProtocol(Binding->ImageHandle,&gEfiLoadedImageProtocolGuid,(VOID **)&Image))) continue;
+  Path=Image->FilePath;if(!Path) continue;
+  while(!IsDevicePathEnd(Path)) {
+   if(DevicePathType(Path)==MEDIA_DEVICE_PATH && DevicePathSubType(Path)==MEDIA_PIWG_FW_FILE_DP) {
+    MEDIA_FW_VOL_FILEPATH_DEVICE_PATH *File=(VOID *)Path;
+    for(J=0;J<ARRAY_SIZE(DiskDrivers);J++) if(!CompareMem(&File->FvFileName,&DiskDrivers[J].Guid,sizeof(EFI_GUID))) {
+     DiskDrivers[J].Binding=Binding;DiskDrivers[J].Supported=Binding->Supported;DiskDrivers[J].Start=Binding->Start;
+     Binding->Supported=DriverSupported;Binding->Start=DriverStart;break;
+    }
+   }
+   Path=NextDevicePathNode(Path);
+  }
+ }
+ FreePool(Handles);
+ for(J=0;J<ARRAY_SIZE(DiskDrivers);J++) {
+  Print(L"USB: disk driver trace %a %s\r\n",DiskDrivers[J].Name,DiskDrivers[J].Binding?L"READY":L"MISSING");
+  Check(DiskDrivers[J].Binding?EFI_SUCCESS:EFI_NOT_FOUND,"USB DISK DRIVER TRACE MISSING");
+ }
+}
 STATIC VOID ConnectProtocol(EFI_GUID *Guid) {
  EFI_HANDLE *Handles;UINTN Count,I;
  if(EFI_ERROR(gBS->LocateHandleBuffer(ByProtocol,Guid,NULL,&Count,&Handles))) return;
- for(I=0;I<Count;I++) gBS->ConnectController(Handles[I],NULL,NULL,TRUE);
+ for(I=0;I<Count;I++) {
+  if(Guid==&gEfiBlockIoProtocolGuid) {
+   EFI_BLOCK_IO_PROTOCOL *Io;
+   if(!EFI_ERROR(gBS->HandleProtocol(Handles[I],Guid,(VOID **)&Io)))
+    Print(L"USB: block handle %p media %u size %u last LBA %Lu partition %u\r\n",Handles[I],Io->Media->MediaId,Io->Media->BlockSize,Io->Media->LastBlock,Io->Media->LogicalPartition);
+  }
+  gBS->ConnectController(Handles[I],NULL,NULL,TRUE);
+  if(Guid==&gEfiBlockIoProtocolGuid) Print(L"USB: block handle %p connect returned\r\n",Handles[I]);
+ }
  FreePool(Handles);
 }
 STATIC VOID NativeUsb(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
@@ -103,6 +161,7 @@ STATIC VOID NativeUsb(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  EFI_SIMPLE_TEXT_INPUT_PROTOCOL *Keyboard=NULL;EFI_STATUS S;EFI_USB2_HC_PROTOCOL *Hc;
  EFI_GUID ProbeGuid={0x4a7a8bbb,0xac8f,0x4f00,{0xaa,0xd1,0x8a,0x83,0xfa,0x91,0x10,0x74}};
  BOOLEAN Storage=FALSE;
+ TraceDiskDrivers();
  Print(L"USB: connecting native X64 xHCI...\r\n");
  ConnectProtocol(&gEfiPciIoProtocolGuid);
  Check(gBS->LocateProtocol(&gEfiUsb2HcProtocolGuid,NULL,(VOID **)&Hc),"USB XHCI DRIVER FAILED");
@@ -165,6 +224,11 @@ EFI_STATUS EFIAPI UsbBootEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  if(!Out) {FreePool(Handles);Check(EFI_NOT_FOUND,"SHELL TEXT CONSOLE MISSING");}
  St->ConsoleOutHandle=Handles[I];St->StandardErrorHandle=Handles[I];St->ConOut=Out;St->StdErr=Out;FreePool(Handles);
  NativeUsb(Image,St);
+ {
+  BAYTRAIL_USB_TRACE_CONTROL *Control;
+  Check(gBS->LocateProtocol(&gBaytrailUsbTraceControlGuid,NULL,(VOID **)&Control),"USB TRACE CONTROL MISSING");
+  if(Control->Revision==1) Control->Enabled=FALSE;TraceBindings=FALSE;
+ }
 
  St->FirmwareVendor=AllocateRuntimeCopyPool(sizeof(L"Baytrail EDK2 X64"),L"Baytrail EDK2 X64");
  if(!St->FirmwareVendor) Check(EFI_OUT_OF_RESOURCES,"SHELL VENDOR ALLOCATION FAILED");
