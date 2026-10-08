@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-08",
+  "photos": [
+    {
+      "name": "IMG_0441.HEIC",
+      "sha256": "1875a37a79bbec85da0cf7825df2309cdc57d1ac96605acbcb21a81ddff828ad",
+      "run": 1
+    },
+    {
+      "name": "IMG_0442.HEIC",
+      "sha256": "0fcae5084dbdd31062cee5542d01267dd5b31cd52b1674cea378582408e7395e",
+      "run": 1
+    },
+    {
+      "name": "IMG_0443.HEIC",
+      "sha256": "d47ab25cf7d0c376db168c8d7d7bf069bb6b3e6d027e349be683eb771fc7c7bd",
+      "run": 1
+    },
+    {
+      "name": "IMG_0444.HEIC",
+      "sha256": "ccd9af2c45c079c431ec971cd7c28e34e0896eaeba8b224a1eecec6ea416e28e",
+      "run": 1
+    },
+    {
+      "name": "IMG_0445.HEIC",
+      "sha256": "1ff307cbe7f30172cb276d03643ed1abb215f62de25eba5bf7ae316b6a245411",
+      "run": 2
+    }
+  ],
+  "user_identifies_bootx64_as": "Ventoy",
+  "user_identifies_last_photo_as_second_run": true,
+  "observations": {
+    "run_1": [
+      "USB FILESYSTEM READY and USB SHELL KEYBOARD READY visible",
+      "FS1 EFI BOOT directory listing and manual BOOTX64.efi command visible",
+      "error: out of memory",
+      "Later screens contain garbled text with GRUB/ELF strings; reason not established"
+    ],
+    "run_2": [
+      "FS1 directory navigation and full BOOT listing visible",
+      "BOOTX64.EFI file size 1927600 bytes",
+      "Manual BOOTX64.efi produces error: out of memory, out of memory, Aborted. Press any key to exit."
+    ]
+  },
+  "physical_usb_filesystem_and_interactive_shell_confirmed": true,
+  "physical_ventoy_success": false,
+  "boot_time_measured": false,
+  "reference_loader_sha256": "86a5756d1ef298099277ca01726a9fb73b3fcef4ada9305c53069f39d55e15d0",
+  "loader_hash_visible_in_photos": false,
+  "memory_findings": {
+    "current_arena_bytes": 67108864,
+    "all_other_stock_memory_reserved": true,
+    "free_memory_at_launch_not_measured": true,
+    "ventoy_source_url": "https://github.com/ventoy/Ventoy/blob/master/GRUB2/MOD_SRC/grub-2.04/grub-core/kern/efi/mm.c",
+    "source_observation": "GRUB initializes heap from a fraction of conventional memory, with Ventoy-specific reserve logic",
+    "applicability_limit": "Actual user EFI version/binary not available; exact cause remains unverified"
+  },
+  "next_required_evidence": [
+    "Actual USB BOOTX64.EFI for binary inspection and reproduction",
+    "Shell memmap output if memory layout needs confirmation"
+  ]
+}

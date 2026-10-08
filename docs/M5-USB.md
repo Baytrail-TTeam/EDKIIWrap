@@ -322,3 +322,9 @@ wejścia do Shell. QEMU sprawdza brak automatycznego uruchomienia, ręczny wybó
 pliku i powrót do działającej powłoki; także obcy testowy plik nie blokuje Shell.
 Raport bieżącej wersji: M5-USB-MANUAL-SHELL-2026-10-08.json. Wcześniejsze
 sekcje i raporty opisują kolejne historyczne warianty diagnostyczne.
+
+## Potwierdzenie fizycznego Shell USB
+
+IMG_0441–0445 potwierdzają interaktywny Shell i przeglądanie FAT pendrive
+w dwóch uruchomieniach. Ręcznie wybrany Ventoy BOOTX64.EFI kończy OOM;
+nie jest to sukces bootu Ventoy/OS. Szczegóły: MANUAL-TEST-M5-USB-SHELL-2026-10-08.md.

@@ -7,7 +7,7 @@
 | M3 — EDK2 X64 payload | zbudowany: SEC adapter + oficjalny DXE Core/RuntimeDxe + probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0428 |
 | M4 — GOP w EDK2 | zbudowany fixed-mode GOP X64, FrameBufferBltLib i probe | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0429 |
 | Shell X64 — etap dodatkowy | oficjalny ShellPkg, konsola, read-only RAM FAT, LoadImage/StartImage | QEMU IA32 OVMF: sukces; tablet: potwierdzony zdjęciem IMG_0430 |
-| M5 — USB BOOTX64.EFI | ograniczony PCI/DMA, timer kooperacyjny, oficjalny stos xHCI/USB/FAT/klawiatury; obecnie bezpośrednio do Shell, ręczny wybór EFI | QEMU: storage + polecenie klawiatury; tablet: tablet: odczyt pliku USB potwierdzony zdjęciem, wcześniejszy test odrzucał obcy BOOTX64; nowy szybki tryb Shell oczekuje próby |
+| M5 — USB BOOTX64.EFI | ograniczony PCI/DMA, timer kooperacyjny, oficjalny stos xHCI/USB/FAT/klawiatury; obecnie bezpośrednio do Shell, ręczny wybór EFI | QEMU: ręczne wykonanie app USB + klawiatura; tablet: IMG_0441–0445 potwierdzają USB FAT i interaktywny Shell w dwóch runach; Ventoy BOOTX64 kończy out of memory |
 | M6 — bootmgfw.efi X64 | bez prób | wstrzymany |
 
 Pakiet przygotowano i sprawdzono statycznie; następnie użytkownik przesłał
@@ -33,3 +33,7 @@ na pendrive; należy fotografować ekran. Mapę i HANDOFF zachowuje się w RAM.
 M5 inicjalizuje wyłącznie xHCI i DMA jego własnych buforów. Brak przejęcia AP,
 pozostałych kontrolerów DMA, pełnych runtime services i SMM platformy;
 te tematy pozostają do rozwiązania przed bootem OS.
+
+Ręczny tryb USB Shell na tablecie: docs/MANUAL-TEST-M5-USB-SHELL-2026-10-08.md.
+Uruchomienie Ventoy pozostaje nieukończone; arena EDK2 ma 64 MiB,
+przyczyna błędu konkretnego EFI wymaga analizy pliku użytkownika.
