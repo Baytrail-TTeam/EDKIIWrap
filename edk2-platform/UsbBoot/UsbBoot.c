@@ -108,8 +108,12 @@ STATIC VOID NativeUsb(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  Check(gBS->LocateProtocol(&gEfiUsb2HcProtocolGuid,NULL,(VOID **)&Hc),"USB XHCI DRIVER FAILED");
  Print(L"USB: xHCI started; enumerating hubs/devices (15 s)...\r\n");
  for(Round=0;Round<150;Round++) {
+  if(Round%10==0) Print(L"USB: enumerate tick %u/150 - timer wait...\r\n",(UINT32)Round);
   gBS->Stall(100000);
-  if(Round%10==0) {ConnectProtocol(&gEfiUsbIoProtocolGuid);ConnectProtocol(&gEfiBlockIoProtocolGuid);}
+  if(Round%10==0) {
+   Print(L"USB: connecting USB interfaces...\r\n");ConnectProtocol(&gEfiUsbIoProtocolGuid);
+   Print(L"USB: connecting disks/FAT...\r\n");ConnectProtocol(&gEfiBlockIoProtocolGuid);
+  }
  }
  Check(GetSectionFromAnyFv(&ProbeGuid,EFI_SECTION_RAW,0,(VOID **)&Expected,&ExpectedSize),"USB TEST REFERENCE MISSING");
  Check(gBS->LocateHandleBuffer(ByProtocol,&gEfiSimpleFileSystemProtocolGuid,NULL,&Count,&Handles),"USB FAT MISSING");

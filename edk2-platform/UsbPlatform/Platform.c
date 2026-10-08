@@ -25,9 +25,39 @@ STATIC EFI_STATUS EFIAPI Pump(EFI_TIMER_ARCH_PROTOCOL *This) {
  Busy=TRUE;Now=GetPerformanceCounter();Delta=(Now-Last)&Mask;
  if(Delta*10000000ULL>=Period*3579545ULL) {
   Last=Now;Old=gBS->RaiseTPL(TPL_HIGH_LEVEL);
-  Handler(Delta*10000000ULL/3579545);gBS->RestoreTPL(Old);
+  Handler(Delta*10000000ULL/3579545);
+  /* RestoreTPL dispatches USB callbacks. Those callbacks must be able to
+   * advance timers while polling media readiness or waiting for transfers. */
+  Busy=FALSE;gBS->RestoreTPL(Old);return EFI_SUCCESS;
  }
  Busy=FALSE;return EFI_SUCCESS;
+}
+STATIC EFI_STATUS EFIAPI Stall(UINTN Us);
+STATIC EFI_CHECK_EVENT OriginalCheckEvent;
+STATIC EFI_STATUS EFIAPI CheckEvent(EFI_EVENT Event) {
+ /* Media NOT_READY retries can poll CheckEvent without Stall. */
+ Pump(&Timer);return OriginalCheckEvent(Event);
+}
+STATIC BOOLEAN TimerTestDone,TimerTestOk;
+STATIC VOID EFIAPI TimerTest(EFI_EVENT Event,VOID *Context) {
+ EFI_EVENT Timeout;UINT64 Start;EFI_STATUS S;(VOID)Event;(VOID)Context;
+ S=gBS->CreateEvent(EVT_TIMER,TPL_CALLBACK,NULL,NULL,&Timeout);
+ if(EFI_ERROR(S)) {TimerTestDone=TRUE;return;}
+ S=gBS->SetTimer(Timeout,TimerRelative,100000);Start=GetPerformanceCounter();
+ while(!EFI_ERROR(S) && EFI_ERROR(gBS->CheckEvent(Timeout))) {
+  if(((GetPerformanceCounter()-Start)&Mask)>3579545/5) {S=EFI_TIMEOUT;break;}
+ }
+ TimerTestOk=!EFI_ERROR(S);TimerTestDone=TRUE;gBS->CloseEvent(Timeout);
+}
+STATIC EFI_STATUS TestCallbackTimeout(VOID) {
+ EFI_EVENT Event;UINT64 Start;EFI_STATUS S;
+ S=gBS->CreateEvent(EVT_TIMER|EVT_NOTIFY_SIGNAL,TPL_CALLBACK,TimerTest,NULL,&Event);
+ if(EFI_ERROR(S)) return S;
+ S=gBS->SetTimer(Event,TimerRelative,10000);Start=GetPerformanceCounter();
+ while(!EFI_ERROR(S) && !TimerTestDone) {
+  Stall(1000);if(((GetPerformanceCounter()-Start)&Mask)>3579545/2) {S=EFI_TIMEOUT;break;}
+ }
+ gBS->CloseEvent(Event);return !EFI_ERROR(S) && TimerTestOk?EFI_SUCCESS:EFI_DEVICE_ERROR;
 }
 STATIC EFI_STATUS EFIAPI Register(EFI_TIMER_ARCH_PROTOCOL *This,EFI_TIMER_NOTIFY Notify) {
  (VOID)This;if(Notify && Handler) return EFI_ALREADY_STARTED;
@@ -63,7 +93,7 @@ STATIC VOID EFIAPI GuardBlocks(EFI_EVENT Event,VOID *Context) {
 }
 EFI_STATUS EFIAPI UsbPlatformEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  VOID *Hob=GetFirstGuidHob(&gBaytrailHandoffGuid);M3Handoff *M;EFI_HANDLE Handle=NULL;
- EFI_EVENT Event;EFI_STATUS S;(VOID)Image;(VOID)St;
+ EFI_EVENT Event;EFI_STATUS S;UINT32 Crc;(VOID)Image;(VOID)St;
  if(!Hob || GET_GUID_HOB_DATA_SIZE(Hob)!=sizeof(*M)) return EFI_NOT_FOUND;
  M=GET_GUID_HOB_DATA(Hob);
  if(GetPerformanceCounterProperties(NULL,&Mask)!=3579545) {
@@ -71,6 +101,11 @@ EFI_STATUS EFIAPI UsbPlatformEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  }
  Timer.RegisterHandler=Register;Timer.SetTimerPeriod=SetPeriod;Timer.GetTimerPeriod=GetPeriod;Timer.GenerateSoftInterrupt=Pump;
  Last=GetPerformanceCounter();S=gBS->InstallMultipleProtocolInterfaces(&Handle,&gEfiTimerArchProtocolGuid,&Timer,&gEfiMetronomeArchProtocolGuid,&Metronome,NULL);
+ if(EFI_ERROR(S)) return S;
+ OriginalCheckEvent=gBS->CheckEvent;gBS->CheckEvent=CheckEvent;
+ gBS->Hdr.CRC32=0;gBS->CalculateCrc32(gBS,gBS->Hdr.HeaderSize,&Crc);gBS->Hdr.CRC32=Crc;
+ S=TestCallbackTimeout();
+ BaytrailMarker(&M->common,9,EFI_ERROR(S)?"USB TIMER CALLBACK FAILED":"USB TIMER CALLBACK OK",EFI_ERROR(S)?0xff4040:0x40ff40);
  if(EFI_ERROR(S)) return S;
  S=gBS->CreateEventEx(EVT_NOTIFY_SIGNAL,TPL_CALLBACK,Idle,NULL,&gIdleLoopEventGuid,&Event);
  if(EFI_ERROR(S)) return S;

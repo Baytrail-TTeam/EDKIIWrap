@@ -1,0 +1,16 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailUsbDebugLib
+ FILE_GUID = c8252966-7d21-4b68-a9be-6e8a60fd4b12
+ MODULE_TYPE = BASE
+ LIBRARY_CLASS = DebugLib|DXE_DRIVER UEFI_DRIVER
+[Sources]
+ Debug.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ BaseLib
+ HobLib
+ PrintLib
+ BaytrailMarkerLib

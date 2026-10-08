@@ -77,10 +77,10 @@ kierunkach. Inne stockowe regiony pamięci pozostają zarezerwowane.
 TimerLib odczytuje port PM timer z walidowanego FADT, w tym Extended GAS
 SystemIO. Nie programuje LPC ani ACPI i nie zakłada częstotliwości TSC.
 Metronome obsługuje oficjalne Boot Services Stall. Timer adapter przekazuje
-CoreTimerTick przy Stall oraz IdleLoopEvent z elapsed PM ticks. IRQ procesora
+CoreTimerTick przy Stall, CheckEvent i IdleLoopEvent z elapsed PM ticks. IRQ procesora
 pozostają wyłączone. **Jest to timer kooperacyjny do tego PoC, nie pełny
 sprzętowy timer PI:** zdarzenia nie postępują podczas długiego kodu, który
-nie wykonuje Stall ani idle. APIC/PIC i pozostałe AP nie są inicjalizowane.
+nie wykonuje Stall, CheckEvent ani idle. APIC/PIC i pozostałe AP nie są inicjalizowane.
 
 Notify na BlockIo ustawia ReadOnly i zastępuje WriteBlocks odmową
 EFI_WRITE_PROTECTED przed połączeniem FAT. Obejmuje dyski USB, partycje
@@ -133,3 +133,30 @@ M5 wymaga jeszcze zdjęcia sukcesu z tabletu i próby wejścia przez klawiaturę
 wolumin/plik lub plik różni się od wzorca. `USB KEYBOARD MISSING` — test aplikacji
 może być zakończony, ale nie powstał protokół klawiatury USB.
 Zrób zdjęcie również przy ASSERT, czarnym ekranie i nieruchomej enumeracji.
+
+## Poprawka zatrzymania enumeracji — 2026-10-08
+
+Użytkownik zgłosił zatrzymanie na „enumerating devices” przez ponad 2 minuty
+dla wcześniejszego pakietu. Bez zdjęcia/trace nie ustalono jeszcze dokładnej operacji urządzenia.
+Audyt wykazał błąd naszego timera: Busy pozostawało TRUE podczas RestoreTPL,
+które dispatchuje callbacki USB. Timeouty tworzone w takich callbackach
+nie dostawały ticków mimo wywołań Stall. Dodatkowo UsbBootExecCmdWithRetry
+może odpytywać CheckEvent w pętli EFI_NOT_READY bez wykonywania Stall.
+
+Busy jest teraz zwalniane przed dispatchowaniem callbacków. CheckEvent
+pompuje timer przed wywołaniem oryginalnej funkcji; CRC Boot Services jest
+ponownie obliczane. Wbudowany test tworzy 10 ms timeout wewnątrz callbacku
+uruchomionego przez Pump/RestoreTPL i oczekuje przez samo CheckEvent.
+Niezależny PM timer przerywa test po 200 ms, jeśli timeout się nie sygnalizuje.
+Bez sukcesu tego testu PciIo nie jest publikowane.
+
+Postęp enumeracji wypisuje teraz tick N/150, oczekiwanie na timer oraz osobne
+łączenie interfejsów USB i dysków/FAT. USB/FAT UEFI_DRIVER korzystają również
+z framebufferowego reportera DEBUG_ERROR/ASSERT. Komunikat „15 s” oznacza
+czas głównej pętli; synchroniczne próby sterowników mogą go wydłużyć,
+w tym retry gotowości pamięci masowej ograniczony do 60 s przez EDK2.
+
+Dokładny wynik nowego testu fizycznego nadal oczekuje na użytkownika.
+Nowy pakiet ma taki sam plik diagnostyczny BOOTX64.EFI, ale nowy loader IA32.
+Raport poprawki: M5-USB-TIMER-FIX-2026-10-08.json. Poprzedni raport i hashe
+pozostają dowodem wcześniejszej wersji, nie poprawionego loadera.

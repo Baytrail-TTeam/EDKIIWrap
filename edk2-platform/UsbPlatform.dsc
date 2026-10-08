@@ -27,7 +27,7 @@
 [LibraryClasses.common.DXE_RUNTIME_DRIVER]
  VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLibRuntimeDxe.inf
 [LibraryClasses.common.UEFI_DRIVER]
- DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+ DebugLib|edk2-platform/Library/UsbDebugLib/UsbDebugLib.inf
  TimerLib|edk2-platform/Library/PmTimerLib/PmTimerLib.inf
 [PcdsFixedAtBuild]
  gEfiMdeModulePkgTokenSpaceGuid.PcdEmuVariableNvModeEnable|TRUE
