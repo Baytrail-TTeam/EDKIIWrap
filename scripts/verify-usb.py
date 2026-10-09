@@ -21,7 +21,7 @@ def pe(data,machine,subsystem):
  return {'machine':hex(m),'subsystem':subsystem,'entry_rva':hex(entry),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
 files={'BAYTRAIL-USB-IA32.EFI':(root/'build/BAYTRAIL-USB-IA32.EFI',0x14c,10)}
 for path in out.glob('*.efi'):
- subsystem=12 if path.name in ['RuntimeDxe.efi','VariableRuntimeDxe.efi'] else 10 if path.name in ['BaytrailUsbTest.efi'] else 11
+ subsystem=12 if path.name in ['RuntimeDxe.efi','VariableRuntimeDxe.efi','BaytrailReadOnlyRtc.efi'] else 10 if path.name in ['BaytrailUsbTest.efi'] else 11
  files[path.name]=(path,0x8664,subsystem)
 files['BOOTX64.EFI']=(out/'BOOTX64.EFI',0x8664,10)
 results={name:pe(p.read_bytes(),m,s) for name,(p,m,s) in files.items()}
@@ -42,8 +42,8 @@ while pos+24<len(fv):
   if st==0x10:images.append(fv[sec+4:sec+size])
   sec=(sec+size+3)&~3
  pos+=length
-assert sorted(types)==[2,2,2,5]+[7]*15
-for name in ['DxeCore.efi','RuntimeDxe.efi','BaytrailUsbPlatform.efi','BaytrailUsbBoot.efi','XhciDxe.efi','UsbBusDxe.efi','UsbKbDxe.efi','UsbMassStorageDxe.efi','PartitionDxe.efi']:
+assert sorted(types)==[2,2,2,5]+[7]*16
+for name in ['DxeCore.efi','RuntimeDxe.efi','BaytrailReadOnlyRtc.efi','BaytrailUsbPlatform.efi','BaytrailUsbBoot.efi','XhciDxe.efi','UsbBusDxe.efi','UsbKbDxe.efi','UsbMassStorageDxe.efi','PartitionDxe.efi']:
  assert files[name][0].read_bytes() in images
 loader=files['BAYTRAIL-USB-IA32.EFI'][0].read_bytes()
 assert fv in loader and files['M3Entry.efi'][0].read_bytes() in loader

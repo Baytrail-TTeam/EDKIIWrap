@@ -16,7 +16,9 @@ EFI_STATUS UniversalLoadDxeCore(EFI_FIRMWARE_VOLUME_HEADER *,EFI_PHYSICAL_ADDRES
 STATIC VOID Fail(CONST Handoff *H,CONST CHAR8 *Text) {BaytrailMarker(H,3,Text,0xff4040);BaytrailHalt();}
 STATIC VOID Reserved(UINT64 Base,UINT64 Size,UINT32 Type) {
  if(!Size) return;
- BuildResourceDescriptorHob(Type,EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED,Base,Size);
+ /* PRESENT + INITIALIZED without TESTED is promotable by DXE after an
+  * allocation failure. Stock reserved ranges must never become free RAM. */
+ BuildResourceDescriptorHob(Type,EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|EFI_RESOURCE_ATTRIBUTE_TESTED,Base,Size);
 }
 STATIC BOOLEAN BuildResources(M3Handoff *M) {
  Handoff *H=&M->common;UINT64 I,Base,Size,End,A=M->arena_base,Z=A+M->arena_size;

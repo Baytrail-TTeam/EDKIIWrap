@@ -470,3 +470,53 @@ referencji ma 1024 MiB, nasz test 512 MiB z areną 256 MiB, więc nie jest to
 porównanie kontrolujące wyłącznie implementację EFI. Łańcuch pełnego Ventoy
 pozostaje innym testem. ISO zamontowano w macOS tylko RO, potem odmontowano;
 Ventoy wysunięto na prośbę użytkownika po zakończeniu wszystkich odczytów.
+
+## MEM-RTC: zamknięcie rezerwacji i odczyt zegara, 2026-10-09
+
+Kod DXE `MdeModulePkg/Core/Dxe/Mem/Page.c:PromoteMemoryResource` traktuje
+reserved resource PRESENT|INITIALIZED bez TESTED jako pamięć do promowania
+po nieudanej alokacji. Nasze stock reserved HOB-y spełniały ten warunek.
+Dodanie TESTED zapobiega promowaniu: nie oznacza, że przetestowano stock RAM,
+tylko utrzymuje jego trwałe wyłączenie z puli naszego DXE. Ograniczenie
+Pci.AllocateBuffer do końca areny pozostaje dodatkową ochroną.
+
+Kontrolny test żąda AllocateAddress 0x102000/16 stron, nie dereferencjonuje
+zwróconych stron, następnie sprawdza obwiednię EfiConventionalMemory.
+Poprzedni loader kończy w page fault podczas obsługi alokacji, w pobliżu
+1 TiB. Nowy odrzuca żądanie i zachowuje rezerwacje; aplikacja następnie
+sprawdza odczyt RTC i alokuje/zwalnia 160 MiB. Negatywny `cpu-fault`
+wyłącznie odczytuje nieobecne 4 GiB w QEMU i potwierdza widoczny CR2.
+Nie należy uruchamiać tego trybu podczas normalnego używania tabletu.
+
+Audyt GetTime przed dodaniem ReadOnlyRtc pokazuje EFI_UNSUPPORTED i
+BlInitializeLibrary failed 0xc0000001. Po zmianie GetTime zwraca EFI_SUCCESS,
+komunikat znika, ale Windows EFI nadal wraca z EFI_NO_MAPPING. Test obejmuje
+ten sam BOOTX64.EFI (sha256 e721eb274aeb9f3102b9eb5e168cbe6c781942e26a2b62bb06a306c933988d07),
+bez BCD i pozostałych plików ISO. Nie rozstrzyga przyczyny kolejnego błędu
+ani nie potwierdza pełnego startu instalatora. Tymczasowy wrapper audytu
+z UsbBoot usunięto; finalna funkcja GetTime należy do DXE_RUNTIME_DRIVER.
+
+ReadOnlyRtc wykonuje dwa zgodne odczyty RTC, czeka na zakończenie aktualizacji
+z ograniczoną liczbą prób, sprawdza VRT, BCD/binarny format, 12/24h i datę.
+Century pochodzi z zebranego FADT; przy braku pola używa okna 2000..2099
+jak PC EDK2. Dostęp do portów wzorowany na PcRtc.c EDK2. Sprzętowa podstawa:
+[Intel Z3600/Z3700 datasheet, rozdział 20](https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/atom-z36xxx-z37xxx-datasheet-vol-1.pdf).
+Sterownik wybiera rejestr przez port indeksu; nie zapisuje danych RTC ani
+alarmów, nie instaluje SetTime. Parametry Capabilities odpowiadają PC EDK2,
+nie są pomiarem dokładności zegara tego tabletu. Nie testowano wywołań po
+ExitBootServices/SetVirtualAddressMap ani działania RTC na tablecie.
+
+Dowody: `M5-MEM-RTC-2026-10-09.json` oraz obrazy MEMORY-BEFORE, RTC-BEFORE,
+RTC-AUDIT-AFTER, WINDOWS-AFTER, USB-AFTER, EXCEPTION, VENTOY. Finalne przypadki
+direct, hub-mbr, removable, wrong-app, no-keyboard, dma-failure, cpu-fault
+przechodzą asercje; obrazy USB pozostają niezmienione. Przypadki ventoy
+i efi-app są eksploracyjne z success=null. Izolowany GRUB wykonuje wpisane
+echo ventoy_key_ok. To nie jest test całego dysku Ventoy.
+
+Kandydat do próby fizycznej: `build/BAYTRAIL-USB-IA32-MEM-RTC.EFI`, sha256
+`3ca672a1efe6794f561124fedf752dbdcdedbdbd77d342885eef5ee8b0cdf09f`.
+Uruchomić ten IA32 loader z dotychczasowego nośnika EFI, następnie w jego
+X64 Shell `map -r` i ręcznie wybrać BOOTX64.EFI z partycji VTOYEFI. Nie
+zastępować pliku BOOTX64.EFI Ventoy tym loaderem. Do kolejnego pełnego testu
+QEMU wymagane ponowne podłączenie oryginalnego ISO. Fizycznych plików USB,
+firmware, BootOrder oraz eMMC nie zmieniano.

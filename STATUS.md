@@ -66,3 +66,20 @@ wyjątku DxeCore/CpuDeadLoop (CR2 ffffffe000), bez odtworzenia dokładnego
 BlInitializeLibrary z tabletu. Referencyjny X64 OVMF pokazuje graficzne logo
 bootu; nie potwierdzono instalatora/OS. Raport: docs/M5-WINDOWS-ISO-2026-10-09.json.
 Ventoy bezpiecznie wysunięty na prośbę użytkownika; plików USB nie zmieniano.
+
+2026-10-09, kandydat MEM-RTC: znaleziono błąd HOB rezerwacji. PRESENT oraz
+INITIALIZED bez TESTED pozwalały DXE PromoteMemoryResource zmieniać stock
+reserved RAM w wolną pamięć po nieudanej alokacji. Kontrolna próba alokacji
+0x102000/16 stron na poprzedniej wersji kończy się page fault; po dodaniu
+TESTED rezerwacje pozostają zamknięte, test oraz alokacja 160 MiB przechodzą.
+Wyjątki CPU są teraz wyświetlane bezpośrednio na framebufferze, z CR2/CR3.
+
+Drugi wykryty brak: GetTime zwracał EFI_UNSUPPORTED. ReadOnlyRtc odczytuje
+istniejący zegar CMOS bez ustawiania daty, trybu lub alarmów. W kontrolnym
+teście samego Windows BOOTX64.EFI komunikat BlInitializeLibrary 0xc0000001
+znika po tej zmianie. Obraz nadal wraca z EFI_NO_MAPPING; brak pełnego ISO
+po wysunięciu Ventoy uniemożliwia ocenę dalszego startu. Nie potwierdzono
+Windows/WinPE ani poprawki na tablecie. Siedem testów QEMU z asercjami
+przechodzi; osobno sprawdzono klawiaturę w izolowanym GRUB użytkownika.
+Loader: build/BAYTRAIL-USB-IA32-MEM-RTC.EFI. Dowody:
+docs/M5-MEM-RTC-2026-10-09.json. Nie zmieniano fizycznych pendrive'ów.

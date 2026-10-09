@@ -1,0 +1,17 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailExceptionDisplayLib
+ FILE_GUID = 7c2dc95e-dfe0-4c3c-83fc-a39d9b4f0688
+ MODULE_TYPE = BASE
+ LIBRARY_CLASS = SerialPortLib
+[Sources]
+ Display.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ HobLib
+ BaseLib
+ BaytrailMarkerLib
+[Guids]
+ gBaytrailHandoffGuid

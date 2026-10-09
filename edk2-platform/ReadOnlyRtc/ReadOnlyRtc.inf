@@ -1,0 +1,25 @@
+[Defines]
+ INF_VERSION = 0x00010005
+ BASE_NAME = BaytrailReadOnlyRtc
+ FILE_GUID = 889ab9cf-9b21-42bc-80c4-f35aef0deec4
+ MODULE_TYPE = DXE_RUNTIME_DRIVER
+ VERSION_STRING = 0.1
+ ENTRY_POINT = RtcEntry
+[Sources]
+ Rtc.c
+[Packages]
+ MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
+[LibraryClasses]
+ UefiDriverEntryPoint
+ UefiBootServicesTableLib
+ BaseLib
+ BaseMemoryLib
+ IoLib
+ HobLib
+[Guids]
+ gBaytrailHandoffGuid
+[Protocols]
+ gEfiRealTimeClockArchProtocolGuid
+[Depex]
+ TRUE

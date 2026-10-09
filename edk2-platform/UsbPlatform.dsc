@@ -22,6 +22,8 @@
  VariableFlashInfoLib|MdeModulePkg/Library/BaseVariableFlashInfoLib/BaseVariableFlashInfoLib.inf
  UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
  GptLib|MdeModulePkg/Library/GptLib/GptLib.inf
+[LibraryClasses.common.DXE_CORE]
+ SerialPortLib|edk2-platform/Library/ExceptionDisplayLib/ExceptionDisplayLib.inf
 [LibraryClasses.common.DXE_DRIVER]
  TimerLib|edk2-platform/Library/PmTimerLib/PmTimerLib.inf
 [LibraryClasses.common.DXE_RUNTIME_DRIVER]
@@ -37,6 +39,7 @@
  edk2-platform/Entry/M3Entry.inf
  MdeModulePkg/Core/Dxe/DxeMain.inf
  MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+ edk2-platform/ReadOnlyRtc/ReadOnlyRtc.inf
  edk2-platform/FramebufferGop/FramebufferGop.inf
  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
