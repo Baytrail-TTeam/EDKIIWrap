@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-09",
+  "photos": [
+    {
+      "path": "/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/codex-clipboard-b18f1f46-89e5-461f-a7f8-f7acf10d385e.jpg",
+      "sha256": "76de63a40bb08717ce4a5086c35896a74a9921c0edf755c292c60b5f97245a60"
+    },
+    {
+      "path": "/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/codex-clipboard-4c439c90-722b-4893-9cb3-d964b2fcd912.jpg",
+      "sha256": "501028ea8bf8c9b4f8b3f2e7e8c20ee585ef37ae5d26453ea7516e676186ebeb"
+    },
+    {
+      "path": "/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/codex-clipboard-329a4516-1475-40e7-acbe-8c7f9256ece2.jpg",
+      "sha256": "840e67ca7dbb4a10d014f78755b44b2c81a4ca9ea363087b3bedd131cdae6633"
+    }
+  ],
+  "visible": "Repeated BlInitializeLibrary failed 0xc0000001; ERROR IMAGE AT 000100000000 START FAILED: NO MAP. No USB DMA MAP FAILED diagnostic visible.",
+  "source_analysis": "EDK2 Image.c line 1716 logs Image.Info.ImageBase and Image.Status after returning from EntryPoint. No Mapping is EFI_NO_MAPPING returned by the child, not evidence that USB filesystem is absent.",
+  "limitations": "No explicit confirmation of keyboard behavior after return. Full Windows ISO unavailable so chainload failure not reproduced. ImageBase log alone does not establish actual physical placement or a mapping fix. Absence of DMA halt on these pictures is progress but not proof of all USB transfers succeeding.",
+  "next_requirement": "Exact Windows ISO path and keyboard behavior after error, asked user asynchronously. No new firmware candidate without identified change."
+}

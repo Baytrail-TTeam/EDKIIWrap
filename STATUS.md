@@ -54,3 +54,8 @@ Zdjęcie diagnostyczne DMA: EFI_UNSUPPORTED dla 1 bajtu BusMasterRead, adres
 poniżej 4 GiB, CR3 bez zmiany. Z kodu wynika odrzucenie alokacji bounce poza
 areną. Ograniczono AllocateMaxAddress do jej końca; kontrola Owned pozostaje.
 Nie potwierdzono jeszcze poprawy na tablecie ani naprawy BlInitializeLibrary.
+Kolejna próba DMA-BOUND: zdjęcia pokazują powtarzający się BlInitializeLibrary
+0xc0000001 i zwrot EFI_NO_MAPPING z obrazu, bez zatrzymania USB DMA MAP FAILED.
+To nie potwierdza startu Windows ani stanu klawiatury po powrocie. Pełny ISO
+jest potrzebny do odtworzenia tego etapu. Raport:
+docs/MANUAL-TEST-M5-WINDOWS-NO-MAP-2026-10-09.json.
