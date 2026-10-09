@@ -115,3 +115,10 @@ nie zostały potwierdzone. Nie otrzymano świeżego zdjęcia ani nowego faultu.
 Następny kontrolowany test: ten sam CPU-EXIT i Windows 10 w Ventoy WIMBOOT,
 zmieniając tylko tryb startu wobec wcześniejszego Normal. Pełne źródłowe ISO
 oraz pozostałe pliki Ventoy nadal nie są dostępne lokalnie do odtworzenia.
+IMG_0471 po prośbie o test WIMBOOT ponownie pokazuje Boot Manager
+0xc0000017 i brak pamięci na ramdisk. Tryb i hash loadera nie są widoczne
+na zdjęciu, przyjęto kontekst rozmowy. Nie zwiększono dalej areny bez
+pomiaru żądanej/dostępnej ciągłej pamięci i rozmiaru oryginalnego boot.wim.
+Poproszono o ponowne podłączenie Ventoy do Maca; odrębny polski obraz
+zamontowany na Macu nie jest oryginalnym angielskim ISO użytkownika.
+Raport: docs/M5-WIMBOOT-RAMDISK-2026-10-09.json.

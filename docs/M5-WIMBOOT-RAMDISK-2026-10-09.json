@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-09",
+  "source_image": "/Users/kacper/Downloads/IMG_0471.HEIC",
+  "source_sha256": "9d5e4b969a87bbf8dc3901a2a5dac2430a1b4aa5d5ec396dd158804f79ea5147",
+  "screen": "Windows Boot Manager",
+  "status": "0xc0000017",
+  "message": "There isn't enough memory available to create a ramdisk device.",
+  "test_context": {
+    "requested_test": "Windows 10, current CPU-EXIT loader, Ventoy WIMBOOT; requested immediately before this photo",
+    "verification": "Neither boot mode nor loader hash is visible in photo; inferred from conversation, not independently confirmed"
+  },
+  "conclusion": "RAM disk creation fails again in this reported test. Does not prove exact bytes requested, available total memory, largest free extent, or badmemory BCD contents. No ExitBootServices status visible.",
+  "next_step": "Obtain original full Windows ISO / Ventoy files, measure boot.wim size and reproduce allocation path before changing arena further. Keep Normal-mode later-stage stall separate from WIMBOOT memory failure.",
+  "available_files": {
+    "original_english_iso": "Not currently mounted or cached locally",
+    "original_windows_efi": "build/usb/inputs/windows-bootx64.efi",
+    "separate_polish_image_boot_wim_bytes": 689772307,
+    "reference_limit": "Mounted Polish image is a different image; its WIM size cannot be attributed to the original English ISO."
+  },
+  "physical_changes": "None"
+}
