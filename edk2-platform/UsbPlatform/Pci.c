@@ -71,9 +71,12 @@ STATIC BOOLEAN Owned(UINT64 Address,UINTN Size) {
  return Address>=HandoffM->arena_base && Address<End && Size<=End-Address;
 }
 STATIC EFI_STATUS EFIAPI Allocate(EFI_PCI_IO_PROTOCOL *T,EFI_ALLOCATE_TYPE Type,EFI_MEMORY_TYPE MemoryType,UINTN Pages,VOID **Host,UINT64 Attr) {
- EFI_PHYSICAL_ADDRESS Address=0xffffffff;EFI_STATUS S;(VOID)Type;
+ EFI_PHYSICAL_ADDRESS Address;EFI_STATUS S;(VOID)Type;
  if(T!=&Pci || !Host || !Pages || Pages>HandoffM->arena_size/4096 || Attr ||
     (MemoryType!=EfiBootServicesData && MemoryType!=EfiRuntimeServicesData)) return EFI_INVALID_PARAMETER;
+ /* Constrain selection before allocating: child EFI applications can change
+  * the free map, and the highest page below 4 GiB need not be in our arena. */
+ Address=HandoffM->arena_base+HandoffM->arena_size-1;
  S=gBS->AllocatePages(AllocateMaxAddress,MemoryType,Pages,&Address);if(EFI_ERROR(S)) return S;
  if(!Owned(Address,Pages*4096)) {gBS->FreePages(Address,Pages);return EFI_UNSUPPORTED;}
  *Host=(VOID *)(UINTN)Address;return EFI_SUCCESS;

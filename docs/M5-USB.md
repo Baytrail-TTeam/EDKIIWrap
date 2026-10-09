@@ -422,3 +422,24 @@ EFI_UNSUPPORTED i zatrzymania. Nie dereferencjonuje tego adresu ani nie
 wysyła transferu USB. Standardowy test bez opcji nadal sprawdza 160 MiB
 alokacji i ręczne uruchomienie. Bare GRUB nadal przyjmuje komendę HID.
 Pełnego Windows ISO/łańcucha Ventoy nie odtworzono w QEMU.
+
+## 2026-10-09: ograniczenie alokatora bufora DMA
+
+Zdjęcie zatrzymanego ekranu: STATUS 8000000000000003 (EFI_UNSUPPORTED),
+OP 0 (BusMasterRead), HOST 7B8D931F, BYTES 1, CR3 i ORIGINAL 7B8B5000,
+ARENA 66000000, SIZE 10000000. Transkrypcja i hash zdjęcia:
+MANUAL-TEST-M5-DMA-BOUND-2026-10-09.json.
+
+Dla tych argumentów MapBuffer nie zwraca bezpośrednio EFI_UNSUPPORTED:
+adres jest poniżej 4 GiB, zakres nie przekracza 4 GiB, operacja nie jest
+CommonBuffer. Z pozostałych gałęzi kodu wynika, że AllocatePages się udało,
+ale wybrany bufor bounce był poza naszą areną. Jego adres nie był logowany;
+wniosek wynika ze ścieżek zwrotu statusu, nie odczytu tego adresu ze zdjęcia.
+Nie ustalono, dlaczego po przejściu do Windows mapa pozwoliła go wybrać.
+
+Pci.AllocateBuffer teraz ogranicza AllocateMaxAddress do końca własnej
+areny minus 1, zamiast do 0xffffffff. Nadal sprawdza dolną granicę i cały
+zakres przez Owned; nie dopuszcza DMA do pamięci stock firmware. Może
+nadal odmówić alokacji przy braku miejsca w arenie. Pozostawiono zatrzymanie
+na pierwszym błędzie mapowania, aby kolejny problem miał czytelny ekran.
+To poprawka wyboru bufora DMA; sukces Windows wymaga testu fizycznego.

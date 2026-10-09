@@ -50,3 +50,7 @@ Pci.Map w xHCI; po powrocie do menu klawiatura nie działa. Aktualny loader
 jest kandydatem diagnostycznym: zatrzymuje pierwszy błąd mapowania, podaje
 status/adres/rozmiar/CR3. Nie stanowi naprawy startu Windows. Szczegóły i
 zdjęcia: docs/MANUAL-TEST-M5-WINDOWS-2026-10-09.json oraz docs/M5-USB.md.
+Zdjęcie diagnostyczne DMA: EFI_UNSUPPORTED dla 1 bajtu BusMasterRead, adres
+poniżej 4 GiB, CR3 bez zmiany. Z kodu wynika odrzucenie alokacji bounce poza
+areną. Ograniczono AllocateMaxAddress do jej końca; kontrola Owned pozostaje.
+Nie potwierdzono jeszcze poprawy na tablecie ani naprawy BlInitializeLibrary.
