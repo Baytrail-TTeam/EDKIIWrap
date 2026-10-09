@@ -590,5 +590,12 @@
   },
   "candidate": "build/BAYTRAIL-USB-IA32-CPU-EXIT.EFI",
   "loader_sha256": "6366fe47b25818409d77dda51a5c700aa2167fbcea6ad2c16d636ce803268193",
-  "limits": "Neither Windows full boot nor CPU-EXIT candidate tablet-tested. Does not establish that either photographed failure was caused by missing CPU Arch. Full original Ventoy/Windows ISO unavailable. No physical disk, firmware, BootOrder or eMMC writes."
+  "limits": "Neither Windows full boot nor CPU-EXIT candidate tablet-tested. Does not establish that either photographed failure was caused by missing CPU Arch. Full original Ventoy/Windows ISO unavailable. No physical disk, firmware, BootOrder or eMMC writes.",
+  "subsequent_tablet_report": {
+    "windows": "Windows 7",
+    "message": "EFI EXIT BOOT SERVICES STATUS 0",
+    "duration": "Unchanged probably over two minutes, confirmed by user",
+    "evidence": "User text only; no fresh photograph, file hash, instruction pointer or runtime trace",
+    "conclusion": "ExitBootServices returned EFI_SUCCESS; subsequent stall. Does not establish kernel entry, runtime virtual mapping, interrupt/ACPI or USB handoff status."
+  }
 }

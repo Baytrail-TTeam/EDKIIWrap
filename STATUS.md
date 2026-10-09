@@ -108,3 +108,10 @@ operacje odrzucane. To nie jest pełny CpuDxe ani dowód naprawy Windowsa.
 Nowy marker pokazuje status zwrotu ExitBootServices. Direct (640 MiB), hub-MBR,
 DMA rejection i klawiatura w izolowanym GRUB sprawdzone w QEMU.
 Plik: build/BAYTRAIL-USB-IA32-CPU-EXIT.EFI. Raport: docs/M5-CPU-EXIT-2026-10-09.json.
+Kolejna próba fizyczna: użytkownik potwierdza Windows 7 pokazujący EFI EXIT
+BOOT SERVICES STATUS 0, bez zmiany ponad dwie minuty. Zwrot EBS potwierdzony
+na tablecie, ale wejście do kernela, SetVirtualAddressMap i dalszy handoff
+nie zostały potwierdzone. Nie otrzymano świeżego zdjęcia ani nowego faultu.
+Następny kontrolowany test: ten sam CPU-EXIT i Windows 10 w Ventoy WIMBOOT,
+zmieniając tylko tryb startu wobec wcześniejszego Normal. Pełne źródłowe ISO
+oraz pozostałe pliki Ventoy nadal nie są dostępne lokalnie do odtworzenia.
