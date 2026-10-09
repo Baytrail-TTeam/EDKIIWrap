@@ -59,3 +59,10 @@ Kolejna próba DMA-BOUND: zdjęcia pokazują powtarzający się BlInitializeLibr
 To nie potwierdza startu Windows ani stanu klawiatury po powrocie. Pełny ISO
 jest potrzebny do odtworzenia tego etapu. Raport:
 docs/MANUAL-TEST-M5-WINDOWS-NO-MAP-2026-10-09.json.
+2026-10-09: odczytano oba pendrive'y, właściwy loader potwierdzony hashem;
+Win10_22H2_English_x64v1.iso dostępny, bezpośrednio odczytany w QEMU tylko RO.
+Nasz Shell widzi pełny ISO i wywołuje Windows EFI. Próba kończy w obsłudze
+wyjątku DxeCore/CpuDeadLoop (CR2 ffffffe000), bez odtworzenia dokładnego
+BlInitializeLibrary z tabletu. Referencyjny X64 OVMF pokazuje graficzne logo
+bootu; nie potwierdzono instalatora/OS. Raport: docs/M5-WINDOWS-ISO-2026-10-09.json.
+Ventoy bezpiecznie wysunięty na prośbę użytkownika; plików USB nie zmieniano.

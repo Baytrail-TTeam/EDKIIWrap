@@ -443,3 +443,30 @@ zakres przez Owned; nie dopuszcza DMA do pamięci stock firmware. Może
 nadal odmówić alokacji przy braku miejsca w arenie. Pozostawiono zatrzymanie
 na pierwszym błędzie mapowania, aby kolejny problem miał czytelny ekran.
 To poprawka wyboru bufora DMA; sukces Windows wymaga testu fizycznego.
+
+## 2026-10-09: bezpośrednia próba dokładnego ISO Windows
+
+Po podłączeniu dwóch pendrive'ów potwierdzono hash loadera DMA-BOUND i plik
+Win10_22H2_English_x64v1.iso (6140975104 bajtów). Raport, hashe i zrzuty:
+M5-WINDOWS-ISO-2026-10-09.json. Surowy odczyt urządzenia blokowego nie był
+dostępny; nie kopiowano całego Ventoy ani nie zmieniano plików pendrive.
+
+Do powtórzenia po podłączeniu ISO, lokalna kopia ISO9660 drivera w
+build/usb/inputs/iso9660_x64.efi lub parametr --iso-driver:
+
+```
+python3 scripts/test-usb-qemu.py --case windows-iso --windows-iso /Volumes/Ventoy/Win10_22H2_English_x64v1.iso
+python3 scripts/test-usb-qemu.py --case windows-iso --native-reference --windows-iso /Volumes/Ventoy/Win10_22H2_English_x64v1.iso
+```
+
+QEMU otwiera ISO jako USB CD z readonly=on; pomocniczy FAT i VARS są własnymi
+plikami testowymi. Przypadki są eksploracyjne (success=null). Nasz Shell
+ładuje ISO9660 driver, widzi FS2 i wywołuje EFI Windowsa. Końcowy RIP pasuje
+do CpuDeadLoop w DxeCore, a ramka zwrotu do CommonExceptionHandler. Nie
+zebrano typu wyjątku ani pełnego EFI_SYSTEM_CONTEXT. CR2 ffffffe000 nie
+wystarcza do zaprojektowania poprawki tablic stron. Referencja standardowego
+X64 OVMF osiąga graficzne logo; nie potwierdzono pełnego startu WinPE. VM
+referencji ma 1024 MiB, nasz test 512 MiB z areną 256 MiB, więc nie jest to
+porównanie kontrolujące wyłącznie implementację EFI. Łańcuch pełnego Ventoy
+pozostaje innym testem. ISO zamontowano w macOS tylko RO, potem odmontowano;
+Ventoy wysunięto na prośbę użytkownika po zakończeniu wszystkich odczytów.

@@ -6,15 +6,25 @@ import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
 root=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
-parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy','dma-failure'],default='direct')
+parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy','dma-failure','windows-iso'],default='direct')
 parser.add_argument('--ventoy-app',type=Path,help='Explore this user EFI in an isolated FAT image; no automatic success verdict')
+parser.add_argument('--windows-iso',type=Path,help='Read-only Windows ISO USB CD; isolated driver disk, no physical disk access')
+parser.add_argument('--iso-driver',type=Path,default=root/'build/usb/inputs/iso9660_x64.efi',help='Copy of ISO9660 X64 driver used for direct ISO test')
+parser.add_argument('--native-reference',action='store_true',help='Compare Windows ISO in stock X64 OVMF, without our loader')
 args=parser.parse_args();case=args.case
+assert not args.native_reference or case=='windows-iso'
+exploratory=case in ['ventoy','windows-iso']
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
+if args.native_reference:out=root/'build/usb/qemu-windows-reference'
 out.mkdir(parents=True,exist_ok=True)
 if case=='ventoy':
  assert args.ventoy_app and args.ventoy_app.is_file(),'--ventoy-app is required'
  subprocess.check_call(['python3',str(root/'scripts/make-usb-test-disk.py'),'--app',str(args.ventoy_app),'--output',str(out)])
-if case not in ['direct','ventoy']:
+if case=='windows-iso':
+ assert args.windows_iso and args.windows_iso.is_file(), '--windows-iso is required'
+ assert args.iso_driver.is_file(),'--iso-driver is required for windows-iso'
+ subprocess.check_call(['python3',str(root/'scripts/make-usb-test-disk.py'),'--app',str(args.iso_driver),'--output',str(out)])
+if case not in ['direct','ventoy','windows-iso']:
  data=bytearray((root/'build/usb/qemu-usb/usb-disk.img').read_bytes())
  if case=='wrong-app':
   off=data.find((root/'build/usb/BOOTX64.EFI').read_bytes());assert off>0;data[off]^=1
@@ -27,7 +37,7 @@ if case not in ['direct','ventoy']:
 negative=case in ['no-keyboard','dma-failure']
 manual_app=case not in ['wrong-app','no-keyboard','dma-failure']
 firmware=Path(os.environ.get('QEMU_FIRMWARE','/opt/homebrew/share/qemu'))
-code=firmware/'edk2-i386-code.fd';vars_template=firmware/'edk2-i386-vars.fd'
+code=firmware/('edk2-x86_64-code.fd' if args.native_reference else 'edk2-i386-code.fd');vars_template=firmware/'edk2-i386-vars.fd'
 assert code.exists() and vars_template.exists(), 'Set QEMU_FIRMWARE to directory containing IA32 OVMF code and vars.'
 esp=out/'esp/EFI/BOOT';esp.mkdir(parents=True,exist_ok=True)
 loader=root/'build/BAYTRAIL-USB-IA32.EFI'
@@ -45,8 +55,14 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  '-device','usb-storage,bus=xhci.0,drive=usbtest'+(',port=1.1' if case=='hub-mbr' else ',removable=on' if case=='removable' else ''),
  '-display','none','-serial',f'file:{out/"serial.log"}','-monitor','none',
  '-qmp',f'unix:{sock},server=on,wait=off','-net','none','-no-reboot','-no-shutdown']
+ if case=='windows-iso':
+  command[command.index('-display'):command.index('-display')]=['-drive',f'if=none,id=windowsiso,format=raw,media=cdrom,readonly=on,file={args.windows_iso}','-device','usb-storage,bus=xhci.0,drive=windowsiso']
  if case=='hub-mbr':command[command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1:command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1]=['-device','usb-hub,id=hub,bus=xhci.0,port=1']
  if case!='no-keyboard':command[command.index('-display'):command.index('-display')]=['-device','usb-kbd,bus=xhci.0'+(',port=1.2' if case=='hub-mbr' else '')]
+ if args.native_reference:
+  for flag,value in [('-drive',f'format=raw,file=fat:rw:{out/"esp"}'),('-drive',f'if=none,id=usbtest,format=raw,file={out/"usb-disk.img"}'),('-device','usb-storage,bus=xhci.0,drive=usbtest')]:
+   i=command.index(value);assert command[i-1]==flag;del command[i-1:i+1]
+  command[command.index('-m')+1]='1024'
  with (out/'qemu.log').open('wb') as log:
   proc=subprocess.Popen(command,stdout=log,stderr=log)
   try:
@@ -75,14 +91,17 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
     red=sum(pixels[i:i+3]==b'\xff\x40\x40' for i in range((8+7*32)*w*3,min(h,36+7*32)*w*3,3))
     if negative and red>100:break
     manual_pixels=sum(pixels[i:i+3]==b'\x40\xff\x40' for i in range((8+20*32)*w*3,min(h,36+20*32)*w*3,3))
-    if counts[2]>100 and not typed:
+    if (counts[2]>100 if not args.native_reference else time.monotonic()-boot_started>20) and not typed:
      shell_ready_seconds=round(time.monotonic()-boot_started,3)
      assert manual_pixels==0,'USB app ran before a manual Shell command'
-     command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+('' if case=='ventoy' else 'echo usb_key_ok\n')
+     command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+('' if exploratory else 'echo usb_key_ok\n')
+     if case=='windows-iso':command_text='load fs1:\\efi\\boot\\bootx64.efi\nmap -r\nfs2:\\efi\\boot\\bootx64.efi\n\n'
+     if args.native_reference:command_text='fs0:\\efi\\boot\\bootx64.efi\n\n'
      if case=='dma-failure':command_text='fs1:\ncd efi\ncd boot\nbootx64.efi dma-map-failure\n'
      for char in command_text:
-      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else 'minus' if char=='-' else char
+      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else 'minus' if char=='-' else 'backslash' if char=='\\' else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
+      if case=='windows-iso' and char=='\n':time.sleep(2)
      typed=True;app_started=time.monotonic()
      if case=='ventoy':
       # Let GRUB finish initialization before testing direct EFI input polling.
@@ -90,20 +109,21 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
       for char in 'echo ventoy_key_ok\n':
        key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else char
        qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.12)
-    if case=='ventoy' and app_started and time.monotonic()-app_started>8:break
-    if case!='ventoy' and min(counts)>100 and (manual_pixels>100 or not manual_app):break
+    if exploratory and app_started and time.monotonic()-app_started>(35 if case=='windows-iso' else 8):break
+    if not exploratory and min(counts)>100 and (manual_pixels>100 or not manual_app):break
     time.sleep(1)
    registers=qmp('human-monitor-command',{'command-line':'info registers'})
    (out/'registers.txt').write_text(registers)
+   (out/'execution.txt').write_text(qmp('human-monitor-command',{'command-line':'x/32i $rip-64'})+'\n'+qmp('human-monitor-command',{'command-line':'x/16gx $rsp'}))
    messages={str(row):marker(pixels,w,row,b'\xff\x40\x40' if row==7 else b'\x40\xff\x40') for row in [7,20,21,22,23]}
    expected={'no-keyboard':'USB KEYBOARD MISSING','dma-failure':'USB DMA MAP FAILED'}
    exact=messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB FILESYSTEM READY'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
    exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and 'HLT=1' in registers if negative else min(counts)>100) and 'CS64' in registers
-   result={'success':None if case=='ventoy' else success,'observation_requires_review':case=='ventoy','visible_markers':messages,'case':case,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
-   'seconds_to_shell_ready':shell_ready_seconds,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
+   result={'success':None if exploratory else success,'observation_requires_review':exploratory,'visible_markers':messages,'case':case,'native_reference':args.native_reference,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
+   'seconds_to_shell_ready':shell_ready_seconds,'iso_driver_sha256':sha(args.iso_driver) if case=='windows-iso' else None,'windows_iso_path':str(args.windows_iso) if args.windows_iso else None,'windows_iso_size':args.windows_iso.stat().st_size if args.windows_iso else None,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
-   'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
+   'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Direct read-only Windows ISO via supplied ISO9660 driver' if case=='windows-iso' else 'Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
    (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
    qmp('quit');proc.wait(timeout=5)
    def chunk(kind,data):
@@ -113,7 +133,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    (out/'screen.png').write_bytes(png)
    print(json.dumps(result,indent=2))
    assert result['usb_disk_unchanged'],'USB disk was modified'
-   if case!='ventoy':assert success,'USB storage/keyboard/Shell markers or X64 state missing; inspect screen.ppm and registers.txt'
+   if not exploratory:assert success,'USB storage/keyboard/Shell markers or X64 state missing; inspect screen.ppm and registers.txt'
   finally:
    if proc.poll() is None:
     proc.terminate()
