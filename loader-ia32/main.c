@@ -226,7 +226,15 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  if((h->initial_pat&255)!=6 || h->framebuffer_size>0xffffffff || h->height<330) {status=EFI_UNSUPPORTED;goto cleanup;}
  if(EFI_ERROR(status=load_m3_entry(&pl,&pl_pages,&pl_entry))) goto cleanup;
  if(EFI_ERROR(status=pages(32,EfiLoaderData,&stack))) goto cleanup;
- if(EFI_ERROR(status=pages(M3_ARENA_SIZE/4096,EfiLoaderData,&arena))) goto cleanup;
+ #ifdef MILESTONE_USB
+ line(L"USB arena requested bytes: ",M3_ARENA_SIZE);
+ #endif
+ if(EFI_ERROR(status=pages(M3_ARENA_SIZE/4096,EfiLoaderData,&arena))) {
+  #ifdef MILESTONE_USB
+  line(L"USB arena allocation failed: ",status);
+  #endif
+  goto cleanup;
+ }
  if(EFI_ERROR(status=pages((sizeof(fv_blob)+4095)/4096,EfiLoaderData,&fv))) goto cleanup;
  copy((void*)(UINTN)fv,fv_blob,sizeof(fv_blob));
  m3->arena_base=arena;m3->arena_size=M3_ARENA_SIZE;

@@ -520,3 +520,37 @@ X64 Shell `map -r` i ręcznie wybrać BOOTX64.EFI z partycji VTOYEFI. Nie
 zastępować pliku BOOTX64.EFI Ventoy tym loaderem. Do kolejnego pełnego testu
 QEMU wymagane ponowne podłączenie oryginalnego ISO. Fizycznych plików USB,
 firmware, BootOrder oraz eMMC nie zmieniano.
+
+## Windows Boot Manager: ramdisk 0xc0000017, kandydat 1G
+
+Nowe zdjęcie użytkownika pokazuje Windows Boot Manager i komunikat o braku
+pamięci na ramdisk, status 0xc0000017. Nie zawiera mapy EFI ani rozmiaru WIM;
+hash uruchomionego na tablecie loadera nie został zweryfikowany. Z kontekstu
+przyjęto poprzedni MEM-RTC. To dowód przejścia do Boot Managera, nie startu OS.
+Znaczenie kodu potwierdza
+[Microsoft](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-windows-stop-error).
+Nie stosowano opisanych tam zmian BCD; nasza własna pula 256 MiB jest
+konkretnym ograniczeniem do sprawdzenia przed zmianami obrazu Windowsa.
+
+USB DSC dla IA32 oraz X64 ustawiają teraz ten sam M3_ARENA_SIZE=1073741824.
+Fabryczne AllocatePages musi przydzielić cały ciągły blok 1024 MiB. W razie
+niepowodzenia loader wypisuje USB arena allocation failed i wykonuje
+dotychczasowe cleanup, bez przejścia do X64. Nie udostępnia stock rezerwacji
+ani nie omija kontroli mapy. Handoff ABI oraz limity DMA pozostają zgodne.
+
+UsbTest żąda teraz 640 MiB zamiast 160 MiB, sprawdza pierwszy/ostatni element
+i zwalnia blok. Direct, hub-MBR i removable potwierdzają ten przydział oraz
+działanie klawiatury; dma-failure nadal odrzuca adres 4 GiB. Izolowany GRUB
+Ventoy wykonuje echo ventoy_key_ok. QEMU ma obecnie 1536 MiB fizycznego RAM,
+parametr --memory-mib pozwala odtworzyć historyczne 512 MiB; referencja
+native-reference nadal używa 1024 MiB. Nie jest to porównanie wydajności
+ani kontrolowany test pełnego Windowsa. Nadal brak oryginalnego ISO po
+wysunięciu nośnika, zatem usunięcie 0xc0000017 wymaga próby fizycznej.
+
+Kandydat `build/BAYTRAIL-USB-IA32-1G.EFI`, sha256
+`1b04bb965cd33439d1068f1a828fb6ac26ace195a1a75306116a14477180b745`.
+Poprzedni `BAYTRAIL-USB-IA32-MEM-RTC.EFI` zachowany. Nowy loader uruchamiać
+jak poprzednio; nie zastępować BOOTX64.EFI Ventoy. Dowody:
+M5-WINDOWS-RAMDISK-2026-10-09.json i M5-WINDOWS-RAMDISK-640M-2026-10-09.png.
+Nie potwierdzono jeszcze dostępności ciągłego 1 GiB na tablecie; przy
+nieudanej rezerwacji potrzebne zdjęcie statusu, zamiast uwalniania cudzej RAM.

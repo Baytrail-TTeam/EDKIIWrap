@@ -13,7 +13,9 @@ parser.add_argument('--windows-iso',type=Path,help='Read-only Windows ISO USB CD
 parser.add_argument('--iso-driver',type=Path,default=root/'build/usb/inputs/iso9660_x64.efi',help='Copy of ISO9660 X64 driver used for direct ISO test')
 parser.add_argument('--native-reference',action='store_true',help='Compare Windows ISO in stock X64 OVMF, without our loader')
 parser.add_argument('--loader',type=Path,default=root/'build/BAYTRAIL-USB-IA32.EFI',help='Loader candidate for controlled before/after comparison')
+parser.add_argument('--memory-mib',type=int,default=1536,help='QEMU physical RAM; USB loader reserves 1024 MiB')
 args=parser.parse_args();case=args.case
+assert 128<=args.memory_mib<=4096
 assert not args.native_reference or case=='windows-iso'
 exploratory=case in ['ventoy','windows-iso','efi-app']
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
@@ -51,7 +53,7 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 usb_before=sha(out/'usb-disk.img')
 with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  sock=Path(tmp)/'qmp.sock'
- command=['qemu-system-x86_64','-machine','q35,accel=tcg','-cpu','max','-m','512','-smp','1',
+ command=['qemu-system-x86_64','-machine','q35,accel=tcg','-cpu','max','-m',str(args.memory_mib),'-smp','1',
  '-drive',f'if=pflash,format=raw,unit=0,readonly=on,file={code}',
  '-drive',f'if=pflash,format=raw,unit=1,file={out/"vars.fd"}',
  '-drive',f'format=raw,file=fat:rw:{out/"esp"}',
@@ -132,7 +134,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    exact=('PAGE FAULT' in messages['7'] and '0000000100000000' in fault_lines['16']) if case=='cpu-fault' else messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB FILESYSTEM READY'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
    exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and ('HLT=1' in registers or case=='cpu-fault') if negative else min(counts)>100) and 'CS64' in registers
-   result={'success':None if exploratory else success,'observation_requires_review':exploratory,'visible_markers':messages,'exception_lines':fault_lines,'fault_stack':fault_detail,'case':case,'native_reference':args.native_reference,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
+   result={'success':None if exploratory else success,'observation_requires_review':exploratory,'visible_markers':messages,'exception_lines':fault_lines,'fault_stack':fault_detail,'case':case,'native_reference':args.native_reference,'physical_memory_mib':int(command[command.index('-m')+1]),'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
    'seconds_to_shell_ready':shell_ready_seconds,'efi_app_sha256':sha(args.efi_app) if case=='efi-app' else None,'iso_driver_sha256':sha(args.iso_driver) if case=='windows-iso' else None,'windows_iso_path':str(args.windows_iso) if args.windows_iso else None,'windows_iso_size':args.windows_iso.stat().st_size if args.windows_iso else None,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
    'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Isolated supplied EFI without companion files; review output' if case=='efi-app' else 'Direct read-only Windows ISO via supplied ISO9660 driver' if case=='windows-iso' else 'Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}

@@ -83,3 +83,14 @@ Windows/WinPE ani poprawki na tablecie. Siedem testów QEMU z asercjami
 przechodzi; osobno sprawdzono klawiaturę w izolowanym GRUB użytkownika.
 Loader: build/BAYTRAIL-USB-IA32-MEM-RTC.EFI. Dowody:
 docs/M5-MEM-RTC-2026-10-09.json. Nie zmieniano fizycznych pendrive'ów.
+
+2026-10-09: nowe zdjęcie użytkownika pokazuje Windows Boot Manager i
+0xc0000017: za mało pamięci na ramdisk. Jest to kolejny etap po poprzednim
+BlInitializeLibrary; uruchomienia WinPE nadal nie potwierdzono. Poprzednia
+pula własna wynosiła tylko 256 MiB. Kandydat 1G zwiększa ją do 1024 MiB
+przy zachowaniu stock rezerwacji i przydziale całości przez IA32 AllocatePages.
+Test dużego ciągłego bloku 640 MiB, Shell/USB/klawiatura, hub-MBR, removable
+oraz odrzucenie błędnego DMA przechodzą w QEMU z 1536 MiB fizycznego RAM.
+Izolowany GRUB użytkownika przyjmuje komendę. Nowy plik:
+build/BAYTRAIL-USB-IA32-1G.EFI. Nie testowano go jeszcze na tablecie ani
+z pełnym ISO Windowsa; szczegóły: docs/M5-WINDOWS-RAMDISK-2026-10-09.json.
