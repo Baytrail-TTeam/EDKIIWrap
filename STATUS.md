@@ -43,3 +43,10 @@ lub zawieszenie (nierozróżnione). W QEMU odtworzono brak wejścia w GRUB
 z jego pliku; pompowanie timerów w ReadKeyStroke/ReadKeyStrokeEx przywraca
 wykonanie wpisanej komendy. Nowy loader wymaga sprawdzenia na tablecie.
 Dowody: docs/M5-USB-KEYBOARD-2026-10-09.json.
+
+2026-10-09: klawiatura w Ventoy potwierdzona przez użytkownika. Windows 10
+x64 kończy się BlInitializeLibrary 0xc0000001, na zdjęciach dodatkowo błąd
+Pci.Map w xHCI; po powrocie do menu klawiatura nie działa. Aktualny loader
+jest kandydatem diagnostycznym: zatrzymuje pierwszy błąd mapowania, podaje
+status/adres/rozmiar/CR3. Nie stanowi naprawy startu Windows. Szczegóły i
+zdjęcia: docs/MANUAL-TEST-M5-WINDOWS-2026-10-09.json oraz docs/M5-USB.md.

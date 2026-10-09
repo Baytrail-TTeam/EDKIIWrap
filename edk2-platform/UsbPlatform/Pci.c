@@ -11,6 +11,8 @@
 #include <Library/IoLib.h>
 #include <Library/TimerLib.h>
 #include "M3Handoff.h"
+#include "Marker.h"
+#include <Library/PrintLib.h>
 STATIC EFI_PCI_IO_PROTOCOL Pci;
 STATIC M3Handoff *HandoffM;
 STATIC UINTN Device,Function;
@@ -81,7 +83,7 @@ STATIC EFI_STATUS EFIAPI Free(EFI_PCI_IO_PROTOCOL *T,UINTN Pages,VOID *Host) {
  return gBS->FreePages((UINTN)Host,Pages);
 }
 typedef struct {UINT32 Signature;EFI_PCI_IO_PROTOCOL_OPERATION Op;VOID *Host,*Bounce;UINTN Bytes,Pages;} DMA_MAP;
-STATIC EFI_STATUS EFIAPI Map(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_OPERATION Op,VOID *Host,UINTN *Bytes,EFI_PHYSICAL_ADDRESS *Address,VOID **Mapping) {
+STATIC EFI_STATUS MapBuffer(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_OPERATION Op,VOID *Host,UINTN *Bytes,EFI_PHYSICAL_ADDRESS *Address,VOID **Mapping) {
  DMA_MAP *M;EFI_STATUS S;
  if(T!=&Pci || Op>EfiPciIoOperationBusMasterCommonBuffer || !Host || !Bytes || !*Bytes ||
     *Bytes>HandoffM->arena_size || !Address || !Mapping) return EFI_INVALID_PARAMETER;
@@ -96,6 +98,27 @@ STATIC EFI_STATUS EFIAPI Map(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_OPERATIO
  if(EFI_ERROR(S)) {FreePool(M);return S;}
  if(Op==EfiPciIoOperationBusMasterRead) CopyMem(M->Bounce,Host,*Bytes);else ZeroMem(M->Bounce,M->Pages*4096);
  *Address=(UINTN)M->Bounce;*Mapping=M;MemoryFence();return EFI_SUCCESS;
+}
+/* Latch the first runtime mapping error before xHCI retries overwrite it.
+ * Bounds self-tests run before this diagnostic is armed. No failed mapping
+ * is submitted to the controller. This build deliberately stops on error. */
+STATIC BOOLEAN HoldMapFailure;
+STATIC EFI_STATUS EFIAPI Map(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_OPERATION Op,VOID *Host,UINTN *Bytes,EFI_PHYSICAL_ADDRESS *Address,VOID **Mapping) {
+ EFI_STATUS S=MapBuffer(T,Op,Host,Bytes,Address,Mapping);CHAR8 Text[112];
+ if(EFI_ERROR(S) && HoldMapFailure) {
+  BaytrailMarker(&HandoffM->common,7,"USB DMA MAP FAILED",0xff4040);
+  AsciiSPrint(Text,sizeof(Text),"STATUS %LX OP %u",(UINT64)S,(UINT32)Op);
+  BaytrailMarker(&HandoffM->common,8,Text,0xffffff);
+  AsciiSPrint(Text,sizeof(Text),"HOST %LX BYTES %LX",(UINT64)(UINTN)Host,Bytes?(UINT64)*Bytes:0);
+  BaytrailMarker(&HandoffM->common,9,Text,0xffffff);
+  AsciiSPrint(Text,sizeof(Text),"CR3 %LX ORIGINAL %LX",AsmReadCr3(),HandoffM->common.page_tables);
+  BaytrailMarker(&HandoffM->common,10,Text,0xffffff);
+  AsciiSPrint(Text,sizeof(Text),"ARENA %LX SIZE %LX",HandoffM->arena_base,HandoffM->arena_size);
+  BaytrailMarker(&HandoffM->common,11,Text,0xffffff);
+  BaytrailMarker(&HandoffM->common,12,"DIAGNOSTIC STOP - PHOTOGRAPH SCREEN",0xffa040);
+  BaytrailHalt();
+ }
+ return S;
 }
 STATIC EFI_STATUS EFIAPI Unmap(EFI_PCI_IO_PROTOCOL *T,VOID *Mapping) {
  DMA_MAP *M=Mapping;if(T!=&Pci) return EFI_INVALID_PARAMETER;if(!M) {MemoryFence();return EFI_SUCCESS;}
@@ -209,5 +232,6 @@ EFI_STATUS PublishXhci(M3Handoff *M) {
  Pci.AllocateBuffer=Allocate;Pci.FreeBuffer=Free;Pci.Flush=Flush;Pci.GetLocation=Location;Pci.Attributes=Attribute;
  Pci.GetBarAttributes=GetBar;Pci.SetBarAttributes=SetBar;Path.Pci.Device=(UINT8)Device;Path.Pci.Function=(UINT8)Function;
  S=CheckDmaAndBounds();if(EFI_ERROR(S)) return S;
+ HoldMapFailure=TRUE;
  return gBS->InstallMultipleProtocolInterfaces(&Handle,&gEfiPciIoProtocolGuid,&Pci,&gEfiDevicePathProtocolGuid,&Path,NULL);
 }

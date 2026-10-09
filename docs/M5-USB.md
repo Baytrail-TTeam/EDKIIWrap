@@ -394,3 +394,31 @@ Dowody przed/po i pięć standardowych przypadków: M5-USB-KEYBOARD-2026-10-09.j
 Zrzuty: M5-USB-KEYBOARD-BEFORE-2026-10-09.png i M5-USB-KEYBOARD-AFTER-2026-10-09.png.
 Test obejmuje bare GRUB z rzeczywistego pliku, nie pełną partycję Ventoy,
 menu ISO ani start OS. Fizyczny test nowego loadera pozostaje użytkownikowi.
+
+## 2026-10-09: próba Windows 10 x64 przez Ventoy
+
+Użytkownik potwierdził działającą klawiaturę w Ventoy z poprzednią poprawką.
+Po wybraniu Windows 10 x64 pojawia się `BlInitializeLibrary failed
+0xc0000001`, potem szybkie komunikaty i powrót do menu bez klawiatury.
+IMG_0450/0451 pokazują dodatkowo `XhcCreateTransferTrb: Fail to map Urb->Data`.
+IMG_0452/0453 mają nakładające się teksty diagnostyczne. Raport i hashe
+oryginałów: MANUAL-TEST-M5-WINDOWS-2026-10-09.json.
+
+Nie ustalono zależności między błędem Windows a błędem USB. Pci.Map może
+odrzucić argumenty/adres spoza zakresu poniżej 4 GiB albo nie przydzielić
+bufora bounce. Sam komunikat xHCI nie podaje statusu ani adresu. Nie
+zmieniamy ograniczeń DMA ani nie ogłaszamy naprawy startu Windows.
+
+Nowy kandydat jest diagnostyczny: pierwszy błąd Pci.Map po wewnętrznych
+self-testach zatrzymuje firmware na stałych wierszach 7–12, zanim xHCI
+nadpisze tekst retry. Pokazuje status EFI, operację, Host, Bytes, CR3,
+oryginalną tablicę stron i zakres własnej areny. Zatrzymanie jest celowe;
+nie będzie wtedy powrotu do Ventoy. Po zdjęciu ekranu trzeba zrestartować
+tablet. Udane mapowania i ochrona przed zapisami pozostają bez zmian.
+
+Regresja `--case dma-failure` uruchamia z Shell testowe EFI z opcją
+`dma-map-failure`: żąda mapowania adresu 0x100000000 (8 bajtów), oczekuje
+EFI_UNSUPPORTED i zatrzymania. Nie dereferencjonuje tego adresu ani nie
+wysyła transferu USB. Standardowy test bez opcji nadal sprawdza 160 MiB
+alokacji i ręczne uruchomienie. Bare GRUB nadal przyjmuje komendę HID.
+Pełnego Windows ISO/łańcucha Ventoy nie odtworzono w QEMU.

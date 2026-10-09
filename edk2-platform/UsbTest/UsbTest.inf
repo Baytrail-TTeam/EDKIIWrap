@@ -12,3 +12,7 @@
 [LibraryClasses]
  UefiApplicationEntryPoint
  UefiLib
+ BaseLib
+[Protocols]
+ gEfiLoadedImageProtocolGuid
+ gEfiPciIoProtocolGuid

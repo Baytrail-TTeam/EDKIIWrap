@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-09",
+  "user_report": "Keyboard works in Ventoy; selecting Windows 10 x64 shows error then fast messages and returns to Ventoy without keyboard.",
+  "confirmed": "Interactive Ventoy keyboard before Windows selection confirmed by user, not visible in these four error photographs.",
+  "not_confirmed": "Cause of Windows initialization failure or relation to subsequent USB mapping error; cause of keyboard loss after return; Windows boot success.",
+  "photos": [
+    {
+      "path": "/Users/kacper/Downloads/IMG_0450.HEIC",
+      "sha256": "85be3e0d41f082fa6e87b9d1432f4d66972cb9dddc49910c8180d42dc6db4e06",
+      "observed": "BlInitializeLibrary failed 0xc0000001; IMG_0450 and IMG_0451 clearly show XHCCREATETRANSFERTRB FAIL TO MAP URB DATA; other two frames have overlapping diagnostic text."
+    },
+    {
+      "path": "/Users/kacper/Downloads/IMG_0451.HEIC",
+      "sha256": "c4c1bea617f51a110253b647e55139f080fab9c66004dfaa18fa73d041e4ab0f",
+      "observed": "BlInitializeLibrary failed 0xc0000001; IMG_0450 and IMG_0451 clearly show XHCCREATETRANSFERTRB FAIL TO MAP URB DATA; other two frames have overlapping diagnostic text."
+    },
+    {
+      "path": "/Users/kacper/Downloads/IMG_0452.HEIC",
+      "sha256": "021a7100732f4fb532f0a5b2dbc94278ad7f0c6006c57d3c078effc441e08f68",
+      "observed": "BlInitializeLibrary failed 0xc0000001; IMG_0450 and IMG_0451 clearly show XHCCREATETRANSFERTRB FAIL TO MAP URB DATA; other two frames have overlapping diagnostic text."
+    },
+    {
+      "path": "/Users/kacper/Downloads/IMG_0453.HEIC",
+      "sha256": "979c0eea4674a073a44398d2e873d3d22214523580cc91eda194e86acacb61f1",
+      "observed": "BlInitializeLibrary failed 0xc0000001; IMG_0450 and IMG_0451 clearly show XHCCREATETRANSFERTRB FAIL TO MAP URB DATA; other two frames have overlapping diagnostic text."
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
 root=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
-parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy'],default='direct')
+parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy','dma-failure'],default='direct')
 parser.add_argument('--ventoy-app',type=Path,help='Explore this user EFI in an isolated FAT image; no automatic success verdict')
 args=parser.parse_args();case=args.case
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
@@ -24,8 +24,8 @@ if case not in ['direct','ventoy']:
   mbr[446:462]=bytes([0,0xfe,0xff,0xff,6,0xfe,0xff,0xff])+struct.pack('<II',2048,len(data)//512)
   mbr[510:512]=b'\x55\xaa';data=mbr+data
  (out/'usb-disk.img').write_bytes(data)
-negative=case=='no-keyboard'
-manual_app=case not in ['wrong-app','no-keyboard']
+negative=case in ['no-keyboard','dma-failure']
+manual_app=case not in ['wrong-app','no-keyboard','dma-failure']
 firmware=Path(os.environ.get('QEMU_FIRMWARE','/opt/homebrew/share/qemu'))
 code=firmware/'edk2-i386-code.fd';vars_template=firmware/'edk2-i386-vars.fd'
 assert code.exists() and vars_template.exists(), 'Set QEMU_FIRMWARE to directory containing IA32 OVMF code and vars.'
@@ -79,8 +79,9 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
      shell_ready_seconds=round(time.monotonic()-boot_started,3)
      assert manual_pixels==0,'USB app ran before a manual Shell command'
      command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+('' if case=='ventoy' else 'echo usb_key_ok\n')
+     if case=='dma-failure':command_text='fs1:\ncd efi\ncd boot\nbootx64.efi dma-map-failure\n'
      for char in command_text:
-      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else char
+      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else 'minus' if char=='-' else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
      typed=True;app_started=time.monotonic()
      if case=='ventoy':
@@ -95,7 +96,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    registers=qmp('human-monitor-command',{'command-line':'info registers'})
    (out/'registers.txt').write_text(registers)
    messages={str(row):marker(pixels,w,row,b'\xff\x40\x40' if row==7 else b'\x40\xff\x40') for row in [7,20,21,22,23]}
-   expected={'no-keyboard':'USB KEYBOARD MISSING'}
+   expected={'no-keyboard':'USB KEYBOARD MISSING','dma-failure':'USB DMA MAP FAILED'}
    exact=messages['7']==expected[case] if negative else all(messages[str(row)]==text for row,text in [(21,'USB FILESYSTEM READY'),(22,'USB KEYBOARD COMMAND OK'),(23,'USB SHELL KEYBOARD READY')])
    exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and 'HLT=1' in registers if negative else min(counts)>100) and 'CS64' in registers
