@@ -554,3 +554,47 @@ jak poprzednio; nie zastępować BOOTX64.EFI Ventoy. Dowody:
 M5-WINDOWS-RAMDISK-2026-10-09.json i M5-WINDOWS-RAMDISK-640M-2026-10-09.png.
 Nie potwierdzono jeszcze dostępności ciągłego 1 GiB na tablecie; przy
 nieudanej rezerwacji potrzebne zdjęcie statusu, zamiast uwalniania cudzej RAM.
+
+## CPU-EXIT: Windows 7 page fault / Windows 10 bez tekstu
+
+IMG_0466 i IMG_0467 oraz odpowiedzi użytkownika: oba uruchomienia przez Ventoy
+Normal; Windows 10 stoi ponad dwie minuty na jednolitym niebieskim ekranie.
+Nie klasyfikować tego tła jako BSOD bez kodu. Windows 7: page fault 0x0e,
+error code 0 (nieobecna strona, odczyt supervisor), CR2 fffff80042200028,
+RIP 41cedaf2 przy oryginalnym CR3 7b8b5000. ImageBase 41ce9000, entry 41cea000,
+RVA 4af2. Nie ustalono modułu: entry RVA nie odpowiada naszym zbudowanym
+sterownikom, instrukcja w zapisanym GRUB pod tym RVA nie odpowiada granicy
+faultu. Nie dodawano zgadywanego aliasu wysokich adresów do fizycznej RAM.
+
+Niezależnie od zdjęć kod CoreExitBootServices wywołuje gCpu->DisableInterrupt,
+a platforma nie instalowała CPU Arch. Kontrolna aplikacja wywołuje ten etap
+z aktualnym MapKey. W starym 1G kończy się invalid opcode pod b0001 i RCX=0;
+w CPU-EXIT wywołanie zwraca success, ST.BootServices jest NULL i IF jest 0.
+Framebuffer daje USB EXIT BOOT SERVICES OK. Próba po success jedynie rysuje
+marker i haltuje, nie uruchamia OS ani nie wywołuje Boot Services.
+
+Cpu.c udostępnia ograniczoną, rzeczywistą obsługę: CLI / odczyt IF oraz
+WriteBackInvalidate przez WBINVD (pełne czyszczenie cache dopuszczone przez
+CPU Arch). EnableInterrupt zwraca DEVICE_ERROR, ponieważ platforma nadal
+działa z IRQ wyłączonymi. Init, RegisterInterruptHandler, GetTimerValue i
+SetMemoryAttributes zwracają UNSUPPORTED; liczba CPU timerów 0. Nie zmienia
+MTRR/APIC ani nie uruchamia AP. Instalacja następuje po inicjalizacji USB.
+Nie jest to pełna obsługa CPU lub platformy wymagana dla dowolnego OS.
+
+Wrapper ExitBootServices aktualizuje CRC tabeli BS, rysuje REQUEST przed
+wywołaniem i STATUS po zwrocie. Po success nie używa wyzerowanej tabeli BS.
+Zielony EFI EXIT BOOT SERVICES STATUS 0 oznacza zwrot EFI_SUCCESS, nie
+udany boot Windowsa. Brak markera na zdjęciu nie dowodzi niewywołania:
+Windows może później przemalować framebuffer lub zmienić tryb grafiki.
+
+Po zmianie direct (alokacja 640 MiB/RTC/rezerwacje/klawiatura), hub-MBR i
+DMA rejection przechodzą asercje. Izolowany GRUB wykonuje echo ventoy_key_ok.
+Nowy loader nie był testowany na tablecie ani z pełnym ISO. Dowody i fotografie
+referencjonowane w M5-CPU-EXIT-2026-10-09.json, zrzuty BEFORE/AFTER/USB.
+Kandydat: build/BAYTRAIL-USB-IA32-CPU-EXIT.EFI, sha256
+`6366fe47b25818409d77dda51a5c700aa2167fbcea6ad2c16d636ce803268193`.
+Najpierw powtórzyć Windows 10 Normal z nowym loaderem; zachować stare pliki.
+Jeżeli dalej stoi, oddzielna próba WIMBOOT może porównać ścieżkę Ventoy,
+zgodnie z [dokumentacją Ventoy](https://ventoy.net/en/doc_wimboot.html).
+Nie dowodzi to, że mode jest przyczyną. Przy dalszym win7 fault do identyfikacji
+modułu potrzebne pliki pełnego Ventoy i właściwy ISO.

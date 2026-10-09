@@ -9,10 +9,15 @@
  UsbTest.c
 [Packages]
  MdePkg/MdePkg.dec
+ edk2-platform/Baytrail.dec
 [LibraryClasses]
  UefiApplicationEntryPoint
  UefiLib
  BaseLib
+ HobLib
+ BaytrailMarkerLib
+[Guids]
+ gBaytrailHandoffGuid
 [Protocols]
  gEfiLoadedImageProtocolGuid
  gEfiPciIoProtocolGuid

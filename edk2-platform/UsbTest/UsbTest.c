@@ -1,9 +1,12 @@
-#include <Uefi.h>
+#include <PiDxe.h>
 #include <Protocol/LoadedImage.h>
 #include <Protocol/PciIo.h>
 #include <Library/BaseLib.h>
 #include <Library/UefiLib.h>
 #include <Library/UefiBootServicesTableLib.h>
+#include <Library/HobLib.h>
+#include "M3Handoff.h"
+#include "Marker.h"
 STATIC UINT8 MapBuffer[32768];
 STATIC EFI_STATUS Envelope(UINT64 *Low,UINT64 *High) {
  UINTN Size=sizeof(MapBuffer),Key,Stride;UINT32 Version;EFI_STATUS S;
@@ -41,6 +44,25 @@ EFI_STATUS EFIAPI UsbTestEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  Print(L"USB_RTC_READ_OK %04u-%02u-%02u %02u:%02u:%02u\r\n",Time.Year,Time.Month,Time.Day,Time.Hour,Time.Minute,Time.Second);
  {
   EFI_LOADED_IMAGE_PROTOCOL *Loaded;EFI_PCI_IO_PROTOCOL *Pci;
+  if(!EFI_ERROR(gBS->HandleProtocol(Image,&gEfiLoadedImageProtocolGuid,(VOID **)&Loaded)) &&
+     Loaded->LoadOptions && Loaded->LoadOptionsSize>=sizeof(L"exit-boot-services") &&
+     StrStr(Loaded->LoadOptions,L"exit-boot-services")) {
+   VOID *Hob=GetFirstGuidHob(&gBaytrailHandoffGuid);Handoff H;UINTN Size,Key,Stride;UINT32 Version;
+   if(!Hob || GET_GUID_HOB_DATA_SIZE(Hob)!=sizeof(M3Handoff)) return EFI_NOT_FOUND;
+   H=((M3Handoff *)GET_GUID_HOB_DATA(Hob))->common;
+   Print(L"USB_EXIT_BOOT_SERVICES_BEGIN\r\n");
+   for(UINTN Attempt=0;Attempt<2;Attempt++) {
+    Size=sizeof(MapBuffer);S=gBS->GetMemoryMap(&Size,(VOID *)MapBuffer,&Key,&Stride,&Version);
+    if(EFI_ERROR(S)) return S;
+    S=gBS->ExitBootServices(Image,Key);if(!EFI_ERROR(S)) {
+     if(St->BootServices || GetInterruptState()) {
+      BaytrailMarker(&H,7,"USB EXIT BOOT STATE INVALID",0xff4040);BaytrailHalt();
+     }
+     BaytrailMarker(&H,20,"USB EXIT BOOT SERVICES OK",0x40ff40);BaytrailHalt();
+    }
+   }
+   BaytrailMarker(&H,7,"USB EXIT BOOT SERVICES FAILED",0xff4040);BaytrailHalt();
+  }
   if(!EFI_ERROR(gBS->HandleProtocol(Image,&gEfiLoadedImageProtocolGuid,(VOID **)&Loaded)) &&
      Loaded->LoadOptions && Loaded->LoadOptionsSize>=sizeof(L"cpu-fault") &&
      StrStr(Loaded->LoadOptions,L"cpu-fault")) {

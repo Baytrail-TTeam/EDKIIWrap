@@ -94,3 +94,17 @@ oraz odrzucenie błędnego DMA przechodzą w QEMU z 1536 MiB fizycznego RAM.
 Izolowany GRUB użytkownika przyjmuje komendę. Nowy plik:
 build/BAYTRAIL-USB-IA32-1G.EFI. Nie testowano go jeszcze na tablecie ani
 z pełnym ISO Windowsa; szczegóły: docs/M5-WINDOWS-RAMDISK-2026-10-09.json.
+
+2026-10-09: po kandydacie 1G użytkownik zgłasza Windows 7 page fault
+(IMG_0466: RIP 41cedaf2, CR2 fffff80042200028, CR3 7b8b5000) oraz Windows 10
+stojący >2 min na pustym niebieskim tle (IMG_0467). Tryb Ventoy Normal.
+Nie zidentyfikowano modułu win7 ani fazy zatrzymania win10; brak kodu BSOD.
+Osobno znaleziono brak CPU Arch wymaganej przez CoreExitBootServices.
+Próba kontrolna starego loadera kończy się invalid opcode przy RCX=0;
+kandydat CPU-EXIT przechodzi ExitBootServices, zeruje BootServices w ST i
+pozostawia IRQ wyłączone. CPU Arch ograniczona do rzeczywistych metod
+DisableInterrupt, GetInterruptState i WriteBackInvalidate; pozostałe
+operacje odrzucane. To nie jest pełny CpuDxe ani dowód naprawy Windowsa.
+Nowy marker pokazuje status zwrotu ExitBootServices. Direct (640 MiB), hub-MBR,
+DMA rejection i klawiatura w izolowanym GRUB sprawdzone w QEMU.
+Plik: build/BAYTRAIL-USB-IA32-CPU-EXIT.EFI. Raport: docs/M5-CPU-EXIT-2026-10-09.json.

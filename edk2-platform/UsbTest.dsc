@@ -9,6 +9,7 @@
  SKUID_IDENTIFIER = DEFAULT
 !include MdePkg/MdeLibs.dsc.inc
 [LibraryClasses]
+ BaytrailMarkerLib|edk2-platform/Library/MarkerLib/MarkerLib.inf
  BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
  BaseMemoryLib|MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf
  DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf

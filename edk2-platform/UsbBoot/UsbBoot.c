@@ -49,6 +49,16 @@ STATIC EFI_STATUS EFIAPI WriteDisk(EFI_BLOCK_IO_PROTOCOL *This,UINT32 Id,EFI_LBA
 }
 STATIC EFI_STATUS EFIAPI FlushDisk(EFI_BLOCK_IO_PROTOCOL *This) {(VOID)This;return EFI_SUCCESS;}
 STATIC Handoff *ContextH;
+EFI_STATUS InstallBootCpu(VOID);
+STATIC EFI_EXIT_BOOT_SERVICES OriginalExit;
+STATIC EFI_STATUS EFIAPI ObserveExit(EFI_HANDLE Image,UINTN Key) {
+ EFI_STATUS S;CHAR8 Text[80];
+ BaytrailMarker(ContextH,4,"EFI EXIT BOOT SERVICES REQUEST",0xffa040);
+ S=OriginalExit(Image,Key);
+ /* After success the Boot Services table has been cleared: framebuffer only. */
+ AsciiSPrint(Text,sizeof(Text),"EFI EXIT BOOT SERVICES STATUS %LX",(UINT64)S);
+ BaytrailMarker(ContextH,4,Text,EFI_ERROR(S)?0xffa040:0x40ff40);return S;
+}
 STATIC BOOLEAN ScriptOk,KeyboardCommandOk,StorageOk,ManualAppOk;
 STATIC CHAR16 Trace[32768];STATIC UINTN TraceLength;
 STATIC EFI_TEXT_STRING OriginalOutput;
@@ -168,6 +178,10 @@ EFI_STATUS EFIAPI UsbBootEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
   if(Control->Revision==1) Control->Enabled=FALSE;
  }
 
+ Check(InstallBootCpu(),"CPU ARCH INSTALL FAILED");
+ OriginalExit=gBS->ExitBootServices;gBS->ExitBootServices=ObserveExit;
+ gBS->Hdr.CRC32=0;
+ Check(gBS->CalculateCrc32(gBS,gBS->Hdr.HeaderSize,&gBS->Hdr.CRC32),"BOOT SERVICES CRC FAILED");
  St->FirmwareVendor=AllocateRuntimeCopyPool(sizeof(L"Baytrail EDK2 X64"),L"Baytrail EDK2 X64");
  if(!St->FirmwareVendor) Check(EFI_OUT_OF_RESOURCES,"SHELL VENDOR ALLOCATION FAILED");
  St->FirmwareRevision=0x00010000;
