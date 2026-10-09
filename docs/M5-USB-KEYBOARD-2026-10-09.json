@@ -1,0 +1,712 @@
+{
+  "date": "2026-10-09",
+  "physical_report": "User reports entering Ventoy with 256 MiB loader, then keyboard unresponsive or freeze; not distinguished. New keyboard patch not yet tested on tablet.",
+  "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+  "manifest": {
+    "static_checks_passed": true,
+    "source_date_epoch": 1791331200,
+    "source_lock": {
+      "sources": [
+        {
+          "path": "third_party/edk2",
+          "url": "https://github.com/tianocore/edk2.git",
+          "commit": "2970e5699ba6267f3384ffab20f96647578aebc8"
+        },
+        {
+          "path": "third_party/coreboot",
+          "url": "https://github.com/coreboot/coreboot.git",
+          "commit": "608fac61470b2b05e4ed11808e97efd636697c3d"
+        },
+        {
+          "path": "third_party/mrchromebox-edk2",
+          "url": "https://github.com/MrChromebox/edk2.git",
+          "commit": "1f9ab463057c53883245d0ce5dfe07201efb1efe"
+        },
+        {
+          "path": "third_party/mrchromebox-blobs",
+          "url": "https://github.com/MrChromebox/blobs.git",
+          "commit": "a8c9e312c44e108f3c6cfd51953439d353a7a461"
+        }
+      ],
+      "initialized_edk2_submodules": [
+        {
+          "path": "BaseTools/Source/C/BrotliCompress/brotli",
+          "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+        },
+        {
+          "path": "MdeModulePkg/Library/BrotliCustomDecompressLib/brotli",
+          "commit": "e230f474b87134e8c6c85b630084c612057f253e"
+        },
+        {
+          "path": "MdePkg/Library/BaseFdtLib/libfdt",
+          "commit": "cfff805481bdea27f900c32698171286542b8d3c"
+        },
+        {
+          "path": "MdePkg/Library/MipiSysTLib/mipisyst",
+          "commit": "370b5944c046bab043dd8b133727b2135af7747a"
+        }
+      ]
+    },
+    "artifacts": {
+      "BAYTRAIL-USB-IA32.EFI": {
+        "machine": "0x14c",
+        "subsystem": 10,
+        "entry_rva": "0x2dc",
+        "bytes": 3176928,
+        "sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6"
+      },
+      "UsbMassStorageDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1094",
+        "bytes": 22656,
+        "sha256": "e908079882d4c385822bc60f8329461ca215eb5e0d41cc136b0b7f1b9ea1ea3e"
+      },
+      "BaytrailUsbBoot.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 20576,
+        "sha256": "346f182ba0a53ebde2bb28a8d9406b261ffba711def62514ba4bee270493484c"
+      },
+      "UsbKbDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 24064,
+        "sha256": "d6b4efdaaf5d572360ba380fb49ce9da37a3d8a6883cbb193a4205874d4c3bad"
+      },
+      "RuntimeDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 12,
+        "entry_rva": "0x10a8",
+        "bytes": 11008,
+        "sha256": "ee7348666e49f445d3bc40a9fd0c17a72bfd83b713f321874006b1b5102754bb"
+      },
+      "BaytrailUsbPlatform.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 20448,
+        "sha256": "950cd49b5f4f43c150d7f18bfcb163d8190503c4d3e9e1fd23c06f4259b0f0ba"
+      },
+      "BaytrailUsbTest.efi": {
+        "machine": "0x8664",
+        "subsystem": 10,
+        "entry_rva": "0x1080",
+        "bytes": 7232,
+        "sha256": "2db19ab8483f685b726e88df1d751ea4a93a3d9d0ff0bb969c129847c918ff64"
+      },
+      "UsbBusDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 34336,
+        "sha256": "ec63f8ab4d1e7d8df04407aa3bef7056a18f4f3388d9cdd10f28e3e155a06055"
+      },
+      "DiskIoDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 18496,
+        "sha256": "4a82470d6471a2ead4c7532412428f37028c60060029e8c9ee5fcec2b05ffeba"
+      },
+      "EnglishDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 9120,
+        "sha256": "631e45605f4fdd72b2a5018e0c57ed9591ef9ec4fea425878cedad4cd10a4836"
+      },
+      "M3Entry.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x32c",
+        "bytes": 16864,
+        "sha256": "0f700fb56d34c986de056e268a7e4618bbcdfc17a284c1d8693630ccf3e4c6fa"
+      },
+      "Fat.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x122c",
+        "bytes": 40320,
+        "sha256": "9ccebd7cb354cea3833be19a58c3db3172378bbc3ac54a016d97358b9525b227"
+      },
+      "HiiDatabase.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1094",
+        "bytes": 104064,
+        "sha256": "30e647f44bcb155b8cbe69c781f737ceeef7a926f3c947e8d9a57fede64090c4"
+      },
+      "BaytrailFramebufferGop.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x10d4",
+        "bytes": 13280,
+        "sha256": "0404b001bbba01a7f331511f4004505cbc7a4fd3cd8ebf76a39806c04836d2db"
+      },
+      "DxeCore.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x27e0",
+        "bytes": 111712,
+        "sha256": "41785808383345d9e728302462c57204e9c07bc7e1c7d181855b7656fb2a4022"
+      },
+      "VariableRuntimeDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 12,
+        "entry_rva": "0x10c8",
+        "bytes": 42624,
+        "sha256": "02033a0f9529185dceabb86db44343cbcc1d5a7f8c69da03a94054a0cd7c3acb"
+      },
+      "PartitionDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 24000,
+        "sha256": "88bae52f1274bb05133e3c7ae580386e16132e1d891f7d82ead4757683092724"
+      },
+      "XhciDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 47456,
+        "sha256": "26260d95e4a9870cb6440c76470687b43785cbc59f215e6436ab2a73e61e7bf3"
+      },
+      "GraphicsConsoleDxe.efi": {
+        "machine": "0x8664",
+        "subsystem": 11,
+        "entry_rva": "0x1080",
+        "bytes": 22816,
+        "sha256": "8caffbd874b1a081e53ba165f4f35980b7383b074da741ae285a69386685e77f"
+      },
+      "BOOTX64.EFI": {
+        "machine": "0x8664",
+        "subsystem": 10,
+        "entry_rva": "0x1080",
+        "bytes": 7232,
+        "sha256": "609ecf5c66f327ee4fecd2201a8fae9ea1406337b478eca8a481c8375394f884"
+      },
+      "USBDXE.Fv": {
+        "bytes": 3145728,
+        "sha256": "0e5e43d9919a10986c1ef55ceb8c57d27e81af24ce2294fa6a1c46ca69425e9d",
+        "ffs_types": [
+          2,
+          5,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          2,
+          2
+        ],
+        "pe32_sections": 16
+      }
+    }
+  },
+  "package": {
+    "files": {
+      "EFI/TOOLS/BAYTRAIL-USB-IA32.EFI": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "EFI/SAMPLES/USBTEST.EFI": "609ecf5c66f327ee4fecd2201a8fae9ea1406337b478eca8a481c8375394f884"
+    },
+    "archive_sha256": "137de9f76b7f6cf40a716d2b2ce6328e03959712d30282587c6a10f9afd93862"
+  },
+  "cases": {
+    "direct": {
+      "success": true,
+      "observation_requires_review": false,
+      "visible_markers": {
+        "7": "",
+        "20": "USB MANUAL X64 APP OK",
+        "21": "USB FILESYSTEM READY",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "direct",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "seconds_to_shell_ready": 4.234,
+      "ventoy_app_sha256": null,
+      "manual_usb_app_requested": true,
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "3329f914a4961a54e6c1a8a16ed3c5bbc043aecd0671a3cd80c2454f6913ff0f",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1092,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "512",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-device",
+        "usb-kbd,bus=xhci.0",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-usb/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-kkhry20c/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Manual USB application from interactive Shell + keyboard command; cooperative PM timer; QEMU only; tablet not tested"
+    },
+    "hub-mbr": {
+      "success": true,
+      "observation_requires_review": false,
+      "visible_markers": {
+        "7": "",
+        "20": "USB MANUAL X64 APP OK",
+        "21": "USB FILESYSTEM READY",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "hub-mbr",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "seconds_to_shell_ready": 4.238,
+      "ventoy_app_sha256": null,
+      "manual_usb_app_requested": true,
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "793cb899264caaf639cb4d1a8a6e464e636fbfbdd4e2665f18025f090bbfb7e1",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1092,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "512",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/usb-disk.img",
+        "-device",
+        "usb-hub,id=hub,bus=xhci.0,port=1",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest,port=1.1",
+        "-device",
+        "usb-kbd,bus=xhci.0,port=1.2",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-hub-mbr/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-1x26cez6/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Manual USB application from interactive Shell + keyboard command; cooperative PM timer; QEMU only; tablet not tested"
+    },
+    "removable": {
+      "success": true,
+      "observation_requires_review": false,
+      "visible_markers": {
+        "7": "",
+        "20": "USB MANUAL X64 APP OK",
+        "21": "USB FILESYSTEM READY",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "removable",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "seconds_to_shell_ready": 4.232,
+      "ventoy_app_sha256": null,
+      "manual_usb_app_requested": true,
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "3329f914a4961a54e6c1a8a16ed3c5bbc043aecd0671a3cd80c2454f6913ff0f",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1092,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "512",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-removable/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-removable/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-removable/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest,removable=on",
+        "-device",
+        "usb-kbd,bus=xhci.0",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-removable/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-ku7vv1nw/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Manual USB application from interactive Shell + keyboard command; cooperative PM timer; QEMU only; tablet not tested"
+    },
+    "wrong-app": {
+      "success": true,
+      "observation_requires_review": false,
+      "visible_markers": {
+        "7": "",
+        "20": "",
+        "21": "USB FILESYSTEM READY",
+        "22": "USB KEYBOARD COMMAND OK",
+        "23": "USB SHELL KEYBOARD READY"
+      },
+      "case": "wrong-app",
+      "expected_rejection": false,
+      "red_pixels_row_7": 0,
+      "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "seconds_to_shell_ready": 4.222,
+      "ventoy_app_sha256": null,
+      "manual_usb_app_requested": false,
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "56d9cd5743bf10dc77912776432d02c7471bac7663cf5707db58f7567d37e0e9",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        1092,
+        1308,
+        1336
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "512",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-device",
+        "usb-kbd,bus=xhci.0",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-wrong-app/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-_lt7ega9/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch; cooperative PM timer; QEMU only; tablet not tested"
+    },
+    "no-keyboard": {
+      "success": true,
+      "observation_requires_review": false,
+      "visible_markers": {
+        "7": "USB KEYBOARD MISSING",
+        "20": "",
+        "21": "",
+        "22": "",
+        "23": ""
+      },
+      "case": "no-keyboard",
+      "expected_rejection": true,
+      "red_pixels_row_7": 1144,
+      "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+      "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+      "seconds_to_shell_ready": null,
+      "ventoy_app_sha256": null,
+      "manual_usb_app_requested": false,
+      "usb_disk_unchanged": true,
+      "usb_disk_sha256": "3329f914a4961a54e6c1a8a16ed3c5bbc043aecd0671a3cd80c2454f6913ff0f",
+      "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+      "green_pixels_rows_21_22_23": [
+        0,
+        0,
+        0
+      ],
+      "qemu_version": "QEMU emulator version 11.1.1",
+      "command": [
+        "qemu-system-x86_64",
+        "-machine",
+        "q35,accel=tcg",
+        "-cpu",
+        "max",
+        "-m",
+        "512",
+        "-smp",
+        "1",
+        "-drive",
+        "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+        "-drive",
+        "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/vars.fd",
+        "-drive",
+        "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/esp",
+        "-device",
+        "qemu-xhci,id=xhci",
+        "-drive",
+        "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/usb-disk.img",
+        "-device",
+        "usb-storage,bus=xhci.0,drive=usbtest",
+        "-display",
+        "none",
+        "-serial",
+        "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-no-keyboard/serial.log",
+        "-monitor",
+        "none",
+        "-qmp",
+        "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-yep6__95/qmp.sock,server=on,wait=off",
+        "-net",
+        "none",
+        "-no-reboot",
+        "-no-shutdown"
+      ],
+      "date": "2026-10-08",
+      "scope": "Expected rejection of no-keyboard; cooperative PM timer; QEMU only; tablet not tested"
+    }
+  },
+  "ventoy_before": {
+    "success": null,
+    "observation_requires_review": true,
+    "visible_markers": {
+      "7": "",
+      "20": "",
+      "21": "",
+      "22": "",
+      "23": ""
+    },
+    "case": "ventoy",
+    "expected_rejection": false,
+    "red_pixels_row_7": 0,
+    "loader_sha256": "e60db1f1a629f0242a7372c03dd8dbccddd3cd249424b905f7f1cfc86fab3b05",
+    "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+    "seconds_to_shell_ready": 4.247,
+    "ventoy_app_sha256": "907c99a8370e953eb4ec34df2c314cf979356bfca97733ccb1139ee3f5e98cce",
+    "manual_usb_app_requested": true,
+    "usb_disk_unchanged": true,
+    "usb_disk_sha256": "b7020e8144cef038a3fa24ad03e3baec12463a655260d72daba59a1476e6eb24",
+    "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+    "green_pixels_rows_21_22_23": [
+      0,
+      0,
+      0
+    ],
+    "qemu_version": "QEMU emulator version 11.1.1",
+    "command": [
+      "qemu-system-x86_64",
+      "-machine",
+      "q35,accel=tcg",
+      "-cpu",
+      "max",
+      "-m",
+      "512",
+      "-smp",
+      "1",
+      "-drive",
+      "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+      "-drive",
+      "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/vars.fd",
+      "-drive",
+      "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/esp",
+      "-device",
+      "qemu-xhci,id=xhci",
+      "-drive",
+      "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/usb-disk.img",
+      "-device",
+      "usb-storage,bus=xhci.0,drive=usbtest",
+      "-device",
+      "usb-kbd,bus=xhci.0",
+      "-display",
+      "none",
+      "-serial",
+      "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/serial.log",
+      "-monitor",
+      "none",
+      "-qmp",
+      "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-qub_l55u/qmp.sock,server=on,wait=off",
+      "-net",
+      "none",
+      "-no-reboot",
+      "-no-shutdown"
+    ],
+    "date": "2026-10-08",
+    "scope": "Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition; cooperative PM timer; QEMU only; tablet not tested"
+  },
+  "ventoy_after": {
+    "success": null,
+    "observation_requires_review": true,
+    "visible_markers": {
+      "7": "",
+      "20": "",
+      "21": "",
+      "22": "",
+      "23": ""
+    },
+    "case": "ventoy",
+    "expected_rejection": false,
+    "red_pixels_row_7": 0,
+    "loader_sha256": "75666fa65895275164230710e910d49ae7fce483b74415a6af925766cefd36f6",
+    "firmware_code_sha256": "c8161f6e8464778e13795297e87f5e83cf97c8987480eea1d80742f6c98c18a9",
+    "seconds_to_shell_ready": 4.234,
+    "ventoy_app_sha256": "907c99a8370e953eb4ec34df2c314cf979356bfca97733ccb1139ee3f5e98cce",
+    "manual_usb_app_requested": true,
+    "usb_disk_unchanged": true,
+    "usb_disk_sha256": "b7020e8144cef038a3fa24ad03e3baec12463a655260d72daba59a1476e6eb24",
+    "firmware_vars_template_sha256": "5d2ac383371b408398accee7ec27c8c09ea5b74a0de0ceea6513388b15be5d1e",
+    "green_pixels_rows_21_22_23": [
+      0,
+      0,
+      0
+    ],
+    "qemu_version": "QEMU emulator version 11.1.1",
+    "command": [
+      "qemu-system-x86_64",
+      "-machine",
+      "q35,accel=tcg",
+      "-cpu",
+      "max",
+      "-m",
+      "512",
+      "-smp",
+      "1",
+      "-drive",
+      "if=pflash,format=raw,unit=0,readonly=on,file=/opt/homebrew/share/qemu/edk2-i386-code.fd",
+      "-drive",
+      "if=pflash,format=raw,unit=1,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/vars.fd",
+      "-drive",
+      "format=raw,file=fat:rw:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/esp",
+      "-device",
+      "qemu-xhci,id=xhci",
+      "-drive",
+      "if=none,id=usbtest,format=raw,file=/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/usb-disk.img",
+      "-device",
+      "usb-storage,bus=xhci.0,drive=usbtest",
+      "-device",
+      "usb-kbd,bus=xhci.0",
+      "-display",
+      "none",
+      "-serial",
+      "file:/Users/kacper/code/BaytrailProject/baytrail-x64-uefi/build/usb/qemu-ventoy/serial.log",
+      "-monitor",
+      "none",
+      "-qmp",
+      "unix:/var/folders/vf/b26nfwz531x55sp5l_7bx37c0000gn/T/baytrail-usb-ee8z6sis/qmp.sock,server=on,wait=off",
+      "-net",
+      "none",
+      "-no-reboot",
+      "-no-shutdown"
+    ],
+    "date": "2026-10-08",
+    "scope": "Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition; cooperative PM timer; QEMU only; tablet not tested"
+  },
+  "screenshots": {
+    "BEFORE": {
+      "path": "docs/M5-USB-KEYBOARD-BEFORE-2026-10-09.png",
+      "sha256": "f9891a7a08336937f7440f7b74a2ddc1d5d4fef70592a80c93428bcc83522fbf"
+    },
+    "AFTER": {
+      "path": "docs/M5-USB-KEYBOARD-AFTER-2026-10-09.png",
+      "sha256": "b5e2eaa7737e60b1d9c320ad98c0719c0f77fd4a1a3d9fef2751eaf11e363e22"
+    }
+  },
+  "manual_visual_review": {
+    "before": "Empty grub> prompt after sending echo ventoy_key_ok + Enter four seconds after launch. No input accepted.",
+    "after": "grub> echo ventoy_key_ok, output ventoy_key_ok, followed by new grub> prompt. Input and command execution confirmed.",
+    "scope": "Actual supplied EFI, same isolated FAT image and USB HID command. No full Ventoy partition/menu/ISO/OS test."
+  }
+}

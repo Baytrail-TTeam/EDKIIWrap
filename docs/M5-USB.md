@@ -365,3 +365,32 @@ standardowe markery naszej aplikacji nie są warunkiem sukcesu programu
 Ventoy. Uruchomienie GRUB prompt nie oznacza działania pełnego Ventoy.
 Raport wariantu: M5-USB-MEMORY-2026-10-08.json. Fizyczna próba 256 MiB
 pozostaje do wykonania przez użytkownika.
+
+
+## 2026-10-09: klawiatura po przejściu do Ventoy
+
+Użytkownik potwierdził wejście do Ventoy z pulą 256 MiB, następnie brak
+reakcji na klawisze lub zawieszenie; z samego opisu nie rozróżniamy tych
+objawów. Odtworzono brak reakcji klawiatury na jego BOOTX64.EFI w QEMU:
+po czterech sekundach od ręcznego uruchomienia w Shell wysłano USB HID
+`echo ventoy_key_ok` i Enter. Stary loader pozostał na pustym `grub>`.
+Nowy loader pokazuje polecenie, jego wynik i kolejny prompt.
+
+Platforma nadal używa kooperacyjnego timera przy wyłączonych IRQ.
+GRUB odpytuje bezpośrednio wejście EFI, bez obowiązku Stall/CheckEvent.
+Keyboard.c przez notify owija ReadKeyStroke oraz ReadKeyStrokeEx wyłącznie
+na urządzeniach z USB device path. Przed oryginalnym odczytem przesuwa timer,
+co pozwala uruchomić callback xHCI i konwersję klawiszy UsbKbDxe. Zachowuje
+oryginalne protokoły, zdarzenia i statusy; nie dodaje celowego oczekiwania.
+Lista zawiera do 64 interfejsów każdego rodzaju; reinstalacja nie zapisuje
+wrappera jako oryginału. Nie jest to implementacja sprzętowych przerwań ani
+potwierdzenie działania po ExitBootServices.
+
+Źródło porównawcze kodu GRUB (nie dowód dokładnej wersji binarki użytkownika):
+https://raw.githubusercontent.com/rhboot/grub2/master/grub-core/term/efi/console.c
+funkcje grub_console_getkey_con i grub_console_read_key_stroke.
+
+Dowody przed/po i pięć standardowych przypadków: M5-USB-KEYBOARD-2026-10-09.json.
+Zrzuty: M5-USB-KEYBOARD-BEFORE-2026-10-09.png i M5-USB-KEYBOARD-AFTER-2026-10-09.png.
+Test obejmuje bare GRUB z rzeczywistego pliku, nie pełną partycję Ventoy,
+menu ISO ani start OS. Fizyczny test nowego loadera pozostaje użytkownikowi.

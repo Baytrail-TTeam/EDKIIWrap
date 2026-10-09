@@ -9,6 +9,7 @@
  Platform.c
  Pci.c
  UsbTransport.c
+ Keyboard.c
 [Packages]
  MdePkg/MdePkg.dec
  MdeModulePkg/MdeModulePkg.dec
@@ -24,6 +25,7 @@
  TimerLib
  PrintLib
  BaytrailMarkerLib
+ DevicePathLib
 [Guids]
  gBaytrailHandoffGuid
  gIdleLoopEventGuid
@@ -35,5 +37,7 @@
  gEfiDevicePathProtocolGuid
  gEfiBlockIoProtocolGuid
  gEfiUsbIoProtocolGuid
+ gEfiSimpleTextInProtocolGuid
+ gEfiSimpleTextInputExProtocolGuid
 [Depex]
  TRUE

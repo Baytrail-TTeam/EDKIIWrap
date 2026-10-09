@@ -37,4 +37,9 @@ te tematy pozostają do rozwiązania przed bootem OS.
 Ręczny tryb USB Shell na tablecie: docs/MANUAL-TEST-M5-USB-SHELL-2026-10-08.md.
 Uruchomienie Ventoy pozostaje nieukończone; USB arena EDK2 ma teraz 256 MiB,
 plik użytkownika uruchamia bare GRUB w QEMU również przy 64 MiB;
-OOM pełnego Ventoy na tablecie nie odtworzono. Próba 256 MiB oczekuje użytkownika.
+OOM pełnego Ventoy na tablecie nie odtworzono. 2026-10-09 użytkownik zgłosił
+wejście do Ventoy po zmianie na 256 MiB, następnie brak reakcji klawiatury
+lub zawieszenie (nierozróżnione). W QEMU odtworzono brak wejścia w GRUB
+z jego pliku; pompowanie timerów w ReadKeyStroke/ReadKeyStrokeEx przywraca
+wykonanie wpisanej komendy. Nowy loader wymaga sprawdzenia na tablecie.
+Dowody: docs/M5-USB-KEYBOARD-2026-10-09.json.

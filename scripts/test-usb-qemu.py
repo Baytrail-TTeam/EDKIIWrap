@@ -1,5 +1,6 @@
 """Boot our IA32 EFI in IA32 OVMF; inspect framebuffer markers, stop VM."""
 import argparse,hashlib,json,os,shutil,socket,struct,subprocess,tempfile,time,zlib
+from datetime import datetime
 from pathlib import Path
 import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
@@ -77,11 +78,17 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
     if counts[2]>100 and not typed:
      shell_ready_seconds=round(time.monotonic()-boot_started,3)
      assert manual_pixels==0,'USB app ran before a manual Shell command'
-     command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+'echo usb_key_ok\n'
+     command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+('' if case=='ventoy' else 'echo usb_key_ok\n')
      for char in command_text:
       key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
      typed=True;app_started=time.monotonic()
+     if case=='ventoy':
+      # Let GRUB finish initialization before testing direct EFI input polling.
+      time.sleep(4)
+      for char in 'echo ventoy_key_ok\n':
+       key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else char
+       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.12)
     if case=='ventoy' and app_started and time.monotonic()-app_started>8:break
     if case!='ventoy' and min(counts)>100 and (manual_pixels>100 or not manual_app):break
     time.sleep(1)
@@ -95,7 +102,7 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    result={'success':None if case=='ventoy' else success,'observation_requires_review':case=='ventoy','visible_markers':messages,'case':case,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
    'seconds_to_shell_ready':shell_ready_seconds,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
-   'command':command,'date':'2026-10-08','scope':('Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
+   'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
    (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
    qmp('quit');proc.wait(timeout=5)
    def chunk(kind,data):

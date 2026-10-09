@@ -19,6 +19,7 @@ extern EFI_GUID gBaytrailHandoffGuid;
 EFI_STATUS PublishXhci(M3Handoff *M);
 EFI_STATUS TraceUsbTransport(CONST Handoff *H,BAYTRAIL_USB_TRACE_CONTROL *State);
 VOID RefreshUsbTransportTrace(VOID);
+EFI_STATUS HookUsbKeyboard(VOID);
 STATIC EFI_TIMER_NOTIFY Handler;
 STATIC UINT64 Period=10000,Last,Mask;
 STATIC BOOLEAN Busy;
@@ -59,6 +60,7 @@ STATIC EFI_STATUS EFIAPI Pump(EFI_TIMER_ARCH_PROTOCOL *This) {
  }
  Busy=FALSE;return EFI_SUCCESS;
 }
+VOID PumpUsbTimer(VOID) {Pump(&Timer);}
 STATIC EFI_STATUS EFIAPI Stall(UINTN Us);
 STATIC EFI_CHECK_EVENT OriginalCheckEvent;
 STATIC EFI_STATUS EFIAPI CheckEvent(EFI_EVENT Event) {
@@ -161,6 +163,7 @@ EFI_STATUS EFIAPI UsbPlatformEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  S=gBS->RegisterProtocolNotify(&gEfiBlockIoProtocolGuid,Event,&BlockRegistration);
  if(EFI_ERROR(S)) return S;
  S=TraceUsbTransport(&M->common,&TraceControl);if(EFI_ERROR(S)) return S;
+ S=HookUsbKeyboard();if(EFI_ERROR(S)) return S;
  S=PublishXhci(M);BaytrailMarker(&M->common,8,EFI_ERROR(S)?"USB PCI PUBLISH FAILED":"USB PCI AND PM TIMER READY",EFI_ERROR(S)?0xff4040:0x40ff40);
  return S;
 }
