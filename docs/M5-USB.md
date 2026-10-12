@@ -598,3 +598,59 @@ Jeżeli dalej stoi, oddzielna próba WIMBOOT może porównać ścieżkę Ventoy,
 zgodnie z [dokumentacją Ventoy](https://ventoy.net/en/doc_wimboot.html).
 Nie dowodzi to, że mode jest przyczyną. Przy dalszym win7 fault do identyfikacji
 modułu potrzebne pliki pełnego Ventoy i właściwy ISO.
+
+## LOWMEM, 2026-10-12: Windows 10 Setup w QEMU
+
+Oryginalny ISO skopiowano lokalnie i potwierdzono znany SHA256 a6f470ca...
+BOOTX64.EFI jest zgodny z wcześniejszą kopią. boot.wim ma 677539713 bajtów,
+boot.sdi 3170304. Wybrany Win7 to Patched ACPI and Updates (potwierdzenie
+użytkownika), jego ISO także skopiowano. Własne montowania były readonly
+i zostały odmontowane; fizycznych nośników nie modyfikowano.
+
+Pełny Win10 bez Ventoy na CPU-EXIT dochodzi do HaliHaltSystem, z
+KiBugCheckData 5C, 8000, B, 0, 0. Znaczenie kodu:
+[Microsoft HAL_INITIALIZATION_FAILED](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/bug-check-0x5c--hal-initialization-failed).
+Dokładny kernel wyodrębniono z WIM, identyfikowano jego bazę przez wielokrotne
+zgodne sekwencje kodu; publiczny PDB pobrano z Microsoft dla właściwego GUID.
+Ślad pokazuje HalpAcpiFindRsdp -> HalpAcpiAllocateMemory -> C000009A.
+Funkcja wymaga pamięci pod 0x1000000 (16 MiB). ACPI istnieje i ma poprawne
+rooty/MADT, ale nasza cała wcześniejsza free RAM była wyżej. Późniejsze
+niepowodzenie cache ACPI powoduje błąd inicjalizacji przerwań.
+
+Poprawiono także typy stock ACPI/NVS/runtime: typed Allocation HOB na GCD
+Reserved nie dodaje właściwego typu do mapy EFI. Są teraz SystemMemory,
+zajęte w całości przez typed HOB; Probe sprawdza typy oraz ConventionalMemory
+wyłącznie w przydzielonych pulach. Sama zmiana typów nadal dawała 5C.
+
+Stock IA32 AllocateMaxAddress przydziela dodatkowe 4 MiB pod 16 MiB, z bazą
+>=1 MiB; legacy RAM poniżej 1 MiB pozostaje poza pulą. Nieudany przydział
+wraca do cleanup przed ExitBootServices. Main nadal ma 1 GiB. Entry sprawdza
+rozmiar, zakres oraz LoaderData/WB ze stock mapy. DMA Owned obejmuje oba
+rzeczywiście zdobyte zakresy. M3 ABI v2 jest spójnie zbudowany (2400 bajtów).
+
+Win10 po tej zmianie pokazuje język Windows Setup; po 120 sekundach Tab
+przenosi fokus do pola czasu/waluty, KiBugCheckData jest zerowe. Reference
+OVMF X64 również pokazuje Setup. Nie klikano Next ani nie instalowano OS.
+Direct, hub-MBR, removable, wrong-app, no-keyboard, dma-failure, cpu-fault,
+exit-boot-services przechodzą; osobno GRUB wykonuje komendę klawiatury.
+UsbTest sprawdza 640 MiB, przydział 64 KiB pod 16 MiB oraz odrzucenie
+legacy 0x1000/16 stron. Krótka próba GUI nie dowiodła wejścia klawiatury;
+dopiero 120-sekundowa próba potwierdziła dialog i zmianę fokusu.
+
+Pierwszy udany kernel zmienił wyłącznie prywatną kopię helper FAT po
+przejęciu USB przez Windows. Finalny helper FAT także jest QEMU readonly,
+hash pozostaje niezmieniony. ISO zawsze było readonly. Test wykorzystuje
+pełny ISO jako USB CD, nie cały dysk Ventoy. Nowy loader nie był jeszcze
+testowany na tablecie ani z Win7; nie ogłaszać naprawy WIMBOOT 0xc0000017.
+
+Harness dodaje --observe-seconds, --kernel-image, --kernel-trace,
+--capture-handoff, --setup-keyboard-test. Tymczasowy QEMU RAM dump usuwa
+po wydobyciu handoff/ACPI. Testy OS pozostają success=null z oceną obrazu.
+Zerowy bugcheck sam nie potwierdza działającego instalatora.
+Dowody: M5-WINDOWS-LOWMEM-2026-10-12.json i PNG BEFORE/AFTER/SETUP/REFERENCE/USB.
+Kandydat build/BAYTRAIL-USB-IA32-LOWMEM.EFI, SHA256
+`cf492ee58130fcf2f631a5c2b533057c849513120bf863ed870d0beee16ec7cb`.
+Uruchomić jak poprzednio, następnie Windows 10 w Ventoy Normal mode.
+Zachować CPU-EXIT. Przy USB low arena allocation failed / PRE-EXIT ERROR
+sfotografować status; nie uwalniać cudzych rezerwacji. Nie zastępować pliku
+BOOTX64.EFI Ventoy tym loaderem.

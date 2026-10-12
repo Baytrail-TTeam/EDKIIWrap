@@ -23,9 +23,9 @@ STATIC EFI_STATUS Envelope(UINT64 *Low,UINT64 *High) {
  return *High?EFI_SUCCESS:EFI_NOT_FOUND;
 }
 STATIC EFI_STATUS CheckReserved(VOID) {
- UINT64 BeforeLow,BeforeHigh,AfterLow,AfterHigh;EFI_PHYSICAL_ADDRESS Address=0x102000;EFI_STATUS S,Request;
+ UINT64 BeforeLow,BeforeHigh,AfterLow,AfterHigh;EFI_PHYSICAL_ADDRESS Address=0x1000;EFI_STATUS S,Request;
  S=Envelope(&BeforeLow,&BeforeHigh);if(EFI_ERROR(S)) return S;
- /* Mirror the failed low allocation seen in the Windows call stack.
+ /* These legacy low pages are outside both explicitly acquired arenas.
   * Never touch the requested pages even if old DXE incorrectly frees them. */
  Request=gBS->AllocatePages(AllocateAddress,EfiLoaderData,16,&Address);
  if(!EFI_ERROR(Request)) gBS->FreePages(Address,16);
@@ -83,6 +83,16 @@ EFI_STATUS EFIAPI UsbTestEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  S=CheckReserved();
  if(EFI_ERROR(S)) {Print(L"USB_RESERVED_MEMORY_FAILED: %r\r\n",S);return S;}
  Print(L"USB_RESERVED_MEMORY_OK\r\n");
+ {
+  VOID *Hob=GetFirstGuidHob(&gBaytrailHandoffGuid);M3Handoff *M;EFI_PHYSICAL_ADDRESS Low=0xffffff;
+  if(!Hob || GET_GUID_HOB_DATA_SIZE(Hob)!=sizeof(*M)) return EFI_NOT_FOUND;
+  M=GET_GUID_HOB_DATA(Hob);
+  S=gBS->AllocatePages(AllocateMaxAddress,EfiLoaderData,16,&Low);
+  if(EFI_ERROR(S)) {Print(L"USB_LOW_MEMORY_FAILED: %r\r\n",S);return S;}
+  BOOLEAN Owned=Low>=M->low_arena_base && Low+65536<=M->low_arena_base+M->low_arena_size && Low+65536<=0x1000000;
+  gBS->FreePages(Low,16);if(!Owned) return EFI_SECURITY_VIOLATION;
+  Print(L"USB_LOW_MEMORY_64K_OK\r\n");
+ }
  /* Verify substantial conventional memory is available to a child EFI app. */
  S=gBS->AllocatePages(AllocateAnyPages,EfiLoaderData,640*256,&Address);
  if(EFI_ERROR(S)) {Print(L"USB_MEMORY_640M_FAILED: %r\r\n",S);return S;}

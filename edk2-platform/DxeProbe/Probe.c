@@ -9,6 +9,9 @@
 extern EFI_GUID gBaytrailHandoffGuid;
 STATIC EFI_GUID ProbeGuid={0x7b4d789e,0x2044,0x4307,{0x94,0x17,0x5f,0x3e,0x11,0x6f,0x6b,0x49}};
 STATIC VOID Fail(CONST Handoff *H,CONST CHAR8 *Text) {BaytrailMarker(H,4,Text,0xff4040);BaytrailHalt();}
+STATIC BOOLEAN Inside(UINT64 Address,UINT64 Pages,UINT64 Base,UINT64 Size) {
+ return Address>=Base && Address<Base+Size && Pages<=((Base+Size-Address)>>12);
+}
 STATIC BOOLEAN Published(EFI_SYSTEM_TABLE *St,EFI_GUID *Guid,UINT64 Address) {
  UINTN I;for(I=0;I<St->NumberOfTableEntries;I++)
   if(CompareGuid(&St->ConfigurationTable[I].VendorGuid,Guid)) return (UINTN)St->ConfigurationTable[I].VendorTable==Address;
@@ -28,7 +31,8 @@ EFI_STATUS EFIAPI ProbeEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  Status=gBS->CalculateCrc32("123456789",9,&Crc);
  if(EFI_ERROR(Status)||Crc!=0xcbf43926) Fail(H,"M3 CRC FAILED");
  Status=gBS->AllocatePages(AllocateAnyPages,EfiBootServicesData,1,&Page);
- if(EFI_ERROR(Status)||Page<M->arena_base || Page+4096>M->arena_base+M->arena_size) Fail(H,"M3 PAGE ALLOCATION FAILED");
+ if(EFI_ERROR(Status) || (!Inside(Page,1,M->arena_base,M->arena_size) &&
+    !Inside(Page,1,M->low_arena_base,M->low_arena_size))) Fail(H,"M3 PAGE ALLOCATION FAILED");
  *(volatile UINT64 *)(UINTN)Page=M3_MAGIC;
  if(*(volatile UINT64 *)(UINTN)Page!=M3_MAGIC || EFI_ERROR(gBS->FreePages(Page,1))) Fail(H,"M3 PAGE TEST FAILED");
  Status=gBS->InstallProtocolInterface(&Handle,&ProbeGuid,EFI_NATIVE_INTERFACE,&Token);
@@ -50,9 +54,23 @@ EFI_STATUS EFIAPI ProbeEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  if(EFI_ERROR(Status)||!Ds||Size%Ds) Fail(H,"M3 MEMORY MAP FAILED");
  for(I=0;I<Size;I+=Ds) {
   EFI_MEMORY_DESCRIPTOR *D=(VOID *)((UINT8 *)Buffer+I);
-  if(D->Type==EfiConventionalMemory && (D->PhysicalStart<M->arena_base ||
-    D->NumberOfPages>((M->arena_base+M->arena_size-D->PhysicalStart)>>12) ||
-    D->PhysicalStart>=M->arena_base+M->arena_size)) Fail(H,"M3 STOCK MEMORY RELEASED");
+  if(D->Type==EfiConventionalMemory && !Inside(D->PhysicalStart,D->NumberOfPages,M->arena_base,M->arena_size) &&
+     !Inside(D->PhysicalStart,D->NumberOfPages,M->low_arena_base,M->low_arena_size)) Fail(H,"M3 STOCK MEMORY RELEASED");
+ }
+ /* Typed stock allocations must survive GCD initialization without becoming
+  * free memory. A Reserved resource silently drops these allocation types. */
+ for(I=0;I<H->memory_map_size;I+=H->descriptor_size) {
+  EFI_MEMORY_DESCRIPTOR *Old=(VOID *)(UINTN)(H->memory_map+I);BOOLEAN Found=FALSE;
+  if(Old->Type!=EfiACPIReclaimMemory && Old->Type!=EfiACPIMemoryNVS &&
+     Old->Type!=EfiRuntimeServicesCode && Old->Type!=EfiRuntimeServicesData) continue;
+  for(UINTN J=0;J<Size;J+=Ds) {
+   EFI_MEMORY_DESCRIPTOR *Now=(VOID *)((UINT8 *)Buffer+J);
+   if(Now->Type==Old->Type && Now->PhysicalStart<=Old->PhysicalStart &&
+      Now->PhysicalStart+(Now->NumberOfPages<<12)>=Old->PhysicalStart+(Old->NumberOfPages<<12)) {
+    Found=TRUE;break;
+   }
+  }
+  if(!Found) Fail(H,"M3 STOCK MEMORY TYPE LOST");
  }
  if(EFI_ERROR(gBS->FreePool(Buffer))) Fail(H,"M3 POOL FREE FAILED");
  BaytrailMarker(H,4,"M3 EDK2 DXE OK",0x40ff40);

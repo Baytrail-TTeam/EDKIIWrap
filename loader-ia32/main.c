@@ -162,7 +162,7 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  uint64_t tr=0,pl=0,stack=0,pt=0;
  UINTN capacity=65536,key=0,ds=0,sz;UINT32 dv=0;
 #if RUN_TRANSITION == 2
- M3Handoff *m3=NULL;uint64_t arena=0,fv=0,pl_entry=0;UINTN pl_pages=0;
+ M3Handoff *m3=NULL;uint64_t arena=0,low_arena=0,fv=0,pl_entry=0;UINTN pl_pages=0;
 #endif
  say(L"Baytrail X64 PoC / " );
 #if RUN_TRANSITION == 2
@@ -184,7 +184,7 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
  if(EFI_ERROR(status=pages(1,EfiLoaderData,&hp))) return status;
  h=(void*)(UINTN)hp;h->magic=HANDOFF_MAGIC;h->version=1;h->size=sizeof(*h);
 #if RUN_TRANSITION == 2
- m3=(void*)(UINTN)hp;m3->m3_magic=M3_MAGIC;m3->m3_version=1;m3->m3_size=sizeof(*m3);
+ m3=(void*)(UINTN)hp;m3->m3_magic=M3_MAGIC;m3->m3_version=M3_VERSION;m3->m3_size=sizeof(*m3);
  m3->firmware_system_table=(UINTN)system;
 #endif
  if(!cpu(h)) {say(L"Unsupported CPU/mode/PAT (requires PAT entry 3 = UC).\r\n");status=EFI_UNSUPPORTED;goto cleanup;}
@@ -235,6 +235,19 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image,EFI_SYSTEM_TABLE *system) {
   #endif
   goto cleanup;
  }
+ #ifdef MILESTONE_USB
+ if(arena<0x1000000) {status=EFI_OUT_OF_RESOURCES;goto cleanup;}
+ {
+  EFI_PHYSICAL_ADDRESS Low=0xffffff;
+  status=bs->AllocatePages(AllocateMaxAddress,EfiLoaderData,M3_LOW_ARENA_SIZE/4096,&Low);
+  if(EFI_ERROR(status)) {line(L"USB low arena allocation failed: ",status);goto cleanup;}
+  low_arena=Low;
+  if(Low<0x100000 || Low+M3_LOW_ARENA_SIZE>0x1000000) {status=EFI_UNSUPPORTED;goto cleanup;}
+  zero((void*)(UINTN)Low,M3_LOW_ARENA_SIZE);
+  m3->low_arena_base=Low;m3->low_arena_size=M3_LOW_ARENA_SIZE;
+  line(L"USB low arena base: ",Low);
+ }
+ #endif
  if(EFI_ERROR(status=pages((sizeof(fv_blob)+4095)/4096,EfiLoaderData,&fv))) goto cleanup;
  copy((void*)(UINTN)fv,fv_blob,sizeof(fv_blob));
  m3->arena_base=arena;m3->arena_size=M3_ARENA_SIZE;
@@ -320,6 +333,7 @@ cleanup:
  #if RUN_TRANSITION == 2
  if(fv) bs->FreePages(fv,(sizeof(fv_blob)+4095)/4096);
  if(arena) bs->FreePages(arena,M3_ARENA_SIZE/4096);
+ if(low_arena) bs->FreePages(low_arena,M3_LOW_ARENA_SIZE/4096);
  if(stack) bs->FreePages(stack,32);
  if(pl) bs->FreePages(pl,pl_pages);
 #else

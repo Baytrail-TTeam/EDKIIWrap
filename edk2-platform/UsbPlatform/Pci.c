@@ -68,7 +68,9 @@ STATIC EFI_STATUS EFIAPI NoPoll(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_WIDTH
 STATIC EFI_STATUS EFIAPI NoCopy(EFI_PCI_IO_PROTOCOL *T,EFI_PCI_IO_PROTOCOL_WIDTH W,UINT8 DB,UINT64 DO,UINT8 SB,UINT64 SO,UINTN C) {(VOID)T;(VOID)W;(VOID)DB;(VOID)DO;(VOID)SB;(VOID)SO;(VOID)C;return EFI_UNSUPPORTED;}
 STATIC BOOLEAN Owned(UINT64 Address,UINTN Size) {
  UINT64 End=HandoffM->arena_base+HandoffM->arena_size;
- return Address>=HandoffM->arena_base && Address<End && Size<=End-Address;
+ UINT64 LowEnd=HandoffM->low_arena_base+HandoffM->low_arena_size;
+ return (Address>=HandoffM->arena_base && Address<End && Size<=End-Address) ||
+        (Address>=HandoffM->low_arena_base && Address<LowEnd && Size<=LowEnd-Address);
 }
 STATIC EFI_STATUS EFIAPI Allocate(EFI_PCI_IO_PROTOCOL *T,EFI_ALLOCATE_TYPE Type,EFI_MEMORY_TYPE MemoryType,UINTN Pages,VOID **Host,UINT64 Attr) {
  EFI_PHYSICAL_ADDRESS Address;EFI_STATUS S;(VOID)Type;

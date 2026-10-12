@@ -122,3 +122,23 @@ pomiaru żądanej/dostępnej ciągłej pamięci i rozmiaru oryginalnego boot.wim
 Poproszono o ponowne podłączenie Ventoy do Maca; odrębny polski obraz
 zamontowany na Macu nie jest oryginalnym angielskim ISO użytkownika.
 Raport: docs/M5-WIMBOOT-RAMDISK-2026-10-09.json.
+
+2026-10-12: oryginalny Win10 ISO ponownie dostępny; kopia lokalna ma znany
+hash a6f470ca..., boot.wim 677539713 bajtów (646.15 MiB). Użytkownik wskazał
+Win7 Patched ACPI and Updates; także skopiowany tylko odczytem.
+Pełny Win10 na CPU-EXIT odtwarza bugcheck 5C / 8000 / B / 0 / 0.
+Exact ntoskrnl + symbole Microsoft + QEMU trace: HalpAcpiFindRsdp znajduje
+ACPI, lecz HalpAcpiAllocateMemory nie ma stron poniżej 16 MiB i zwraca
+C000009A; później zawodzi inicjalizacja przerwań. Standardowe X64 OVMF
+pokazuje Setup. Samo poprawienie stock ACPI/NVS/runtime typów mapy nie usuwa
+5C; dopiero osobna pula 4 MiB poniżej 16 MiB pozwala dojść do Setup.
+
+LOWMEM: dodatkowa pula jawnie przydzielona przez stock IA32 AllocateMaxAddress;
+main 1024 MiB pozostaje. M3 v2, 2400 bajtów; zakresy free RAM/DMA ograniczone
+do obu przydzielonych pul. Stock ACPI/NVS/runtime zajęte typed HOB-ami na
+SystemMemory (GCD Reserved ignorował ich typy), z kontrolą braku wolnej RAM
+poza pulami. Osiem testów z asercjami przechodzi; GRUB sprawdzony osobno.
+Win10 Setup w QEMU po 120 s reaguje na Tab, bugcheck data zerowe.
+Kandydat: build/BAYTRAIL-USB-IA32-LOWMEM.EFI. Nie instalowano OS; test na
+tablecie, pełnym Ventoy i Win7 nadal wymagany. Fizycznych USB nie zmieniano.
+Raport: docs/M5-WINDOWS-LOWMEM-2026-10-12.json oraz PNG BEFORE/AFTER/REFERENCE/USB.

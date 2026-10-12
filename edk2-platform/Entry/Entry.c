@@ -22,7 +22,7 @@ STATIC VOID Reserved(UINT64 Base,UINT64 Size,UINT32 Type) {
 }
 STATIC BOOLEAN BuildResources(M3Handoff *M) {
  Handoff *H=&M->common;UINT64 I,Base,Size,End,A=M->arena_base,Z=A+M->arena_size;
- BOOLEAN Found=FALSE;
+ BOOLEAN Found=FALSE,LowFound=M->low_arena_size==0;UINT64 L=M->low_arena_base,T=L+M->low_arena_size;
  for(I=0;I<H->memory_map_size;I+=H->descriptor_size) {
   EFI_MEMORY_DESCRIPTOR *D=(VOID *)(UINTN)(H->memory_map+I);
   Base=D->PhysicalStart;
@@ -38,6 +38,24 @@ STATIC BOOLEAN BuildResources(M3Handoff *M) {
     EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|
     EFI_RESOURCE_ATTRIBUTE_TESTED|EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE,A,M->arena_size);
    Reserved(Z,End-Z,EFI_RESOURCE_MEMORY_RESERVED);
+  } else if(M->low_arena_size && Base<T && End>L) {
+   if(LowFound || Base>L || End<T || D->Type!=EfiLoaderData || !(D->Attribute&EFI_MEMORY_WB)) return FALSE;
+   LowFound=TRUE;Reserved(Base,L-Base,EFI_RESOURCE_MEMORY_RESERVED);
+   BuildResourceDescriptorHob(EFI_RESOURCE_SYSTEM_MEMORY,
+    EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|
+    EFI_RESOURCE_ATTRIBUTE_TESTED|EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE,L,M->low_arena_size);
+   Reserved(T,End-T,EFI_RESOURCE_MEMORY_RESERVED);
+  } else if(D->Type==EfiACPIReclaimMemory || D->Type==EfiACPIMemoryNVS ||
+            D->Type==EfiRuntimeServicesCode || D->Type==EfiRuntimeServicesData) {
+   /* DXE ignores typed allocation HOBs on a GCD Reserved resource. Describe
+    * real RAM as SystemMemory, then consume the entire range with the typed
+    * allocation HOB below. It must never appear as ConventionalMemory. */
+   UINT64 Attr=EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|EFI_RESOURCE_ATTRIBUTE_TESTED;
+   if(D->Attribute&EFI_MEMORY_WB) Attr|=EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE;
+   else if(D->Attribute&EFI_MEMORY_WT) Attr|=EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE;
+   else if(D->Attribute&EFI_MEMORY_WC) Attr|=EFI_RESOURCE_ATTRIBUTE_WRITE_COMBINEABLE;
+   else Attr|=EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE;
+   BuildResourceDescriptorHob(EFI_RESOURCE_SYSTEM_MEMORY,Attr,Base,Size);
   } else {
    UINT32 T=(D->Type==EfiMemoryMappedIO)?EFI_RESOURCE_MEMORY_MAPPED_IO:EFI_RESOURCE_MEMORY_RESERVED;
    if(D->Type==EfiMemoryMappedIOPortSpace) continue;
@@ -48,7 +66,7 @@ STATIC BOOLEAN BuildResources(M3Handoff *M) {
      D->Type==EfiRuntimeServicesCode || D->Type==EfiRuntimeServicesData)
    BuildMemoryAllocationHob(Base,Size,(EFI_MEMORY_TYPE)D->Type);
  }
- return Found;
+ return Found && LowFound;
 }
 EFI_STATUS EFIAPI _ModuleEntryPoint(UINTN Parameter) {
  M3Handoff *M=(VOID *)Parameter;Handoff *H=&M->common;
@@ -56,12 +74,16 @@ EFI_STATUS EFIAPI _ModuleEntryPoint(UINTN Parameter) {
  UINT32 A,B,C,D;EFI_PEI_GRAPHICS_INFO_HOB *G;
  if(H->magic!=HANDOFF_MAGIC || H->version!=1 || H->size!=sizeof(*H)) BaytrailHalt();
  BaytrailMarker(H,0,"M3 X64 ENTRY",0xffffff);
- if(M->m3_magic!=M3_MAGIC || M->m3_version!=1 || M->m3_size!=sizeof(*M) ||
+ if(M->m3_magic!=M3_MAGIC || M->m3_version!=M3_VERSION || M->m3_size!=sizeof(*M) ||
     M->arena_size!=M3_ARENA_SIZE || M->arena_base>=0x100000000ULL ||
     M->arena_base+M->arena_size>0x100000000ULL ||
     !H->descriptor_size || H->descriptor_size<sizeof(EFI_MEMORY_DESCRIPTOR) ||
     H->memory_map_size%H->descriptor_size || H->memory_map_size>65536)
   Fail(H,"M3 BAD HANDOFF");
+ if((!M->low_arena_size && M->low_arena_base) ||
+    (M->low_arena_size && (M->low_arena_size!=M3_LOW_ARENA_SIZE || M->low_arena_base<0x100000 ||
+      M->low_arena_base+M->low_arena_size>0x1000000 || M->arena_base<0x1000000)))
+  Fail(H,"M3 BAD LOW ARENA");
  InitializeFloatingPointUnits();
  /* Official payload-entry HobLib/allocator run only inside our preallocated arena. */
  HobConstructor((VOID *)(UINTN)M->arena_base,(VOID *)(UINTN)(M->arena_base+M->arena_size),

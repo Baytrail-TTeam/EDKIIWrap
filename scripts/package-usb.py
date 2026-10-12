@@ -25,7 +25,8 @@ Możesz też wpisać pełną ścieżkę, np. fs1:\EFI\BOOT\BOOTX64.EFI.
 Oczekiwane markery: USB FILESYSTEM READY, USB SHELL KEYBOARD READY.
 Polecenie echo usb_key_ok daje USB KEYBOARD COMMAND OK.
 Dołączony EFI/SAMPLES/USBTEST.EFI to opcjonalna aplikacja testowa X64.
-Sprawdza przydzielenie i zwolnienie bloku 640 MiB; loader rezerwuje pulę 1024 MiB.
+Sprawdza przydzielenie i zwolnienie bloku 640 MiB; loader rezerwuje pulę 1024 MiB oraz 4 MiB poniżej 16 MiB.
+Aplikacja sprawdza też przydział 64 KiB z niskiej puli.
 Jej ręczne uruchomienie daje USB MANUAL X64 APP OK; możesz zachować swój plik.
 Nie nadpisuj istniejącego BOOTX64 ani BOOTIA32 podczas kopiowania loadera.
 
