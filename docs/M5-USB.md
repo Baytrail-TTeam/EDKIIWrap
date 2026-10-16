@@ -654,3 +654,52 @@ Uruchomić jak poprzednio, następnie Windows 10 w Ventoy Normal mode.
 Zachować CPU-EXIT. Przy USB low arena allocation failed / PRE-EXIT ERROR
 sfotografować status; nie uwalniać cudzych rezerwacji. Nie zastępować pliku
 BOOTX64.EFI Ventoy tym loaderem.
+
+## 2026-10-16 — pamięć dla real-mode trampoline
+
+Debian Live 13.7 amd64 uruchomiony bezpośrednio przez EFI stub pokazał
+Kernel panic: Real mode trampoline was not allocated. Mapa E820 całą
+pamięć pod 1 MiB oznaczała Reserved. Sama pula 4 MiB pod 16 MiB nie wystarcza.
+
+Collector USB przydziela dodatkowe 64 KiB przez stock IA32 AllocateMaxAddress
+z limitem 0x9ffff. Wymaga bazy >=0x10000 i końca <=0xa0000. Nieudany
+przydział przerywa start przed EBS i zwalnia własne alokacje. Handoff v3
+ma 2416 bajtów. Entry, Probe i PCI DMA respektują trzy własne pule.
+Nie zwalnia się IVT/BDA/EBDA ani całego dolnego 1 MiB.
+
+UsbTest sprawdza przydział/zapis/zwolnienie 16 KiB w nowej puli, zachowując
+próbę odrzucenia legacy 0x1000, 64 KiB pod 16 MiB i 640 MiB głównej RAM.
+W QEMU przydział stock to 0x90000..0xa0000; Linux widzi ten zakres jako
+usable, a pozostałe 0..0x90000 nadal reserved. Poprawka usuwa panic i
+pozwala rozpocząć usługi Live oraz uzyskać prompt logowania ttyS0.
+Nie potwierdzono pulpitu LXQt ani działania na tablecie.
+
+Windows 10 z dokładnie tym samym lokalnym ISO ponownie dochodzi do
+instalatora, Tab zmienia fokus; KiBugCheckData ma pięć zer. To start
+bezpośrednio z ISO, nie pełna ścieżka Ventoy. Direct, hub-MBR, DMA rejection
+i ExitBootServices przechodzą. Wszystkie testy w QEMU, bez dysków fizycznych.
+
+Nowy kandydat: build/BAYTRAIL-USB-IA32-REALMODE.EFI
+SHA256 d7637dadeabc2619c8e65e832dc480392ed063ff55bf413db2cfd9c115dfddf8.
+Zachować poprzedni LOWMEM. Nie zastępować BOOTX64.EFI Ventoy loaderem IA32.
+Dowody: M5-REALMODE-2026-10-16.json oraz PNG USB/WINDOWS.
+
+Powtórzenie próby Linux (macOS tar/libarchive odczytuje ISO):
+
+```sh
+python3 scripts/test-usb-qemu.py --case linux-iso --linux-iso /Users/kacper/Downloads/debian-live-13.7.0-amd64-lxqt.iso --observe-seconds 180 --linux-keyboard-test
+```
+
+Harness wyciąga kernel/initrd do prywatnego katalogu USB FAT i uruchamia
+linux.efi bez GRUB/Ventoy, z wczesną konsolą EFI, ttyS0 i nomodeset.
+Przypadek grub jest eksploracyjny: wpisy klawiszy i brak logu nie dowodzą
+przekazania parametrów. success=null w testach OS wymaga oceny logu/obrazu.
+
+Próba 180 s z --linux-keyboard-test: log szeregowy kończy się promptem
+Debian GNU/Linux 13 debian ttyS0 / debian login:, bez kernel panic.
+Ctrl+Alt+F2 i próba logowania/poleceń dały czarny framebuffer, więc nie
+potwierdzono wykonania uname ani odczytu fw_platform_size. Nie oznaczać
+tego jako potwierdzona interaktywna konsola ani pełny działający pulpit.
+Następnym testem wyświetlania może być konsola szeregowa z wejściem oraz
+oddzielny test fbcon/KMS. Aktualny serial jest tylko logiem wyjściowym.
+Dowody: M5-REALMODE-DEBIAN-2026-10-16.log oraz PNG.

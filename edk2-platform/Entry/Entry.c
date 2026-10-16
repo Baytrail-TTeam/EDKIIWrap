@@ -22,7 +22,8 @@ STATIC VOID Reserved(UINT64 Base,UINT64 Size,UINT32 Type) {
 }
 STATIC BOOLEAN BuildResources(M3Handoff *M) {
  Handoff *H=&M->common;UINT64 I,Base,Size,End,A=M->arena_base,Z=A+M->arena_size;
- BOOLEAN Found=FALSE,LowFound=M->low_arena_size==0;UINT64 L=M->low_arena_base,T=L+M->low_arena_size;
+ BOOLEAN Found=FALSE,RealFound=M->realmode_arena_size==0,LowFound=M->low_arena_size==0;
+ UINT64 R=M->realmode_arena_base,V=R+M->realmode_arena_size;UINT64 L=M->low_arena_base,T=L+M->low_arena_size;
  for(I=0;I<H->memory_map_size;I+=H->descriptor_size) {
   EFI_MEMORY_DESCRIPTOR *D=(VOID *)(UINTN)(H->memory_map+I);
   Base=D->PhysicalStart;
@@ -45,6 +46,13 @@ STATIC BOOLEAN BuildResources(M3Handoff *M) {
     EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|
     EFI_RESOURCE_ATTRIBUTE_TESTED|EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE,L,M->low_arena_size);
    Reserved(T,End-T,EFI_RESOURCE_MEMORY_RESERVED);
+  } else if(M->realmode_arena_size && Base<V && End>R) {
+   if(RealFound || Base>R || End<V || D->Type!=EfiLoaderData || !(D->Attribute&EFI_MEMORY_WB)) return FALSE;
+   RealFound=TRUE;Reserved(Base,R-Base,EFI_RESOURCE_MEMORY_RESERVED);
+   BuildResourceDescriptorHob(EFI_RESOURCE_SYSTEM_MEMORY,
+    EFI_RESOURCE_ATTRIBUTE_PRESENT|EFI_RESOURCE_ATTRIBUTE_INITIALIZED|
+    EFI_RESOURCE_ATTRIBUTE_TESTED|EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE,R,M->realmode_arena_size);
+   Reserved(V,End-V,EFI_RESOURCE_MEMORY_RESERVED);
   } else if(D->Type==EfiACPIReclaimMemory || D->Type==EfiACPIMemoryNVS ||
             D->Type==EfiRuntimeServicesCode || D->Type==EfiRuntimeServicesData) {
    /* DXE ignores typed allocation HOBs on a GCD Reserved resource. Describe
@@ -66,7 +74,7 @@ STATIC BOOLEAN BuildResources(M3Handoff *M) {
      D->Type==EfiRuntimeServicesCode || D->Type==EfiRuntimeServicesData)
    BuildMemoryAllocationHob(Base,Size,(EFI_MEMORY_TYPE)D->Type);
  }
- return Found && LowFound;
+ return Found && LowFound && RealFound;
 }
 EFI_STATUS EFIAPI _ModuleEntryPoint(UINTN Parameter) {
  M3Handoff *M=(VOID *)Parameter;Handoff *H=&M->common;
@@ -81,9 +89,14 @@ EFI_STATUS EFIAPI _ModuleEntryPoint(UINTN Parameter) {
     H->memory_map_size%H->descriptor_size || H->memory_map_size>65536)
   Fail(H,"M3 BAD HANDOFF");
  if((!M->low_arena_size && M->low_arena_base) ||
-    (M->low_arena_size && (M->low_arena_size!=M3_LOW_ARENA_SIZE || M->low_arena_base<0x100000 ||
+    (M->low_arena_size && (M->low_arena_size!=M3_LOW_ARENA_SIZE || M->low_arena_base<0x100000 || M->low_arena_base>=0x1000000 ||
       M->low_arena_base+M->low_arena_size>0x1000000 || M->arena_base<0x1000000)))
   Fail(H,"M3 BAD LOW ARENA");
+ if((!M->realmode_arena_size && M->realmode_arena_base) ||
+    (M->realmode_arena_size && (M->realmode_arena_size!=M3_REALMODE_ARENA_SIZE ||
+     (M->realmode_arena_base&4095) || M->realmode_arena_base<0x10000 || M->realmode_arena_base>=0xa0000 ||
+     M->realmode_arena_base+M->realmode_arena_size>0xa0000 || !M->low_arena_size)))
+  Fail(H,"M3 BAD REALMODE ARENA");
  InitializeFloatingPointUnits();
  /* Official payload-entry HobLib/allocator run only inside our preallocated arena. */
  HobConstructor((VOID *)(UINTN)M->arena_base,(VOID *)(UINTN)(M->arena_base+M->arena_size),

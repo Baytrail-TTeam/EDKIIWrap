@@ -6,10 +6,13 @@ import runpy
 marker=runpy.run_path(str(Path(__file__).with_name("marker-screen.py")))["marker"]
 root=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
-parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy','dma-failure','windows-iso','efi-app','cpu-fault','exit-boot-services'],default='direct')
+parser.add_argument('--case',choices=['direct','hub-mbr','wrong-app','no-keyboard','removable','ventoy','dma-failure','windows-iso','linux-iso','efi-app','cpu-fault','exit-boot-services'],default='direct')
 parser.add_argument('--ventoy-app',type=Path,help='Explore this user EFI in an isolated FAT image; no automatic success verdict')
 parser.add_argument('--efi-app',type=Path,default=root/'build/usb/inputs/windows-bootx64.efi',help='EFI application for isolated exploratory test')
 parser.add_argument('--windows-iso',type=Path,help='Read-only Windows ISO USB CD; isolated driver disk, no physical disk access')
+parser.add_argument('--linux-keyboard-test',action='store_true',help='After observation switch to tty2, log in as Debian live user and run diagnostic commands; review screen')
+parser.add_argument('--linux-boot',choices=['stub','grub'],default='stub',help='Direct EFI kernel or ISO GRUB')
+parser.add_argument('--linux-iso',type=Path,help='Read-only Debian Live ISO, EFI stub or GRUB with diagnostic parameters')
 parser.add_argument('--iso-driver',type=Path,default=root/'build/usb/inputs/iso9660_x64.efi',help='Copy of ISO9660 X64 driver used for direct ISO test')
 parser.add_argument('--native-reference',action='store_true',help='Compare Windows ISO in stock X64 OVMF, without our loader')
 parser.add_argument('--loader',type=Path,default=root/'build/BAYTRAIL-USB-IA32.EFI',help='Loader candidate for controlled before/after comparison')
@@ -20,13 +23,18 @@ parser.add_argument('--setup-keyboard-test',action='store_true',help='At observe
 parser.add_argument('--capture-handoff',action='store_true',help='Inspect our handoff and ACPI in temporary QEMU physical RAM dump')
 parser.add_argument('--kernel-trace',action='store_true',help='QEMU translated kernel blocks at high virtual addresses')
 args=parser.parse_args();case=args.case
+iso_case=case in ['windows-iso','linux-iso']
+iso_path=args.linux_iso if case=='linux-iso' else args.windows_iso
+linux_parameters='boot=live components nomodeset earlycon=efifb keep_bootcon ignore_loglevel loglevel=8 console=ttyS0,115200 console=tty0'
 assert args.observe_seconds is None or 1<=args.observe_seconds<=600
 assert 128<=args.memory_mib<=4096
 assert not args.native_reference or case=='windows-iso'
 assert not args.setup_keyboard_test or case=='windows-iso'
-exploratory=case in ['ventoy','windows-iso','efi-app']
+assert not args.linux_keyboard_test or case=='linux-iso'
+exploratory=case in ['ventoy','windows-iso','linux-iso','efi-app']
 out=root/('build/usb/qemu-usb' if case=='direct' else 'build/usb/qemu-'+case)
 if args.native_reference:out=root/'build/usb/qemu-windows-reference'
+if case=='linux-iso':out=root/('build/usb/qemu-linux-'+args.linux_boot)
 out.mkdir(parents=True,exist_ok=True)
 if case=='efi-app':
  assert args.efi_app.is_file()
@@ -34,11 +42,11 @@ if case=='efi-app':
 if case=='ventoy':
  assert args.ventoy_app and args.ventoy_app.is_file(),'--ventoy-app is required'
  subprocess.check_call(['python3',str(root/'scripts/make-usb-test-disk.py'),'--app',str(args.ventoy_app),'--output',str(out)])
-if case=='windows-iso':
- assert args.windows_iso and args.windows_iso.is_file(), '--windows-iso is required'
- assert args.iso_driver.is_file(),'--iso-driver is required for windows-iso'
+if iso_case:
+ assert iso_path and iso_path.is_file(), 'An ISO is required'
+ assert args.iso_driver.is_file(),'--iso-driver is required for ISO tests'
  subprocess.check_call(['python3',str(root/'scripts/make-usb-test-disk.py'),'--app',str(args.iso_driver),'--output',str(out)])
-if case not in ['direct','ventoy','windows-iso','efi-app']:
+if case not in ['direct','ventoy','windows-iso','linux-iso','efi-app']:
  data=bytearray((root/'build/usb/qemu-usb/usb-disk.img').read_bytes())
  if case=='wrong-app':
   off=data.find((root/'build/usb/BOOTX64.EFI').read_bytes());assert off>0;data[off]^=1
@@ -118,7 +126,8 @@ def inspect_handoff(out,memory_mib,qmp):
     if at+2400<=len(ram) and struct.unpack_from('<Q',ram,at+2312)[0]==0x33464f484c545942:
      version,size=struct.unpack_from('<II',ram,at+2320)
      entry.update({'m3_version':version,'m3_size':size,'arena_base':hex(struct.unpack_from('<Q',ram,at+2328)[0]),'arena_size':struct.unpack_from('<Q',ram,at+2336)[0]})
-     if version==2 and size==2400:entry.update({'low_arena_base':hex(struct.unpack_from('<Q',ram,at+2384)[0]),'low_arena_size':struct.unpack_from('<Q',ram,at+2392)[0]})
+     if version in [2,3] and size in [2400,2416]:entry.update({'low_arena_base':hex(struct.unpack_from('<Q',ram,at+2384)[0]),'low_arena_size':struct.unpack_from('<Q',ram,at+2392)[0]})
+     if version==3 and size==2416:entry.update({'realmode_arena_base':hex(struct.unpack_from('<Q',ram,at+2400)[0]),'realmode_arena_size':struct.unpack_from('<Q',ram,at+2408)[0]})
     for i in range(count):
      address,length,signature=struct.unpack_from('<QII',ram,at+264+i*16)
      name=signature.to_bytes(4,'little').decode('ascii',errors='replace')
@@ -161,9 +170,16 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
  '-display','none','-serial',f'file:{out/"serial.log"}','-monitor','none',
  '-qmp',f'unix:{sock},server=on,wait=off','-net','none','-no-reboot','-no-shutdown']
  if args.kernel_trace:command+=['-d','in_asm','-dfilter','0xffff800000000000..0xffffffffffffffff','-D',str(out/'kernel-trace.log')]
- if case=='windows-iso':
+ if case=='linux-iso' and args.linux_boot=='stub':
+  boot_files=out/'linux-files';boot_files.mkdir(exist_ok=True)
+  for source,target in [('live/vmlinuz','linux.efi'),('live/initrd.img','initrd.img')]:
+   with (boot_files/target).open('wb') as output:
+    subprocess.run(['tar','-xOf',str(args.linux_iso),source],stdout=output,check=True)
+   assert (boot_files/target).stat().st_size>0, 'Empty Debian boot file'
+  command+=['-drive',f'if=none,id=linuxfiles,format=raw,readonly=on,file=fat:{boot_files}','-device','usb-storage,bus=xhci.0,drive=linuxfiles']
+ if iso_case:
   i=command.index(f'if=none,id=usbtest,format=raw,file={out/"usb-disk.img"}');command[i]+=',readonly=on'
-  command[command.index('-display'):command.index('-display')]=['-drive',f'if=none,id=windowsiso,format=raw,media=cdrom,readonly=on,file={args.windows_iso}','-device','usb-storage,bus=xhci.0,drive=windowsiso']
+  command[command.index('-display'):command.index('-display')]=['-drive',f'if=none,id=windowsiso,format=raw,media=cdrom,readonly=on,file={iso_path}','-device','usb-storage,bus=xhci.0,drive=windowsiso']
  if case=='hub-mbr':command[command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1:command.index('usb-storage,bus=xhci.0,drive=usbtest,port=1.1')-1]=['-device','usb-hub,id=hub,bus=xhci.0,port=1']
  if case!='no-keyboard':command[command.index('-display'):command.index('-display')]=['-device','usb-kbd,bus=xhci.0'+(',port=1.2' if case=='hub-mbr' else '')]
  if args.native_reference:
@@ -202,22 +218,33 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
      shell_ready_seconds=round(time.monotonic()-boot_started,3)
      assert manual_pixels==0,'USB app ran before a manual Shell command'
      command_text=('fs1:\ncd efi\ncd boot\nbootx64.efi\n' if manual_app else '')+('' if exploratory else 'echo usb_key_ok\n')
-     if case=='windows-iso':command_text='load fs1:\\efi\\boot\\bootx64.efi\nmap -r\nfs2:\\efi\\boot\\bootx64.efi\n\n'
+     if iso_case:command_text='load fs1:\\efi\\boot\\bootx64.efi\nmap -r\nfs2:\\efi\\boot\\bootx64.efi\n\n'
+     if case=='linux-iso' and args.linux_boot=='stub':command_text='load fs1:\\efi\\boot\\bootx64.efi\nmap -r\nfs3:\\linux.efi initrd=\\initrd.img '+linux_parameters+'\n'
      if args.native_reference:command_text='fs0:\\efi\\boot\\bootx64.efi\n\n'
      if case=='dma-failure':command_text='fs1:\ncd efi\ncd boot\nbootx64.efi dma-map-failure\n'
      if case=='exit-boot-services':command_text='fs1:\ncd efi\ncd boot\nbootx64.efi exit-boot-services\n'
      if case=='cpu-fault':command_text='fs1:\ncd efi\ncd boot\nbootx64.efi cpu-fault\n'
      for char in command_text:
-      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else 'minus' if char=='-' else 'backslash' if char=='\\' else char
+      key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else 'shift-semicolon' if char==':' else 'dot' if char=='.' else 'minus' if char=='-' else 'backslash' if char=='\\' else 'equal' if char=='=' else 'comma' if char==',' else 'shift-'+char.lower() if char.isupper() else char
       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
-      if case=='windows-iso' and char=='\n':time.sleep(2)
+      if iso_case and char=='\n':time.sleep(2)
      typed=True;app_started=time.monotonic()
+     if case=='linux-iso' and args.linux_boot=='grub':
+      time.sleep(5)
+      qmp('human-monitor-command',{'command-line':'sendkey c 20'});time.sleep(1)
+      linux_commands='search --file --set=root /live/vmlinuz\nlinux /live/vmlinuz '+linux_parameters+'\ninitrd /live/initrd.img\nboot\n'
+      for char in linux_commands:
+       key='spc' if char==' ' else 'ret' if char=='\n' else 'slash' if char=='/' else 'equal' if char=='=' else 'comma' if char==',' else 'dot' if char=='.' else 'minus' if char=='-' else char
+       qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.08)
+       if char=='\n':time.sleep(2)
+      app_started=time.monotonic()
      if case=='ventoy':
       # Let GRUB finish initialization before testing direct EFI input polling.
       time.sleep(4)
       for char in 'echo ventoy_key_ok\n':
        key='spc' if char==' ' else 'ret' if char=='\n' else 'shift-minus' if char=='_' else char
        qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.12)
+    if case=='linux-iso' and app_started and b'Kernel panic - not syncing:' in (out/'serial.log').read_bytes():break
     if case=='exit-boot-services' and manual_pixels>100:break
     if exploratory and app_started and time.monotonic()-app_started>(args.observe_seconds or (35 if case=='windows-iso' else 8)):break
     if not exploratory and min(counts)>100 and (manual_pixels>100 or not manual_app):break
@@ -245,12 +272,21 @@ with tempfile.TemporaryDirectory(prefix='baytrail-usb-') as tmp:
    exact=exact and (messages['20']=='USB MANUAL X64 APP OK' if manual_app else messages['20']=='')
    success=exact and (red>100 and ('HLT=1' in registers or case=='cpu-fault') if negative else min(counts)>100) and 'CS64' in registers
    if case=='exit-boot-services':success=messages['20']=='USB EXIT BOOT SERVICES OK' and 'CS64' in registers and 'HLT=1' in registers
-   result={'success':None if exploratory else success,'observation_requires_review':exploratory,'visible_markers':messages,'exception_lines':fault_lines,'fault_stack':fault_detail,'case':case,'native_reference':args.native_reference,'physical_memory_mib':int(command[command.index('-m')+1]),'observe_seconds':args.observe_seconds,'kernel':kernel_result,'handoff':handoff_result,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
-   'seconds_to_shell_ready':shell_ready_seconds,'efi_app_sha256':sha(args.efi_app) if case=='efi-app' else None,'iso_driver_sha256':sha(args.iso_driver) if case=='windows-iso' else None,'windows_iso_path':str(args.windows_iso) if args.windows_iso else None,'windows_iso_size':args.windows_iso.stat().st_size if args.windows_iso else None,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
+   result={'success':None if exploratory else success,'observation_requires_review':exploratory,'visible_markers':messages,'exception_lines':fault_lines,'fault_stack':fault_detail,'case':case,'linux_boot':args.linux_boot if case=='linux-iso' else None,'linux_iso_path':str(args.linux_iso) if args.linux_iso else None,'linux_parameters':linux_parameters if case=='linux-iso' else None,'linux_iso_sha256':sha(args.linux_iso) if args.linux_iso else None,'linux_kernel_panic':case=='linux-iso' and b'Kernel panic - not syncing:' in (out/'serial.log').read_bytes(),'native_reference':args.native_reference,'physical_memory_mib':int(command[command.index('-m')+1]),'observe_seconds':args.observe_seconds,'kernel':kernel_result,'handoff':handoff_result,'expected_rejection':negative,'red_pixels_row_7':red,'loader_sha256':sha(loader),'firmware_code_sha256':sha(code),
+   'seconds_to_shell_ready':shell_ready_seconds,'efi_app_sha256':sha(args.efi_app) if case=='efi-app' else None,'iso_driver_sha256':sha(args.iso_driver) if iso_case else None,'windows_iso_path':str(args.windows_iso) if args.windows_iso else None,'windows_iso_size':args.windows_iso.stat().st_size if args.windows_iso else None,'ventoy_app_sha256':sha(args.ventoy_app) if case=='ventoy' else None,'manual_usb_app_requested':manual_app,'usb_disk_unchanged':usb_before==sha(out/'usb-disk.img'),'usb_disk_sha256':sha(out/'usb-disk.img'),'firmware_vars_template_sha256':sha(vars_template),'green_pixels_rows_21_22_23':counts,
    'qemu_version':subprocess.check_output(['qemu-system-x86_64','--version'],text=True).splitlines()[0],
-   'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Successful ExitBootServices, BootServices NULL and interrupts disabled; VM halted without launching OS' if case=='exit-boot-services' else 'Isolated supplied EFI without companion files; review output' if case=='efi-app' else 'Direct read-only Windows ISO via supplied ISO9660 driver' if case=='windows-iso' else 'Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
-   if args.setup_keyboard_test:
-    result['setup_keyboard_input']=['tab']
+   'command':command,'date':datetime.now().astimezone().date().isoformat(),'scope':('Successful ExitBootServices, BootServices NULL and interrupts disabled; VM halted without launching OS' if case=='exit-boot-services' else 'Isolated supplied EFI without companion files; review output' if case=='efi-app' else 'Direct read-only Debian Live ISO via supplied ISO9660 driver; diagnostic kernel parameters' if case=='linux-iso' else 'Direct read-only Windows ISO via supplied ISO9660 driver' if case=='windows-iso' else 'Exploratory user Ventoy EFI on isolated FAT; review screenshot, not a full Ventoy partition' if case=='ventoy' else 'Expected rejection of '+case if negative else 'Manual USB application from interactive Shell + keyboard command' if manual_app else 'Shell accepts USB filesystem with nonmatching BOOTX64; no automatic app launch')+'; cooperative PM timer; QEMU only; tablet not tested'}
+   if args.linux_keyboard_test:
+    result['linux_keyboard_input']='tty2: user/live; uname -m; EFI platform size'
+    qmp('human-monitor-command',{'command-line':'sendkey ctrl-alt-f2 100'});time.sleep(3)
+    for line in ['user','live','uname -m','cat /sys/firmware/efi/fw_platform_size']:
+     for char in line+'\n':
+      key='ret' if char=='\n' else 'spc' if char==' ' else 'slash' if char=='/' else 'minus' if char=='-' else 'shift-minus' if char=='_' else char
+      qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.1)
+     time.sleep(3)
+   if args.setup_keyboard_test or args.linux_keyboard_test:
+    if args.setup_keyboard_test:result['setup_keyboard_input']=['tab']
+    else:result['setup_keyboard_input']=[]
     for key in result['setup_keyboard_input']:
      qmp('human-monitor-command',{'command-line':f'sendkey {key} 20'});time.sleep(.2)
     time.sleep(2);qmp('screendump',{'filename':str(out/'screen.ppm')})

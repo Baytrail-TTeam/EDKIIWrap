@@ -1,0 +1,244 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: failed to load Boot0001 "UEFI QEMU QEMU USB HARDDRIVE 1-0000:00:02.0-2" from PciRoot(0x0)/Pci(0x2,0x0)/USB(0x1,0x0): Not Found
+BdsDxe: failed to load Boot0002 "UEFI QEMU QEMU USB HARDDRIVE 1-0000:00:02.0-1" from PciRoot(0x0)/Pci(0x2,0x0)/USB(0x0,0x0): Not Found
+BdsDxe: failed to load Boot0003 "UEFI QEMU QEMU USB HARDDRIVE 1-0000:00:02.0-4.1" from PciRoot(0x0)/Pci(0x2,0x0)/USB(0x7,0x0)/USB(0x0,0x0): Not Found
+BdsDxe: loading Boot0004 "UEFI QEMU HARDDISK QM00001 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)
+BdsDxe: starting Boot0004 "UEFI QEMU HARDDISK QM00001 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)
+Baytrail X64 PoC / EDK2 X64 NATIVE USB TEST
+USB arena requested bytes: 0x0000000040000000
+USB low arena base: 0x0000000000406000
+CPUID: 0x0000000000000663
+Framebuffer: 0x0000000080000000
+Width: 0x0000000000000500
+Height: 0x0000000000000320
+Stride: 0x0000000000000500
+Pixel format: 0x0000000000000001
+ACPI2 RSDP: 0x000000005FB7E014
+ACPI1 RSDP: 0x000000005FB7E000
+ACPI tables: 0x000000000000000B
+SMBIOS2: 0x000000005F974000
+SMBIOS3: 0x0000000000000000
+Memory map bytes: 0x00000000000013E0
+Handoff: 0x000000005E8B7000
+Tables present flags (ACPI=1 SMBIOS=2): 0x0000000000000003
+M3 arena base: 0x000000001BF78000
+M3 FV base: 0x000000005CED6000
+M3 entry point: 0x000000005D7D132C
+M3: ExitBootServices then EDK2 X64 DXE.
+[    0.000000] Linux version 6.12.107+deb13-amd64 (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #1 SMP PREEMPT_DYNAMIC Debian 6.12.107-1 (2026-08-29)
+[    0.000000] Command line: fs3:\linux.efi initrd=\initrd.img boot=live components nomodeset earlycon=efifb keep_bootcon ignore_loglevel loglevel=8 console=ttyS0,115200 console=tty0
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x0000000000405fff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000406000-0x0000000000805fff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000806000-0x0000000000807fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x0000000000808000-0x000000000080ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000810000-0x00000000008fffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x0000000000900000-0x000000001bf77fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000001bf78000-0x000000005adb0fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005adb1000-0x000000005adb2fff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x000000005adb3000-0x000000005be68fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005be69000-0x000000005be98fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005be99000-0x000000005beaefff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005beaf000-0x000000005beb4fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005beb5000-0x000000005beb7fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005beb8000-0x000000005bebefff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005bebf000-0x000000005bf48fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005bf49000-0x000000005bf49fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005bf4a000-0x000000005bf77fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005bf78000-0x000000005fb6cfff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005fb6d000-0x000000005fb7efff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x000000005fb7f000-0x000000005fbfefff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000005fbff000-0x000000005feb8fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005feb9000-0x000000005febafff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000005febb000-0x000000005ff77fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000005ff78000-0x000000005fffffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000e0000000-0x00000000efffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] earlycon: efifb0 at I/O port 0x0 (options '')
+[    0.000000] printk: legacy bootconsole [efifb0] enabled
+[    0.000000] printk: debug: skip boot console de-registration.
+[    0.000000] printk: debug: ignoring loglevel setting.
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] APIC: Static calls initialized
+[    0.000000] efi: EFI v2.7 by Baytrail EDK2 X64
+[    0.000000] efi: ACPI 2.0=0x5fb7e014 ACPI=0x5fb7e000 SMBIOS=0x5f974000 INITRD=0x5adb5f18 
+[    0.000000] secureboot: Secure boot disabled
+[    0.000000] SMBIOS 2.8 present.
+[    0.000000] DMI: QEMU Standard PC (Q35 + ICH9, 2009), BIOS edk2-stable202408-prebuilt.qemu.org 08/13/2024
+[    0.000000] DMI: Memory slots populated: 1/1
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] tsc: Detected 1000.054 MHz processor
+[    0.001432] e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+[    0.007732] e820: remove [mem 0x000a0000-0x000fffff] usable
+[    0.014121] last_pfn = 0x5fb7f max_arch_pfn = 0x10000000000
+[    0.020780] MTRR map: 3 entries (2 fixed + 1 variable; max 18), built from 8 variable MTRRs
+[    0.027041] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.076460] No sub-1M memory is available for the trampoline
+[    0.082734] Using GB pages for direct mapping
+[    0.100880] RAMDISK: [mem 0x50b95000-0x595b5fff]
+[    0.110298] ACPI: Early table checksum verification disabled
+[    0.116387] ACPI: RSDP 0x000000005FB7E014 000024 (v02 BOCHS )
+[    0.122477] ACPI: XSDT 0x000000005FB7D0E8 000054 (v01 BOCHS  BXPC     00000001      01000013)
+[    0.128821] ACPI: FACP 0x000000005FB79000 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.135286] ACPI: DSDT 0x000000005FB7A000 0020FD (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.141262] ACPI: FACS 0x000000005FBDD000 000040
+[    0.147252] ACPI: APIC 0x000000005FB78000 000078 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.153233] ACPI: HPET 0x000000005FB77000 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.159196] ACPI: MCFG 0x000000005FB76000 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.165174] ACPI: WAET 0x000000005FB75000 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.171107] ACPI: BGRT 0x000000005FB74000 000038 (v01 INTEL  EDK2     00000002      01000013)
+[    0.177101] ACPI: Reserving FACP table memory at [mem 0x5fb79000-0x5fb790f3]
+[    0.182858] ACPI: Reserving DSDT table memory at [mem 0x5fb7a000-0x5fb7c0fc]
+[    0.188565] ACPI: Reserving FACS table memory at [mem 0x5fbdd000-0x5fbdd03f]
+[    0.194267] ACPI: Reserving APIC table memory at [mem 0x5fb78000-0x5fb78077]
+[    0.199984] ACPI: Reserving HPET table memory at [mem 0x5fb77000-0x5fb77037]
+[    0.205683] ACPI: Reserving MCFG table memory at [mem 0x5fb76000-0x5fb7603b]
+[    0.211393] ACPI: Reserving WAET table memory at [mem 0x5fb75000-0x5fb75027]
+[    0.217160] ACPI: Reserving BGRT table memory at [mem 0x5fb74000-0x5fb74037]
+[    0.225248] No NUMA configuration found
+[    0.230996] Faking a node at [mem 0x0000000000000000-0x000000005fb7efff]
+[    0.237378] NODE_DATA(0) allocated [mem 0x5ad86680-0x5adb0fff]
+[    0.247768] Zone ranges:
+[    0.253524]   DMA      [mem 0x0000000000406000-0x0000000000ffffff]
+[    0.259297]   DMA32    [mem 0x0000000001000000-0x000000005fb7efff]
+[    0.265029]   Normal   empty
+[    0.270719]   Device   empty
+[    0.276413] Movable zone start for each node
+[    0.282153] Early memory node ranges
+[    0.287871]   node   0: [mem 0x0000000000406000-0x0000000000805fff]
+[    0.293711]   node   0: [mem 0x000000001bf78000-0x000000005adb0fff]
+[    0.299480]   node   0: [mem 0x000000005adb3000-0x000000005be68fff]
+[    0.305195]   node   0: [mem 0x000000005be99000-0x000000005beaefff]
+[    0.310901]   node   0: [mem 0x000000005beb5000-0x000000005beb7fff]
+[    0.316631]   node   0: [mem 0x000000005bebf000-0x000000005bf48fff]
+[    0.322349]   node   0: [mem 0x000000005bf4a000-0x000000005bf77fff]
+[    0.328196] Initmem setup node 0 [mem 0x0000000000406000-0x000000005bf77fff]
+[    0.335169] On node 0, zone DMA: 1030 pages in unavailable ranges
+[    0.345954] On node 0, zone DMA32: 46962 pages in unavailable ranges
+[    0.351740] On node 0, zone DMA32: 2 pages in unavailable ranges
+[    0.357342] On node 0, zone DMA32: 48 pages in unavailable ranges
+[    0.362929] On node 0, zone DMA32: 6 pages in unavailable ranges
+[    0.368547] On node 0, zone DMA32: 7 pages in unavailable ranges
+[    0.374134] On node 0, zone DMA32: 1 pages in unavailable ranges
+[    0.380976] On node 0, zone DMA32: 16520 pages in unavailable ranges
+[    0.386925] ACPI: PM-Timer IO Port: 0x608
+[    0.392965] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.398977] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.404745] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.410620] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.416322] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.422077] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.427750] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.433579] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.439182] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.445027] efi_bgrt: Ignoring BGRT: invalid image address
+[    0.450932] CPU topo: Max. logical packages:   1
+[    0.456497] CPU topo: Max. logical dies:       1
+[    0.462047] CPU topo: Max. dies per package:   1
+[    0.467650] CPU topo: Max. threads per core:   1
+[    0.473291] CPU topo: Num. cores per package:     1
+[    0.478851] CPU topo: Num. threads per package:   1
+[    0.484293] CPU topo: Allowing 1 present CPUs plus 0 hotplug CPUs
+[    0.490854] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00405fff]
+[    0.496452] PM: hibernation: Registered nosave memory: [mem 0x00806000-0x1bf77fff]
+[    0.501907] PM: hibernation: Registered nosave memory: [mem 0x5adb1000-0x5adb2fff]
+[    0.507337] PM: hibernation: Registered nosave memory: [mem 0x5be69000-0x5be98fff]
+[    0.512759] PM: hibernation: Registered nosave memory: [mem 0x5beaf000-0x5beb4fff]
+[    0.518240] PM: hibernation: Registered nosave memory: [mem 0x5beb8000-0x5bebefff]
+[    0.523739] PM: hibernation: Registered nosave memory: [mem 0x5bf49000-0x5bf49fff]
+[    0.529251] PM: hibernation: Registered nosave memory: [mem 0x5bf78000-0x5fb7efff]
+[    0.534854] [mem 0x60000000-0xdfffffff] available for PCI devices
+[    0.540416] Booting paravirtualized kernel on bare hardware
+[    0.546176] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645519600211568 ns
+[    0.565250] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:1 nr_cpu_ids:1 nr_node_ids:1
+[    0.572723] percpu: Embedded 66 pages/cpu s233472 r8192 d28672 u2097152
+[    0.578904] pcpu-alloc: s233472 r8192 d28672 u2097152 alloc=1*2097152
+[    0.584782] pcpu-alloc: [0] 0 
+[    0.591455] Kernel command line: fs3:\linux.efi initrd=\initrd.img boot=live components nomodeset earlycon=efifb keep_bootcon ignore_loglevel loglevel=8 console=ttyS0,115200 console=tty0
+[    0.631198] Booted with the nomodeset parameter. Only the system framebuffer will be available
+[    0.651505] Unknown kernel command line parameters "components boot=live", will be passed to user space.
+[    0.671623] random: crng init done
+[    0.691406] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.707721] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.726051] Fallback order for Node 0: 0 
+[    0.726415] Built 1 zonelists, mobility grouping on.  Total pages: 263104
+[    0.758588] Policy zone: DMA32
+[    0.775091] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.814872] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.876156] ftrace: allocating 45200 entries in 180 pages
+[    0.894704] ftrace: allocated 180 pages with 4 groups
+[    0.921853] Dynamic Preempt: voluntary
+[    0.943154] rcu: Preemptible hierarchical RCU implementation.
+[    0.961356] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=1.
+[    0.979680] 	Trampoline variant of Tasks RCU enabled.
+[    0.997794] 	Rude variant of Tasks RCU enabled.
+[    1.016016] 	Tracing variant of Tasks RCU enabled.
+[    1.034375] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    1.052434] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
+[    1.071585] RCU Tasks: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=1.
+[    1.086833] RCU Tasks Rude: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=1.
+[    1.101021] RCU Tasks Trace: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=1.
+[    1.158687] NR_IRQS: 524544, nr_irqs: 256, preallocated irqs: 16
+[    1.181225] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    1.196579] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    1.215724] Console: colour dummy device 80x25
+[    1.230851] printk: legacy console [tty0] enabled
+[    1.247137] printk: legacy console [ttyS0] enabled
+[    1.298160] ACPI: Core revision 20240827
+[    1.317486] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    1.336442] APIC: Switch to symmetric I/O mode setup
+[    1.356668] x2apic: IRQ remapping doesn't support X2APIC mode
+[    1.375602] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    1.410881] clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0xe6a4a159b8, max_idle_ns: 440795207445 ns
+[    1.426570] Calibrating delay loop (skipped), value calculated using timer frequency.. 2000.10 BogoMIPS (lpj=4000216)
+[    1.439523] x86/cpu: User Mode Instruction Prevention (UMIP) activated
+[    1.451597] Last level iTLB entries: 4KB 0, 2MB 0, 4MB 0
+[    1.454401] Last level dTLB entries: 4KB 0, 2MB 0, 4MB 0, 1GB 0
+[    1.467253] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    1.470690] Spectre V2 : Mitigation: Retpolines
+[    1.474408] Spectre V2 : Spectre v2 / SpectreRSB: Filling RSB on context switch and VMEXIT
+[    1.478464] Speculative Store Bypass: Vulnerable
+[    1.483817] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+[    1.490627] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+[    1.494447] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+[    1.498402] x86/fpu: Supporting XSAVE feature 0x008: 'MPX bounds registers'
+[    1.506397] x86/fpu: Supporting XSAVE feature 0x010: 'MPX CSR'
+[    1.510456] x86/fpu: Supporting XSAVE feature 0x200: 'Protection Keys User registers'
+[    1.514504] x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
+[    1.518404] x86/fpu: xstate_offset[3]:  960, xstate_sizes[3]:   64
+[    1.522396] x86/fpu: xstate_offset[4]: 1024, xstate_sizes[4]:   64
+[    1.526389] x86/fpu: xstate_offset[9]: 2688, xstate_sizes[9]:    8
+[    1.530436] x86/fpu: Enabled xstate features 0x21f, context size is 2696 bytes, using 'standard' format.
+[    1.873807] Freeing SMP alternatives memory: 40K
+[    1.874686] pid_max: default: 32768 minimum: 301
+[    1.894066] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,tomoyo,bpf,ipe,ima,evm
+[    1.899754] landlock: Up and running.
+[    1.902397] Yama: disabled by default; enable with sysctl kernel.yama.*
+[    1.910825] AppArmor: AppArmor initialized
+[    1.914528] TOMOYO Linux initialized
+[    1.919746] LSM support for eBPF active
+[    1.928683] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    1.931125] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    2.069372] smpboot: CPU0: AMD QEMU TCG CPU version 2.5+ (family: 0x6, model: 0x6, stepping: 0x3)
+[    2.085036] Performance Events: PMU not available due to virtualization, using software events only.
+[    2.086622] Kernel panic - not syncing: Real mode trampoline was not allocated
+[    2.090370] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.12.107+deb13-amd64 #1  Debian 6.12.107-1
+[    2.090370] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS edk2-stable202408-prebuilt.qemu.org 08/13/2024
+[    2.090370] Call Trace:
+[    2.090370]  <TASK>
+[    2.090370]  dump_stack_lvl+0x5d/0x80
+[    2.090370]  panic+0x118/0x2db
+[    2.090370]  ? __pfx_do_init_real_mode+0x10/0x10
+[    2.090370]  init_real_mode+0x2b/0x240
+[    2.090370]  ? __pfx_do_init_real_mode+0x10/0x10
+[    2.090370]  do_init_real_mode+0x12/0x20
+[    2.090370]  do_one_initcall+0x5b/0x310
+[    2.090370]  ? __pfx_kernel_init+0x10/0x10
+[    2.090370]  kernel_init_freeable+0x124/0x2a0
+[    2.090370]  ? __pfx_kernel_init+0x10/0x10
+[    2.090370]  kernel_init+0x1a/0x130
+[    2.090370]  ret_from_fork+0x34/0x50
+[    2.090370]  ? __pfx_kernel_init+0x10/0x10
+[    2.090370]  ret_from_fork_asm+0x1a/0x30
+[    2.090370]  </TASK>
+[    2.090370] ---[ end Kernel panic - not syncing: Real mode trampoline was not allocated ]---

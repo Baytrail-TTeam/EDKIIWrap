@@ -142,3 +142,21 @@ Win10 Setup w QEMU po 120 s reaguje na Tab, bugcheck data zerowe.
 Kandydat: build/BAYTRAIL-USB-IA32-LOWMEM.EFI. Nie instalowano OS; test na
 tablecie, pełnym Ventoy i Win7 nadal wymagany. Fizycznych USB nie zmieniano.
 Raport: docs/M5-WINDOWS-LOWMEM-2026-10-12.json oraz PNG BEFORE/AFTER/REFERENCE/USB.
+
+## 2026-10-16 — Debian Live w QEMU
+
+Start OVMF IA32 → nasz loader LOWMEM → EDK2 X64 → bezpośredni EFI stub
+Debian Live 13.7 amd64. Czytelny log jądra 6.12.107 potwierdza ACPI i
+przekazanie sterowania. Kernel panic: Real mode trampoline was not allocated.
+Nie ma dostępnej pamięci pod 1 MiB; dotychczasowa pula 4 MiB pod 16 MiB
+tego nie zapewnia. Nie potwierdzono pełnego startu Live ani przyczyny błędu
+Windows na tablecie. Bez zmian loadera, bez fizycznych zapisów.
+Dowody i dalszy kierunek: docs/M5-DEBIAN-2026-10-16.md.
+
+Poprawka REALMODE przydziela własne 64 KiB pod 640 KiB (ABI M3 v3).
+QEMU: znika kernel panic Debian, działa init/usługi Live i prompt logowania;
+Windows 10 ponownie pokazuje interaktywny instalator, bugcheck zerowy.
+Direct, hub-MBR, DMA rejection i EBS przechodzą. Kandydat:
+build/BAYTRAIL-USB-IA32-REALMODE.EFI. Nadal brak próby na tablecie, brak
+potwierdzonego pulpitu Debian i brak pełnego testu dysku Ventoy w QEMU.
+Szczegóły: docs/M5-USB.md, docs/M5-REALMODE-2026-10-16.json.

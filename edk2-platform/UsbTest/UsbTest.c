@@ -92,6 +92,16 @@ EFI_STATUS EFIAPI UsbTestEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
   BOOLEAN Owned=Low>=M->low_arena_base && Low+65536<=M->low_arena_base+M->low_arena_size && Low+65536<=0x1000000;
   gBS->FreePages(Low,16);if(!Owned) return EFI_SECURITY_VIOLATION;
   Print(L"USB_LOW_MEMORY_64K_OK\r\n");
+  Low=0x9ffff;
+  S=gBS->AllocatePages(AllocateMaxAddress,EfiLoaderData,4,&Low);
+  if(EFI_ERROR(S)) {Print(L"USB_REALMODE_MEMORY_FAILED: %r\r\n",S);return S;}
+  Owned=Low>=M->realmode_arena_base && Low+16384<=M->realmode_arena_base+M->realmode_arena_size && Low+16384<=0xa0000;
+  if(Owned) {
+   *(volatile UINT64 *)(UINTN)Low=0x42545245414c4d33ULL;
+   Owned=*(volatile UINT64 *)(UINTN)Low==0x42545245414c4d33ULL;
+  }
+  gBS->FreePages(Low,4);if(!Owned) return EFI_SECURITY_VIOLATION;
+  Print(L"USB_REALMODE_MEMORY_16K_OK\r\n");
  }
  /* Verify substantial conventional memory is available to a child EFI app. */
  S=gBS->AllocatePages(AllocateAnyPages,EfiLoaderData,640*256,&Address);

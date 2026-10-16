@@ -32,7 +32,8 @@ EFI_STATUS EFIAPI ProbeEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  if(EFI_ERROR(Status)||Crc!=0xcbf43926) Fail(H,"M3 CRC FAILED");
  Status=gBS->AllocatePages(AllocateAnyPages,EfiBootServicesData,1,&Page);
  if(EFI_ERROR(Status) || (!Inside(Page,1,M->arena_base,M->arena_size) &&
-    !Inside(Page,1,M->low_arena_base,M->low_arena_size))) Fail(H,"M3 PAGE ALLOCATION FAILED");
+    !Inside(Page,1,M->low_arena_base,M->low_arena_size) &&
+    !Inside(Page,1,M->realmode_arena_base,M->realmode_arena_size))) Fail(H,"M3 PAGE ALLOCATION FAILED");
  *(volatile UINT64 *)(UINTN)Page=M3_MAGIC;
  if(*(volatile UINT64 *)(UINTN)Page!=M3_MAGIC || EFI_ERROR(gBS->FreePages(Page,1))) Fail(H,"M3 PAGE TEST FAILED");
  Status=gBS->InstallProtocolInterface(&Handle,&ProbeGuid,EFI_NATIVE_INTERFACE,&Token);
@@ -55,7 +56,8 @@ EFI_STATUS EFIAPI ProbeEntry(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
  for(I=0;I<Size;I+=Ds) {
   EFI_MEMORY_DESCRIPTOR *D=(VOID *)((UINT8 *)Buffer+I);
   if(D->Type==EfiConventionalMemory && !Inside(D->PhysicalStart,D->NumberOfPages,M->arena_base,M->arena_size) &&
-     !Inside(D->PhysicalStart,D->NumberOfPages,M->low_arena_base,M->low_arena_size)) Fail(H,"M3 STOCK MEMORY RELEASED");
+     !Inside(D->PhysicalStart,D->NumberOfPages,M->low_arena_base,M->low_arena_size) &&
+     !Inside(D->PhysicalStart,D->NumberOfPages,M->realmode_arena_base,M->realmode_arena_size)) Fail(H,"M3 STOCK MEMORY RELEASED");
  }
  /* Typed stock allocations must survive GCD initialization without becoming
   * free memory. A Reserved resource silently drops these allocation types. */
