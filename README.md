@@ -1,11 +1,10 @@
 # EDKIIWrap
 
-I am developing EDKIIWrap for devices powered by Intel Bay Trail-T processors.
-My goal is to transition from stock 32-bit UEFI (IA32) to an EDK II-based
-64-bit UEFI (X64) environment so these devices can boot 64-bit operating systems.
+EDKIIWrap is an experimental project for devices powered by Intel Bay Trail-T
+processors. It aims to enable a transition from stock 32-bit UEFI (IA32) to an
+EDK II-based 64-bit UEFI (X64) environment to boot 64-bit operating systems.
 
-This is an experimental project. Compatibility depends on the device and
-operating system.
+Compatibility depends on the device and operating system.
 
 ## Current status
 
