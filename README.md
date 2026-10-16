@@ -1,6 +1,13 @@
-# Bay Trail: stock IA32 UEFI → kod X64
+# EDKIIWrap
 
-Niezależne repozytorium w `/Users/kacper/code/BaytrailProject/baytrail-x64-uefi`.
+Projekt stworzony dla urządzeń z procesorami Intel Bay Trail-T, który ma umożliwić
+przejście z fabrycznego UEFI IA32 do środowiska UEFI X64 opartego na EDK II,
+aby uruchamiać 64-bitowe systemy operacyjne (X64).
+
+Projekt jest eksperymentalny; zgodność zależy od urządzenia i uruchamianego systemu.
+Według testów użytkownika Linux Mint uruchamia się na tablecie, natomiast problemy
+z rozruchem Windows nadal pozostają nierozwiązane.
+
 Dwa sąsiednie repozytoria były użyte wyłącznie jako źródła wiedzy.
 CSMWrap/SeaBIOS nie są częścią tego projektu.
 
@@ -27,8 +34,8 @@ M3 uruchomiono poprawnie w QEMU z IA32 OVMF (2026-10-08).
 M3 potwierdzono również zdjęciem użytkownika IMG_0428 (2026-10-08):
 [wynik testu](docs/MANUAL-TEST-M3-2026-10-08.md). Bramka do M4 spełniona.
 M4 potwierdzono również na tablecie zdjęciem IMG_0429 (2026-10-08):
-[wynik testu](docs/MANUAL-TEST-M4-2026-10-08.md). M5 jest w przygotowaniu.
-Agent nie wykonywał testów fizycznych. Próby Windows są wstrzymane.
+[wynik testu](docs/MANUAL-TEST-M4-2026-10-08.md). Dalszy postęp M5 opisuje `STATUS.md`.
+Agent nie wykonywał testów fizycznych; wyniki z tabletu pochodzą od użytkownika.
 
 ```sh
 ./build.sh      # M1/M2
